@@ -9,7 +9,8 @@ print_line = "-" * 50
 menu_options = [
     "[0] Quit program",
     "[1] get intersection.csv from raid res and attendeese",
-    "[2] add more players"
+    "[2] add more players",
+    "[3] print dict"
                 ]
 
 player_dict = {}
@@ -39,8 +40,21 @@ def get_intersect():
             print("Input not recognized")       
 
 def print_dictionary(dictionary:dict):
+    print("-" * 20 + "Player Dictionary" + "-" * 20)
     for player in dictionary:
-        print(player, dictionary[player])
+        if len(player) < 16:
+            space = 16 - len(player)
+            player_list = str(dictionary[player]).split(".")
+            player_characters = ""
+            if len(player_list) > 1:
+                for name in player_list:
+                    player_characters += name + " - "
+                player_characters = player_characters[:-3]
+                
+            print(f"Player: {player}{" " * space}| Characters: {player_characters}")
+        else:
+            print(f"Player: {player} | Characters: {dictionary[player]}")
+    print(print_line)
 
 def mainloop():
     print("Loading players...")
@@ -52,15 +66,22 @@ def mainloop():
             print(menu_opt)
         print(print_line)
         user_entry = input("Option: ")
+
         try:
             user_entry = int(user_entry)
             print(print_line)
+
             if user_entry == 0:
                 print("Quitting program...")
                 time.sleep(2)
                 break
+
             elif user_entry == 2:
                 manage_dict_func.add_new_players(player_dict)
+                read_write_csv.write_csv_file(player_dict)
+
+            elif user_entry == 3:
+                print_dictionary(player_dict)
         except:
             print("invalid option")
 mainloop()

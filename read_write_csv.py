@@ -6,7 +6,7 @@ test_dict = {
 }
 
 def write_csv_file(dictionary):
-    with open('25-09-26-BWL.csv', 'w', newline='') as csvfile:
+    with open('player_chars.csv', 'w', newline='') as csvfile:
         fieldnames = ['Character', 'Soft Reserve A', 'Soft Reserve B']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
