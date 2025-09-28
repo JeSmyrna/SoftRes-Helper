@@ -9,7 +9,7 @@ print_line = "-" * 50
 menu_options = [
     "[0] Quit program",
     "[1] get intersection.csv from raid res and attendeese",
-    "[2] add more players",
+    "[2] add more players or characters",
     "[3] delete player",
     "[4] print dict"
                 ]
