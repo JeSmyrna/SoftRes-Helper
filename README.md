@@ -11,7 +11,7 @@ Manage players and their characters:
 - add new characters to said player [x]
 - add new characters to existing players [x]
 - delete players [x]
-- delete characters [ ]
+- delete characters [x]
 - create table for different Raid SR+ Sheets [ ]
 
 Manage SR+ sheets:
