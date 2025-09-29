@@ -2,16 +2,18 @@ import raid_attendance
 import raid_res_import
 import read_write_csv
 import manage_dict_func
+import general_functions
 import time
 
-print_line = "-" * 50
+
 
 menu_options = [
     "[0] Quit program",
     "[1] get intersection.csv from raid res and attendeese",
     "[2] add more players or characters",
     "[3] delete player or characters",
-    "[4] print dict"
+    "[4] print dict",
+    "[5] Manage SR+ Sheet"
                 ]
 
 player_dict = {}
@@ -20,6 +22,8 @@ def get_intersect():
     while True:
         user_entry = input("Updated >raidres.txt< and >attendeese.txt< ? (y/n): ")
         if user_entry == "y":
+            print("not available")#Not sure if i need that now tbh
+            break
             raid_res_dict = raid_res_import.get_soft_reserve_players()
             attendeese_list = raid_attendance.get_raid_attendees()
 
@@ -29,7 +33,7 @@ def get_intersect():
             #print("-" * 20 + "Not Attended" + "-" * 20)
             #print_dictionary(not_attended_players)
 
-            read_write_csv.write_csv_file(attended_players)
+            #read_write_csv.write_csv_file(attended_players)
 
             break
         
@@ -41,7 +45,7 @@ def get_intersect():
             print("Input not recognized")       
 
 def print_dictionary(dictionary:dict):
-    print("-" * 20 + "Player Dictionary" + "-" * 20)
+    general_functions.print_menu_title("Player Dictionary")
     for player in dictionary:
         if len(player) < 16:
             space = 16 - len(player)
@@ -56,20 +60,20 @@ def print_dictionary(dictionary:dict):
                 print(f"Player: {player}{" " * space}| Characters: {dictionary[player]}")
         else:
             print(f"Player: {player} | Characters: {dictionary[player]}")
-    print(print_line)
+    general_functions.print_line()
 
 def mainloop():
-
+    
     while True:
-        print(print_line)
+        general_functions.print_menu_title("Main Menu")
         for menu_opt in menu_options:
             print(menu_opt)
-        print(print_line)
+        general_functions.print_line()
         user_entry = input("Option: ")
 
         try:
             user_entry = int(user_entry)
-            print(print_line)
+            general_functions.print_line()
 
             if user_entry == 0:
                 print("Quitting program...")
@@ -78,11 +82,11 @@ def mainloop():
                 break
 
             elif user_entry == 2:
-                print(print_line)
+                general_functions.print_line()
                 print("[1] Add new player")
                 print("[2] Add new characters")
                 user_entry = input("Option: ")
-                print(print_line)
+                general_functions.print_line()
                 if user_entry == "q":
                     continue
                 elif user_entry == "1":
@@ -96,11 +100,11 @@ def mainloop():
                     print("invalid input")
 
             elif user_entry == 3:
-                print(print_line)
+                general_functions.print_line()
                 print("[1] Delete player")
                 print("[2] Delete character")
                 user_entry = input("Option: ")
-                print(print_line)
+                general_functions.print_line()
                 if user_entry == "q":
                     continue
                 elif user_entry == "1":
