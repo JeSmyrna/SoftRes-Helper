@@ -1,4 +1,5 @@
 import time
+import general_functions
 
 #go through character name check for valid characters in name
 valid_characters = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
@@ -103,10 +104,9 @@ def print_player_and_characters(playername, characters):
     player_characters = player_characters[:-3]
 
     space = 16 - len(playername)
-    print("-" * 50)
+    general_functions.print_line()
     print(f"Player: {playername}{" " * space}| Characters: {player_characters}")
-    print("-" * 50)
-
+    general_functions.print_line()
 def delete_character(player_dict):
     
     playername, characters = find_player(player_dict)

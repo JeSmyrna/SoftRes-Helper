@@ -2,6 +2,7 @@ import raid_attendance
 import raid_res_import
 import read_write_csv
 import manage_dict_func
+import sr_sheet_manager
 import general_functions
 import time
 
@@ -22,8 +23,7 @@ def get_intersect():
     while True:
         user_entry = input("Updated >raidres.txt< and >attendeese.txt< ? (y/n): ")
         if user_entry == "y":
-            print("not available")#Not sure if i need that now tbh
-            break
+            print("not available")#Not sure if i need that now tbh - Have to put it into sr manager prob
             raid_res_dict = raid_res_import.get_soft_reserve_players()
             attendeese_list = raid_attendance.get_raid_attendees()
 
@@ -80,6 +80,9 @@ def mainloop():
                 read_write_csv.write_csv_file_players(player_dict)
                 time.sleep(2)
                 break
+            elif user_entry == 1:
+                print("not available")
+                
 
             elif user_entry == 2:
                 general_functions.print_line()
@@ -119,6 +122,9 @@ def mainloop():
             
             elif user_entry == 4:
                 print_dictionary(player_dict)
+
+            elif user_entry == 5:
+                sr_sheet_manager.sheet_manager_start()
 
             else:
                 pass
