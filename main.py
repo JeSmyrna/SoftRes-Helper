@@ -78,8 +78,22 @@ def mainloop():
                 break
 
             elif user_entry == 2:
-                manage_dict_func.add_new_players(player_dict)
-                read_write_csv.write_csv_file_players(player_dict)
+                print(print_line)
+                print("[1] Add new player")
+                print("[2] Add new characters")
+                user_entry = input("Option: ")
+                print(print_line)
+                if user_entry == "q":
+                    continue
+                elif user_entry == "1":
+                    manage_dict_func.add_new_players(player_dict)
+                    read_write_csv.write_csv_file_players(player_dict)
+
+                elif user_entry == "2":
+                    manage_dict_func.add_characters_to_player(player_dict)
+                    read_write_csv.write_csv_file_players(player_dict)
+                else:
+                    print("invalid input")
 
             elif user_entry == 3:
                 print(print_line)

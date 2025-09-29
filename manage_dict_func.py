@@ -36,7 +36,7 @@ def add_new_players(player_dict:dict):
             
             user_entry = input(f"add characters to {user_entry_playername}? (y/n): ")
             if user_entry == "y":
-                add_characters_to_player(user_entry_playername,player_dict)
+                add_characters_to_player(player_dict,user_entry_playername)
             elif user_entry == "n":
                 print("choose different player...")
                 time.sleep(0.5)
@@ -59,9 +59,29 @@ def add_new_players(player_dict:dict):
                         
             player_dict[user_entry_playername] = combine_character_names(character_list)
 
-def add_characters_to_player(playername, player_dict):
-    characters = str(player_dict[playername]).split(".")
+def find_player(player_dict):
+    while True:
+        playername = input("Player: ")
+        if playername == "q":
+            return "", []
+        
+        elif playername in player_dict:
+            characters = str(player_dict[playername]).split(".")
+            return playername, characters
+            
+        else:
+            print("player not found")
+
+def add_characters_to_player(player_dict, playername = ''):
+    if playername == "":
+        playername, characters = find_player(player_dict)
+        if playername == "" or characters == []:
+            return
+    else:
+        characters = str(player_dict[playername]).split(".")
     
+    print_player_and_characters(playername, characters)
+
     while True:
         user_entry_character = input("New Character: ")
         if user_entry_character == "q":
@@ -69,12 +89,13 @@ def add_characters_to_player(playername, player_dict):
         else:
             if check_if_name_valid(user_entry_character):
                 characters.append(user_entry_character)
-                print(characters)
+                print_player_and_characters(playername, characters)
             else:
                 print("Not a valid name")
                 
     player_dict[playername] = combine_character_names(characters)
 
+##Visualising Player and their characters
 def print_player_and_characters(playername, characters):
     player_characters = ""
     for name in characters:
@@ -87,16 +108,8 @@ def print_player_and_characters(playername, characters):
     print("-" * 50)
 
 def delete_character(player_dict):
-    while True:
-        playername = input("Player: ")
-        if playername == "q":
-            return
-        
-        elif playername in player_dict:
-            characters = str(player_dict[playername]).split(".")
-            break
-        else:
-            print("player not found")
+    
+    playername, characters = find_player(player_dict)
 
     while True:
         print_player_and_characters(playername, characters)
