@@ -10,7 +10,7 @@ menu_options = [
     "[0] Quit program",
     "[1] get intersection.csv from raid res and attendeese",
     "[2] add more players or characters",
-    "[3] delete player",
+    "[3] delete player or characters",
     "[4] print dict"
                 ]
 
@@ -59,11 +59,9 @@ def print_dictionary(dictionary:dict):
     print(print_line)
 
 def mainloop():
-    print("Loading players...")
-    player_dict = read_write_csv.read_csv_file_players()
-    #print(print_dictionary(player_dict))
 
     while True:
+        print(print_line)
         for menu_opt in menu_options:
             print(menu_opt)
         print(print_line)
@@ -84,8 +82,22 @@ def mainloop():
                 read_write_csv.write_csv_file_players(player_dict)
 
             elif user_entry == 3:
-                manage_dict_func.delete_player(player_dict)
-                read_write_csv.write_csv_file_players(player_dict)
+                print(print_line)
+                print("[1] Delete player")
+                print("[2] Delete character")
+                user_entry = input("Option: ")
+                print(print_line)
+                if user_entry == "q":
+                    continue
+                elif user_entry == "1":
+                    manage_dict_func.delete_player(player_dict)
+                    read_write_csv.write_csv_file_players(player_dict)
+
+                elif user_entry == "2":
+                    manage_dict_func.delete_character(player_dict)
+                    read_write_csv.write_csv_file_players(player_dict)
+                else:
+                    print("invalid input")
             
             elif user_entry == 4:
                 print_dictionary(player_dict)
@@ -95,4 +107,9 @@ def mainloop():
 
         except:
             print("invalid option")
+
+
+print("Loading players...")
+player_dict = read_write_csv.read_csv_file_players()
+
 mainloop()

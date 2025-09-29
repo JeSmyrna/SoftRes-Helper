@@ -75,7 +75,43 @@ def add_characters_to_player(playername, player_dict):
                 
     player_dict[playername] = combine_character_names(characters)
 
+def print_player_and_characters(playername, characters):
+    player_characters = ""
+    for name in characters:
+        player_characters += name + " - "
+    player_characters = player_characters[:-3]
+
+    space = 16 - len(playername)
+    print("-" * 50)
+    print(f"Player: {playername}{" " * space}| Characters: {player_characters}")
+    print("-" * 50)
+
+def delete_character(player_dict):
+    while True:
+        playername = input("Player: ")
+        if playername == "q":
+            return
+        
+        elif playername in player_dict:
+            characters = str(player_dict[playername]).split(".")
+            break
+        else:
+            print("player not found")
+
+    while True:
+        print_player_and_characters(playername, characters)
+        user_input = input("Delete Character: ")
+        if user_input == "q":
+            player_dict[playername] = combine_character_names(characters)
+            return
+        elif user_input in characters:
+            characters.remove(user_input)
+        else:
+            print("invalid input")
+
+
 #test_dict = {"player" : "player1.player2.player3"}
+#delete_character(test_dict)
 #add_characters_to_player("player",test_dict)
 
 def delete_player(player_dict:dict):
