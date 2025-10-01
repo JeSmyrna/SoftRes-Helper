@@ -72,7 +72,7 @@ def sheet_manager_start(sheet = {}, sheet_name = "[Empty]"): #get player diction
     #in case of coming back from editing a sheet, sheet is already loaded so don't show the available ones
     if sheet != {}:
         general_functions.print_loaded_file(sheet_name)
-        sheet_manager_main(sheet)
+        sheet_manager_main(sheet,sheet_name)
     
     #catch if no sheet is loaded
     else:
@@ -80,7 +80,7 @@ def sheet_manager_start(sheet = {}, sheet_name = "[Empty]"): #get player diction
         choose_sheet()
     
 
-def sheet_manager_main(raid_sheet):
+def sheet_manager_main(raid_sheet,filename):
     while True:
         #show menu options, List at the top
         for option in menu_option:
@@ -96,6 +96,7 @@ def sheet_manager_main(raid_sheet):
         elif user_input == "2":
             pass
         elif user_input == "3":
+            general_functions.print_menu_title(filename)
             sr_sheet_manager_func.print_sr_plus_sheet(raid_sheet)
         else:
             print("invalid input")
