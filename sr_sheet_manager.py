@@ -1,5 +1,6 @@
 import time
 import general_functions
+import read_write_csv
 
 sr_plus_dict = {}
 sr_plus_dict_archive = {}
@@ -20,48 +21,53 @@ sr_plus_dict_archive = {}
 # check if player got sr+ item, if yes > put into archive {1: [Player, item, Bonusroll, status (aquired or changed), status date, dates attendance]}
 
 #Testing file
-testing_dict = [{"filename": "Stonewall Inn BWL"},
-                {"filename": "Stonewall Inn AQ40"},
-                {"filename" : "Stonewall Inn ES"}]
-
-
+sr_sheets = []
 
 menu_option = [
     "[0] return to main menu",
     "[1] load raid sheet", #choose what sheet to load
-    "[2] create new raid SR+ sheet", # create a new SR+ sheet with choosen name, maybe people manage multiple guilds SR sheets so get the name ""
-    "[3] "
+    "[2] create new raid SR+ sheet" # create a new SR+ sheet with choosen name, maybe people manage multiple guilds SR sheets so get the name ""
 ]
 def load_sr_sheet(filename = "[Empty]") -> dict:
     if filename == "[Empty]":
         return filename
     
-    for file in testing_dict:
-        if filename == file["filename"]:
-            print("loading file...")
-            time.sleep(1)
-            return file
+    else:
+        print("loading file...")
+        file = read_write_csv.load_sr_sheet(filename)
+        #load csv raid file
+        
+        time.sleep(1)
+        if file == {}:
+            return file, "[Empty]"
+        else:
+            return file, filename
         #general_functions.print_loaded_file(filename)
 
 
 def print_available_sheets(raid_sheets):
     for sheet in raid_sheets:
-        print(sheet["filename"])
+        print(sheet)
         time.sleep(.15)
     general_functions.print_line()
 
+
+
 def choose_sheet():
-    print_available_sheets(testing_dict)
+    sr_sheets = read_write_csv.load_sr_sheets_directory()
+    print_available_sheets(sr_sheets)
     user_input = input("Choose Sheet: ")
     sheet_manager_start(load_sr_sheet(user_input))
 
-def sheet_manager_start(sheet_dict = {}): #get player dictionary ?
+
+
+def sheet_manager_start(sheet = {}, sheet_name = "[Empty]"): #get player dictionary ?
     general_functions.print_menu_title("SR Sheet Manager")
     
     #in case of coming back from editing a sheet, sheet is already loaded so don't show the available ones
-    if sheet_dict != {}:
-        general_functions.print_loaded_file(sheet_dict["filename"])
-        sheet_manager_main(sheet_dict)
+    if sheet != {}:
+        general_functions.print_loaded_file(sheet_name)
+        sheet_manager_main(sheet)
     
     #catch if no sheet is loaded
     else:
@@ -79,7 +85,12 @@ def sheet_manager_main(sheet_dict):
         if user_input == "0":
             time.sleep(1)
             return
+        
+        elif user_input == "1":
+            pass
+        elif user_input == "2":
+            pass
         else:
             print("invalid input")
 
-#sheet_manager_start()
+sheet_manager_start()
