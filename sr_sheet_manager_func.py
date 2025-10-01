@@ -92,5 +92,5 @@ test_dict = {"columns":["Player","prev bonus", "bonusroll", "raid", "raid", "rai
              "Gwynn": test_row,
              "Player1" : test_row,
              "Player2" : test_row}
-print_sr_plus_sheet(test_dict_1)
+#print_sr_plus_sheet(test_dict_1)
 #print(f'new bonus + previous: {calc_bonus_roll(test_row)}')

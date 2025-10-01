@@ -28,7 +28,8 @@ menu_option = [
     "[0] return to main menu",
     "[1] load raid sheet", #choose what sheet to load
     "[2] create new raid SR+ sheet", # create a new SR+ sheet with choosen name, maybe people manage multiple guilds SR sheets so get the name ""
-    "[3] print SR+ Sheet"
+    "[3] print SR+ Sheet",
+    "[4] save SR+ Sheet"
 ]
 def load_sr_sheet(filename) -> dict:
     if filename == "[Empty]":
@@ -67,7 +68,6 @@ def choose_sheet():
 
 
 def sheet_manager_start(sheet = {}, sheet_name = "[Empty]"): #get player dictionary ?
-    general_functions.print_menu_title("SR Sheet Manager")
     
     #in case of coming back from editing a sheet, sheet is already loaded so don't show the available ones
     if sheet != {}:
@@ -82,6 +82,7 @@ def sheet_manager_start(sheet = {}, sheet_name = "[Empty]"): #get player diction
 
 def sheet_manager_main(raid_sheet,filename):
     while True:
+        general_functions.print_menu_title("SR Sheet Manager")
         #show menu options, List at the top
         for option in menu_option:
             print(option)
@@ -98,6 +99,12 @@ def sheet_manager_main(raid_sheet,filename):
         elif user_input == "3":
             general_functions.print_menu_title(filename)
             sr_sheet_manager_func.print_sr_plus_sheet(raid_sheet)
+        elif user_input == "4":
+            print("saving file...")
+            read_write_csv.safe_sr_sheet_csv(filename,raid_sheet)
+            print("file is safed")
+            general_functions.print_line()
+            time.sleep(1)
         else:
             print("invalid input")
 

@@ -21,16 +21,6 @@ def read_csv_file_players() -> dict:
                 get_dict[row[0]] = row[1]
     return get_dict
 
-#not ready to use, just guessing here
-def write_csv_raid_softres(raidname,sr_dict):
-    with open(f'Data/{raidname + "sr_sheet"}.csv', 'w', newline='') as csvfile:
-        fieldnames = ['Player', ''] #Format need to think about
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-        writer.writeheader()
-        for entry in sr_dict:
-            #characters = str(sr_dict[entry])
-            writer.writerow({'Player': f'{entry}'})
 def load_sr_sheet(filename):
     sr_sheet_dict = {}
     try:
@@ -53,3 +43,24 @@ def load_sr_sheets_directory():
     with open(f'Data/raid_directory.txt', newline='') as sr_directory:
         list_of_sheets = [line.rstrip("\r\n") for line in sr_directory]
         return list_of_sheets
+    
+
+def safe_sr_sheet_csv(raidname:str,sr_dict:dict):
+    with open(f'Data/{raidname}.csv', 'w', newline='') as csvfile:
+        fieldnames = sr_dict["columns"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        column_list = []
+        for column_name in sr_dict['columns']:
+            column_list.append(column_name)
+
+        dict_row = {}
+        for entry in sr_dict:
+            if entry != 'columns':
+                get_entries = sr_dict[entry]
+                for index in range(len(get_entries)):
+                    dict_row[column_list[index]] = get_entries[index]
+                #print(dict_row)#row[sr_dict['columns'][entry]] = sr_dict[entry] 
+        
+                writer.writerow(dict_row)
