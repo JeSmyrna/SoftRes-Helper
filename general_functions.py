@@ -1,6 +1,6 @@
 line_length = 50
 
-def print_line():
+def print_line(line_length = 50):
     print("-" * line_length)
 
 def print_menu_title(title):

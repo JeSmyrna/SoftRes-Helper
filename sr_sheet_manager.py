@@ -1,6 +1,7 @@
 import time
 import general_functions
 import read_write_csv
+import sr_sheet_manager_func
 
 sr_plus_dict = {}
 sr_plus_dict_archive = {}
@@ -26,9 +27,10 @@ sr_sheets = []
 menu_option = [
     "[0] return to main menu",
     "[1] load raid sheet", #choose what sheet to load
-    "[2] create new raid SR+ sheet" # create a new SR+ sheet with choosen name, maybe people manage multiple guilds SR sheets so get the name ""
+    "[2] create new raid SR+ sheet", # create a new SR+ sheet with choosen name, maybe people manage multiple guilds SR sheets so get the name ""
+    "[3] print SR+ Sheet"
 ]
-def load_sr_sheet(filename = "[Empty]") -> dict:
+def load_sr_sheet(filename) -> dict:
     if filename == "[Empty]":
         return filename
     
@@ -39,8 +41,10 @@ def load_sr_sheet(filename = "[Empty]") -> dict:
         
         time.sleep(1)
         if file == {}:
+            #print(filename, file)
             return file, "[Empty]"
         else:
+            #print(filename, file)
             return file, filename
         #general_functions.print_loaded_file(filename)
 
@@ -57,7 +61,8 @@ def choose_sheet():
     sr_sheets = read_write_csv.load_sr_sheets_directory()
     print_available_sheets(sr_sheets)
     user_input = input("Choose Sheet: ")
-    sheet_manager_start(load_sr_sheet(user_input))
+    file, filename = load_sr_sheet(user_input)
+    sheet_manager_start(file, filename)
 
 
 
@@ -71,11 +76,11 @@ def sheet_manager_start(sheet = {}, sheet_name = "[Empty]"): #get player diction
     
     #catch if no sheet is loaded
     else:
-        general_functions.print_loaded_file(load_sr_sheet())
+        general_functions.print_loaded_file(load_sr_sheet(sheet_name))
         choose_sheet()
     
 
-def sheet_manager_main(sheet_dict):
+def sheet_manager_main(raid_sheet):
     while True:
         #show menu options, List at the top
         for option in menu_option:
@@ -90,6 +95,8 @@ def sheet_manager_main(sheet_dict):
             pass
         elif user_input == "2":
             pass
+        elif user_input == "3":
+            sr_sheet_manager_func.print_sr_plus_sheet(raid_sheet)
         else:
             print("invalid input")
 
