@@ -53,7 +53,7 @@ def add_new_players(player_dict:dict):
                     break
                 else:
                     if check_if_name_valid(user_entry_character):
-                        character_list.append(user_entry_character)
+                        character_list.append(user_entry_character.capitalize())
                         print(character_list)
                     else:
                         print("Not a valid name")
@@ -89,7 +89,7 @@ def add_characters_to_player(player_dict, playername = ''):
             break
         else:
             if check_if_name_valid(user_entry_character):
-                characters.append(user_entry_character)
+                characters.append(user_entry_character.capitalize())
                 print_player_and_characters(playername, characters)
             else:
                 print("Not a valid name")
@@ -107,6 +107,7 @@ def print_player_and_characters(playername, characters):
     general_functions.print_line()
     print(f"Player: {playername}{" " * space}| Characters: {player_characters}")
     general_functions.print_line()
+
 def delete_character(player_dict):
     
     playername, characters = find_player(player_dict)
