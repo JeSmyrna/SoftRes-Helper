@@ -13,3 +13,7 @@ def print_loaded_file(filename):
     message = "Loaded: "
     max_length = line_length - len(filename) - len(message)
     print("-" * max_length + message + filename)
+
+def get_user_input(question:str):
+    user_input = input(f"{question}: ")
+    return user_input

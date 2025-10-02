@@ -61,6 +61,5 @@ def safe_sr_sheet_csv(raidname:str,sr_dict:dict):
                 get_entries = sr_dict[entry]
                 for index in range(len(get_entries)):
                     dict_row[column_list[index]] = get_entries[index]
-                #print(dict_row)#row[sr_dict['columns'][entry]] = sr_dict[entry] 
         
                 writer.writerow(dict_row)

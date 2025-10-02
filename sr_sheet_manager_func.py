@@ -1,5 +1,5 @@
-import general_functions
-
+import general_functions as gen_func
+import read_write_csv as rw_csv
 #function to calculate line length for styling the sheet
 def get_line_length(row):
     count_columns = len(row)
@@ -8,15 +8,15 @@ def get_line_length(row):
 
 def print_sr_plus_sheet(sr_dict):
     line_length = get_line_length(sr_dict["columns"])# get how long the entry is and makes the lines longer for styling
-    general_functions.print_line(line_length)    
+    gen_func.print_line(line_length)    
     for row in sr_dict:
         if sr_dict[row][0] == "Player":
             print(style_row(sr_dict[row]))
-            general_functions.print_line(line_length)
+            gen_func.print_line(line_length)
         else:
             sr_dict[row] = calc_bonus_roll(sr_dict[row])
             print(style_row(sr_dict[row]))
-            general_functions.print_line(line_length)
+            gen_func.print_line(line_length)
 
 def style_row(row:list):
     row_to_print = "|"
@@ -78,11 +78,24 @@ def calc_bonus_roll(row_entry):
                 
             else:
                 pass
-    #gives the current bonus roll back into the list -> column 3 "Bonusroll"
+    #gives the current bonus roll, back into the list -> column 3 "Bonusroll"
     row_entry[3] = bonus_roll
     return row_entry
 
+def find_player_by_char(character_name:str) -> str:
+    print("loading player dictionary...")
+    player_dict = rw_csv.read_csv_file_players()
+    
+    for player in player_dict:
+        character_list = str(player_dict[player]).split(".")
+        if character_name in character_list:
+            #rint(f"Player {player} found! with character {user_input}.")
+            return player
+    print("Player not found in player dictionary")
 
+
+
+####################### Test Cases ##############################
 test_dict_1 = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll', '2025-09-28', '2025-09-21', '2025-09-16'],
                'Gwynn': ['Gwynn', 'Hammer', '0', '0', 'present', 'present', 'present'],
                'Wilfret': ['Wilfret', 'staff of awesomeness', '0', '0', 'present', 'not', 'present']}
@@ -94,3 +107,4 @@ test_dict = {"columns":["Player","prev bonus", "bonusroll", "raid", "raid", "rai
              "Player2" : test_row}
 #print_sr_plus_sheet(test_dict_1)
 #print(f'new bonus + previous: {calc_bonus_roll(test_row)}')
+#print(find_player_by_char(str(gen_func.get_user_input("Character")).capitalize()))
