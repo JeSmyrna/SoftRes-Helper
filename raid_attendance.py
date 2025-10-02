@@ -4,7 +4,7 @@ def get_raid_attendees():
 
     with open("attendeese.txt") as file_in:
         for line in file_in:
-            attendees_list.append(line[:-1])
+            attendees_list.append(line.rstrip("\n"))
 
     return attendees_list
 
