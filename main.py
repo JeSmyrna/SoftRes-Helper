@@ -94,11 +94,9 @@ def mainloop():
                     continue
                 elif user_entry == "1":
                     manage_dict_func.add_new_players(player_dict)
-                    read_write_csv.write_csv_file_players(player_dict)
 
                 elif user_entry == "2":
                     manage_dict_func.add_characters_to_player(player_dict)
-                    read_write_csv.write_csv_file_players(player_dict)
                 else:
                     print("invalid input")
 

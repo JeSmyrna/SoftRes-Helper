@@ -1,7 +1,8 @@
 import time
 import general_functions
+import read_write_csv as rw_csv
 
-#go through character name check for valid characters in name
+#go through character name check for valid characters in name re.findall("[a-m]", txt)
 valid_characters = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
 def check_if_name_valid(playername: str):
     playername = playername.lower()
@@ -59,6 +60,7 @@ def add_new_players(player_dict:dict):
                         print("Not a valid name")
                         
             player_dict[user_entry_playername] = combine_character_names(character_list)
+    rw_csv.write_csv_file_players(player_dict)
 
 def find_player(player_dict):
     while True:

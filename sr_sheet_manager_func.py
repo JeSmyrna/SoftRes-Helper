@@ -1,5 +1,10 @@
 import general_functions as gen_func
 import read_write_csv as rw_csv
+import raid_attendance
+import manage_dict_func as mg_dict_func
+import time
+
+
 #function to calculate line length for styling the sheet
 def get_line_length(row):
     count_columns = len(row)
@@ -35,7 +40,12 @@ def style_row(row:list):
         #bonusroll and numbers
         elif column == 3:
             if value != "Bonusroll":#if you've changed the name of the column change it here to match
-                row_to_print += f'{4 * " "}{value}{4 * " "}|'
+                
+                value_len = len(str(value))
+                right_side = ((10 - value_len) // 2)
+                left_side = 10 - value_len - right_side
+
+                row_to_print += f'{left_side * " "}{value}{right_side * " "}|'
                 column += 1
             else:    
                 row_to_print += f' {value}|'
@@ -68,23 +78,20 @@ def calc_bonus_roll(row_entry):
         if row_entry[entry] == "present":
             bonus_roll += 10
             consecutive_raids_missing = 0 #reset to 0
-        else:
-            
+        elif row_entry[entry] == "not":
             #see if the player was missing 2 raids in a row
             consecutive_raids_missing += 1
             if consecutive_raids_missing == 2:
                 bonus_roll -= 5 #reset to 0
                 consecutive_raids_missing = 0
-                
-            else:
-                pass
+            #    
+        else:
+            pass
     #gives the current bonus roll, back into the list -> column 3 "Bonusroll"
     row_entry[3] = bonus_roll
     return row_entry
 
-def find_player_by_char(character_name:str) -> str:
-    print("loading player dictionary...")
-    player_dict = rw_csv.read_csv_file_players()
+def find_player_by_char(character_name:str,player_dict:dict) -> str:
     
     for player in player_dict:
         character_list = str(player_dict[player]).split(".")
@@ -92,19 +99,75 @@ def find_player_by_char(character_name:str) -> str:
             #rint(f"Player {player} found! with character {user_input}.")
             return player
     print("Player not found in player dictionary")
+    return character_name
+
+#loop till every player is in the SR+ sheet
+def add_player_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
+    while player_list != []:
+
+        for player in player_list:
+
+            if mg_dict_func.check_if_player_exists(player,player_dict):
+                print(f"adding {player} to SR+ sheet...")
+                sr_plus_item = gen_func.get_user_input(f"{player}s SR+ ?: ")
+                
+                player_list_part_a = [player, sr_plus_item, 0, 0]
+                player_list_part_b = []
+                for day in range(0,(len(sr_plus_dict["columns"][4:-1]))):
+                    player_list_part_b.append("-") #fill past days with "-" empty space (newly joined player)
+                player_list_part_b.append("present") #add new day with "attended"
+
+                player_sr_list = player_list_part_a + player_list_part_b
+
+                sr_plus_dict[player] = player_sr_list
+                player_list.remove(player)
+                time.sleep(0.5)
+            else:
+                print(f"Character {player} needs to be added to dict")
+                mg_dict_func.add_new_players(player_dict)
 
 
+
+#new column for the SR+ Sheet
+def make_new_entry(filename,sr_pluss_sheet:dict):
+    get_date = gen_func.get_user_input("Raid Date (yyyy-mm-dd): ")
+
+    print("loading player dictionary...")
+    player_dict = rw_csv.read_csv_file_players()
+    
+    attendese = raid_attendance.get_raid_attendees()
+    
+    player_attended = [find_player_by_char(character, player_dict) for character in attendese]
+    
+    sr_pluss_sheet["columns"].append(get_date)
+
+    for player in sr_pluss_sheet:
+        if player != "columns":
+            if player in player_attended:
+                player_attended.remove(player)
+                sr_pluss_sheet[player].append("present")
+            else:
+                sr_pluss_sheet[player].append("not")
+
+    if player_attended != []:
+        print(f"{player_attended}: need to be added to sheet")
+        add_player_to_sheet(player_attended, sr_pluss_sheet, player_dict)
+        pass #add player to sheet
+    rw_csv.safe_sr_sheet_csv(filename,sr_pluss_sheet)
+    #print_sr_plus_sheet(test_dict_1)
 
 ####################### Test Cases ##############################
 test_dict_1 = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll', '2025-09-28', '2025-09-21', '2025-09-16'],
                'Gwynn': ['Gwynn', 'Hammer', '0', '0', 'present', 'present', 'present'],
-               'Wilfret': ['Wilfret', 'staff of awesomeness', '0', '0', 'present', 'not', 'present']}
+               'Nutbath': ['Nutbath', 'staff of awesomeness', '0', '0', 'present', 'not', 'present']}
 
 test_row = ["Hammer",10,20,"present","present","present","not","not","present","not","present","not"]
 test_dict = {"columns":["Player","prev bonus", "bonusroll", "raid", "raid", "raid", "raid", "raid", "raid", "raid", "raid", "raid"],
              "Gwynn": test_row,
              "Player1" : test_row,
              "Player2" : test_row}
+
+#make_new_entry()
 #print_sr_plus_sheet(test_dict_1)
 #print(f'new bonus + previous: {calc_bonus_roll(test_row)}')
 #print(find_player_by_char(str(gen_func.get_user_input("Character")).capitalize()))

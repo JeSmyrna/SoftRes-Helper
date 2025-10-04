@@ -29,7 +29,8 @@ menu_option = [
     "[1] load raid sheet", #choose what sheet to load
     "[2] create new raid SR+ sheet", # create a new SR+ sheet with choosen name, maybe people manage multiple guilds SR sheets so get the name ""
     "[3] print SR+ Sheet",
-    "[4] save SR+ Sheet"
+    "[4] save SR+ Sheet",
+    "[5] make new entry"
 ]
 def load_sr_sheet(filename) -> dict:
     if filename == "[Empty]":
@@ -105,7 +106,9 @@ def sheet_manager_main(raid_sheet,filename):
             print("file is safed")
             general_functions.print_line()
             time.sleep(1)
+        elif user_input == "5":
+            general_functions.print_menu_title(f"New Entry to {filename}")
+            sr_sheet_manager_func.make_new_entry(filename,raid_sheet)
+            general_functions.print_line()
         else:
             print("invalid input")
-
-sheet_manager_start()
