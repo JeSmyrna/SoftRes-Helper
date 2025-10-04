@@ -112,7 +112,7 @@ def add_player_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
             if mg_dict_func.check_if_player_exists(player,player_dict):
                 print(f"adding {player} to SR+ sheet...")
                 sr_plus_item = gen_func.get_user_input(f"{player}s SR+ ?: ")
-                
+                gen_func.print_line()
                 player_list_part_a = [player, sr_plus_item, 0, 0]
                 player_list_part_b = []
                 for day in range(0,(len(sr_plus_dict["columns"][4:-1]))):
@@ -159,6 +159,7 @@ def make_new_entry(filename,sr_pluss_sheet:dict):
             add_player_to_sheet(player_attended, sr_pluss_sheet, player_dict)
             pass #add player to sheet
         rw_csv.safe_sr_sheet_csv(filename,sr_pluss_sheet)
+        
     
 
 def create_new_sr_plus_sheet():

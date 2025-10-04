@@ -28,6 +28,7 @@ def add_new_players(player_dict:dict):
         user_entry_playername = input("new player: ")
         if user_entry_playername == "q":
             print("stop editing...")
+            rw_csv.write_csv_file_players(player_dict)
             time.sleep(1)
             break
 
@@ -60,7 +61,7 @@ def add_new_players(player_dict:dict):
                         print("Not a valid name")
                         
             player_dict[user_entry_playername] = combine_character_names(character_list)
-    rw_csv.write_csv_file_players(player_dict)
+    
 
 def find_player(player_dict):
     while True:

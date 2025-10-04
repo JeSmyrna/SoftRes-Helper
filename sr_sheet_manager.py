@@ -72,7 +72,6 @@ def sheet_manager_start(sheet = {}, sheet_name = "[Empty]"): #get player diction
     
     #in case of coming back from editing a sheet, sheet is already loaded so don't show the available ones
     if sheet != {}:
-        general_functions.print_loaded_file(sheet_name)
         sheet_manager_main(sheet,sheet_name)
     
     #catch if no sheet is loaded
@@ -85,6 +84,7 @@ def sheet_manager_main(raid_sheet,filename):
 
     while True:
         general_functions.print_menu_title("SR Sheet Manager")
+        general_functions.print_loaded_file(filename)
         #show menu options, List at the top
         for option in menu_option:
             print(option)
