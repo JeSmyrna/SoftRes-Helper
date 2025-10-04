@@ -44,6 +44,11 @@ def load_sr_sheets_directory():
         list_of_sheets = [line.rstrip("\r\n") for line in sr_directory]
         return list_of_sheets
     
+def safe_sr_sheets_directory(sr_sheet_directory:list):
+    with open(f'Data/raid_directory.txt', 'w') as sr_directory:
+        for sheet_name in sr_sheet_directory:
+            sr_directory.write(f'{sheet_name}\n')
+    
 
 def safe_sr_sheet_csv(raidname:str,sr_dict:dict):
     with open(f'Data/{raidname}.csv', 'w', newline='') as csvfile:

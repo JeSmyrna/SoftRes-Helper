@@ -82,6 +82,7 @@ def sheet_manager_start(sheet = {}, sheet_name = "[Empty]"): #get player diction
     
 
 def sheet_manager_main(raid_sheet,filename):
+
     while True:
         general_functions.print_menu_title("SR Sheet Manager")
         #show menu options, List at the top
@@ -93,22 +94,34 @@ def sheet_manager_main(raid_sheet,filename):
             time.sleep(1)
             return
         
+        #load SR Sheet
         elif user_input == "1":
-            pass
+            break
+
+        #create SR sheet
         elif user_input == "2":
-            pass
+            sr_sheet_manager_func.create_new_sr_plus_sheet()
+            time.sleep(1)
+            print_available_sheets(read_write_csv.load_sr_sheets_directory())
+
+        #print SR sheet
         elif user_input == "3":
             general_functions.print_menu_title(filename)
             sr_sheet_manager_func.print_sr_plus_sheet(raid_sheet)
+        
+        #save SR sheet
         elif user_input == "4":
             print("saving file...")
             read_write_csv.safe_sr_sheet_csv(filename,raid_sheet)
             print("file is safed")
             general_functions.print_line()
             time.sleep(1)
+        
+        #make new entry in SR sheet
         elif user_input == "5":
             general_functions.print_menu_title(f"New Entry to {filename}")
             sr_sheet_manager_func.make_new_entry(filename,raid_sheet)
             general_functions.print_line()
         else:
             print("invalid input")
+    sheet_manager_start()

@@ -80,6 +80,8 @@ def calc_bonus_roll(row_entry):
             consecutive_raids_missing = 0 #reset to 0
         elif row_entry[entry] == "not":
             #see if the player was missing 2 raids in a row
+            #Idea: search player in player dictionary to see if player has attended at least one raid in 1 or 2 weeks to not get the -5
+            #not entirely sure where to safe this... maybe add an overall SR sheet that puts the week to true if player attended at least one raid
             consecutive_raids_missing += 1
             if consecutive_raids_missing == 2:
                 bonus_roll -= 5 #reset to 0
@@ -131,30 +133,50 @@ def add_player_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_pluss_sheet:dict):
     get_date = gen_func.get_user_input("Raid Date (yyyy-mm-dd): ")
-
-    print("loading player dictionary...")
-    player_dict = rw_csv.read_csv_file_players()
     
-    attendese = raid_attendance.get_raid_attendees()
-    
-    player_attended = [find_player_by_char(character, player_dict) for character in attendese]
-    
-    sr_pluss_sheet["columns"].append(get_date)
+    if get_date == 'q':
+        return
+    else:
+        print("loading player dictionary...")
+        player_dict = rw_csv.read_csv_file_players()
+        
+        attendese = raid_attendance.get_raid_attendees()
+        
+        player_attended = [find_player_by_char(character, player_dict) for character in attendese]
+        
+        sr_pluss_sheet["columns"].append(get_date)
 
-    for player in sr_pluss_sheet:
-        if player != "columns":
-            if player in player_attended:
-                player_attended.remove(player)
-                sr_pluss_sheet[player].append("present")
-            else:
-                sr_pluss_sheet[player].append("not")
+        for player in sr_pluss_sheet:
+            if player != "columns":
+                if player in player_attended:
+                    player_attended.remove(player)
+                    sr_pluss_sheet[player].append("present")
+                else:
+                    sr_pluss_sheet[player].append("not")
 
-    if player_attended != []:
-        print(f"{player_attended}: need to be added to sheet")
-        add_player_to_sheet(player_attended, sr_pluss_sheet, player_dict)
-        pass #add player to sheet
-    rw_csv.safe_sr_sheet_csv(filename,sr_pluss_sheet)
-    #print_sr_plus_sheet(test_dict_1)
+        if player_attended != []:
+            print(f"{player_attended}: need to be added to sheet")
+            add_player_to_sheet(player_attended, sr_pluss_sheet, player_dict)
+            pass #add player to sheet
+        rw_csv.safe_sr_sheet_csv(filename,sr_pluss_sheet)
+    
+
+def create_new_sr_plus_sheet():
+    gen_func.print_menu_title("Create New Sheet")
+    sr_sheets = rw_csv.load_sr_sheets_directory()
+
+    empty_sheet = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll']}
+    
+    filename = gen_func.get_user_input("new SR+ sheet name: ")
+    
+    if filename == 'q':
+        return
+    
+    else:
+        sr_sheets.append(filename)
+        rw_csv.safe_sr_sheets_directory(sr_sheets)
+        rw_csv.safe_sr_sheet_csv(filename,empty_sheet)
+    gen_func.print_line()
 
 ####################### Test Cases ##############################
 test_dict_1 = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll', '2025-09-28', '2025-09-21', '2025-09-16'],
