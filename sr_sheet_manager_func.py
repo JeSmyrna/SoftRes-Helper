@@ -1,6 +1,7 @@
 import general_functions as gen_func
 import read_write_csv as rw_csv
 import raid_attendance
+import raid_res_import
 import manage_dict_func as mg_dict_func
 
 import time
@@ -118,7 +119,9 @@ def add_player_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
             if mg_dict_func.check_if_player_exists(player,player_dict):
                 #Idea: get sr sheet function of main menu intersect with SR sheet export so editor doesnt need to write the item, just choose item 1 or 2 to be the SR+
                 print(f"adding {player} to SR+ sheet...")
-                sr_plus_item = gen_func.get_user_input(f"{player}s SR+ ?: ")
+                # --- > find_choose_sr_plus
+                sr_plus_item = find_choose_sr_plus(player,player_dict) #gen_func.get_user_input(f"{player}s SR+ ?: ")
+                # --- > find_choose_sr_plus
                 gen_func.print_line()
                 player_list_part_a = [player, sr_plus_item, 0, 0]
                 player_list_part_b = []
@@ -135,7 +138,30 @@ def add_player_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
                 print(f"Character {player} needs to be added to dict")
                 mg_dict_func.add_new_players(player_dict)
 
+def find_choose_sr_plus(player,player_dict) -> str: #player name 
+    attendeese = raid_attendance.get_raid_attendees()
+    raidres = raid_res_import.get_soft_reserve_players()
+    
+    attended_players, not_attended_players = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
+    
+    characters = str(player_dict[player]).split(".")
 
+    for char in attended_players:
+        if char in characters:
+            items = str(attended_players[char]).split(",")
+            print(f"""
+            [1] {items[0]}
+            [2] {items[1]}
+            """)
+            while True:
+                user_input = input(f"Choose SR+ for {player}?: ")
+                
+                if user_input == "1":
+                    return items[0]
+                elif user_input == "2":
+                    return items[1]
+                else:
+                    print("invalid input")
 
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_plus_sheet:dict):

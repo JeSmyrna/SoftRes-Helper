@@ -3,8 +3,6 @@ import time
 raid_res_player_dict = {}
 
 def format_sr_players(user_entry):
-
-    #user_entry = input("RaidRes import: ")
     
     player_list = user_entry.split("[00:00]")
     player_list.pop(0)
