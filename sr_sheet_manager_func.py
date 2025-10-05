@@ -2,8 +2,11 @@ import general_functions as gen_func
 import read_write_csv as rw_csv
 import raid_attendance
 import manage_dict_func as mg_dict_func
-import time
 
+import time
+from datetime import datetime
+
+empty_sheet = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll']}
 
 #function to calculate line length for styling the sheet
 def get_line_length(row):
@@ -41,8 +44,8 @@ def style_row(row:list):
         elif column == 3:
             if value != "Bonusroll":#if you've changed the name of the column change it here to match
                 
-                value_len = len(str(value))
-                right_side = ((10 - value_len) // 2)
+                value_len = len(str(value))#3
+                right_side = (10 - value_len) // 2# 10- 3 = 7 / 2 = 4
                 left_side = 10 - value_len - right_side
 
                 row_to_print += f'{left_side * " "}{value}{right_side * " "}|'
@@ -56,7 +59,10 @@ def style_row(row:list):
                 row_to_print += f'{value}|'
                 column += 1
             else:
-                row_to_print += f'{5 * " "}{value}{4 * " "}|'
+                value_len = len(str(value))
+                right_side = (10 - value_len) // 2
+                left_side = 10 - value_len - right_side
+                row_to_print += f'{left_side * " "}{value}{right_side * " "}|'
                 column += 1
         #dates only, everything after the fixed columns above
         else:
@@ -110,6 +116,7 @@ def add_player_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
         for player in player_list:
 
             if mg_dict_func.check_if_player_exists(player,player_dict):
+                #Idea: get sr sheet function of main menu intersect with SR sheet export so editor doesnt need to write the item, just choose item 1 or 2 to be the SR+
                 print(f"adding {player} to SR+ sheet...")
                 sr_plus_item = gen_func.get_user_input(f"{player}s SR+ ?: ")
                 gen_func.print_line()
@@ -131,11 +138,14 @@ def add_player_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
 
 
 #new column for the SR+ Sheet
-def make_new_entry(filename,sr_pluss_sheet:dict):
+def make_new_entry(filename,sr_plus_sheet:dict):
+    if len(sr_plus_sheet["columns"])  >= 12: #8weeks/raids ~ 2 months
+        sr_plus_sheet = make_copy_of_sheet(filename,sr_plus_sheet)
     get_date = gen_func.get_user_input("Raid Date (yyyy-mm-dd): ")
     
     if get_date == 'q':
         return
+        
     else:
         print("loading player dictionary...")
         player_dict = rw_csv.read_csv_file_players()
@@ -144,29 +154,47 @@ def make_new_entry(filename,sr_pluss_sheet:dict):
         
         player_attended = [find_player_by_char(character, player_dict) for character in attendese]
         
-        sr_pluss_sheet["columns"].append(get_date)
+        sr_plus_sheet["columns"].append(get_date)
 
-        for player in sr_pluss_sheet:
+        for player in sr_plus_sheet:
             if player != "columns":
                 if player in player_attended:
                     player_attended.remove(player)
-                    sr_pluss_sheet[player].append("present")
+                    sr_plus_sheet[player].append("present")
                 else:
-                    sr_pluss_sheet[player].append("not")
+                    sr_plus_sheet[player].append("not")
 
         if player_attended != []:
             print(f"{player_attended}: need to be added to sheet")
-            add_player_to_sheet(player_attended, sr_pluss_sheet, player_dict)
+            add_player_to_sheet(player_attended, sr_plus_sheet, player_dict)
             pass #add player to sheet
-        rw_csv.safe_sr_sheet_csv(filename,sr_pluss_sheet)
-        
+        rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
+    return sr_plus_sheet
+
+def make_copy_of_sheet(filename:str,sr_sheet:dict) -> dict:
+    print("make copy of SR+ sheet")
+    time.sleep(1)
+    #safe file under different name
+    date = str(datetime.now().strftime('%Y-%m-%d'))
+    filename_safe = f'{date}_{filename}'
+    rw_csv.safe_sr_sheet_csv(filename_safe, sr_sheet)
     
+    #make new dictionary for new sheet
+    new_sr_sheet = empty_sheet
+
+    for player in sr_sheet:
+        if player != "columns":
+            prev_bonus = int(sr_sheet[player][2]) + int(sr_sheet[player][3])
+            print(prev_bonus)
+            new_sr_sheet[player] = [sr_sheet[player][0],sr_sheet[player][1],prev_bonus,0]
+        else:
+            pass
+    
+    return new_sr_sheet
 
 def create_new_sr_plus_sheet():
     gen_func.print_menu_title("Create New Sheet")
     sr_sheets = rw_csv.load_sr_sheets_directory()
-
-    empty_sheet = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll']}
     
     filename = gen_func.get_user_input("new SR+ sheet name: ")
     
@@ -181,14 +209,15 @@ def create_new_sr_plus_sheet():
 
 ####################### Test Cases ##############################
 test_dict_1 = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll', '2025-09-28', '2025-09-21', '2025-09-16'],
-               'Gwynn': ['Gwynn', 'Hammer', '0', '0', 'present', 'present', 'present'],
-               'Nutbath': ['Nutbath', 'staff of awesomeness', '0', '0', 'present', 'not', 'present']}
+               'Gwynn': ['Gwynn', 'Hammer', '0', '30', 'present', 'present', 'present'],
+               'Nutbath': ['Nutbath', 'staff of awesomeness', '0', '20', 'present', 'not', 'present']}
 
 test_row = ["Hammer",10,20,"present","present","present","not","not","present","not","present","not"]
 test_dict = {"columns":["Player","prev bonus", "bonusroll", "raid", "raid", "raid", "raid", "raid", "raid", "raid", "raid", "raid"],
              "Gwynn": test_row,
              "Player1" : test_row,
              "Player2" : test_row}
+
 
 #make_new_entry()
 #print_sr_plus_sheet(test_dict_1)
