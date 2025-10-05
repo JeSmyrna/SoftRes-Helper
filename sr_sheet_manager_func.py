@@ -12,7 +12,7 @@ empty_sheet = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll']}
 #function to calculate line length for styling the sheet
 def get_line_length(row):
     count_columns = len(row)
-    line_length = 57 + (count_columns - 3) * 13
+    line_length = 63 + (count_columns - 3) * 13
     return line_length
 
 def print_sr_plus_sheet(sr_dict):
@@ -30,7 +30,7 @@ def print_sr_plus_sheet(sr_dict):
 def style_row(row:list):
     row_to_print = "|"
     column = 0
-    column_length = 30
+    column_length = 36
     for value in row:
         #player name
         if column == 0:
@@ -119,15 +119,19 @@ def add_player_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
             if mg_dict_func.check_if_player_exists(player,player_dict):
                 #Idea: get sr sheet function of main menu intersect with SR sheet export so editor doesnt need to write the item, just choose item 1 or 2 to be the SR+
                 print(f"adding {player} to SR+ sheet...")
-                # --- > find_choose_sr_plus
-                sr_plus_item = find_choose_sr_plus(player,player_dict) #gen_func.get_user_input(f"{player}s SR+ ?: ")
-                # --- > find_choose_sr_plus
+
+                sr_plus_item = find_choose_sr_plus(player,player_dict)
+
                 gen_func.print_line()
                 player_list_part_a = [player, sr_plus_item, 0, 0]
                 player_list_part_b = []
                 for day in range(0,(len(sr_plus_dict["columns"][4:-1]))):
                     player_list_part_b.append("-") #fill past days with "-" empty space (newly joined player)
-                player_list_part_b.append("present") #add new day with "attended"
+                
+                if player_list_part_a[1] == "Nothing":
+                    player_list_part_b.append("-")
+                else:
+                    player_list_part_b.append("present") #add new day with "attended"
 
                 player_sr_list = player_list_part_a + player_list_part_b
 
@@ -150,9 +154,11 @@ def find_choose_sr_plus(player,player_dict) -> str: #player name
         if char in characters:
             items = str(attended_players[char]).split(",")
             print(f"""
-            [1] {items[0]}
-            [2] {items[1]}
+[1] {items[0]}
+[2] {items[1]}
+[3] Nothing
             """)
+            #make option for no SR+
             while True:
                 user_input = input(f"Choose SR+ for {player}?: ")
                 
@@ -160,6 +166,8 @@ def find_choose_sr_plus(player,player_dict) -> str: #player name
                     return items[0]
                 elif user_input == "2":
                     return items[1]
+                elif user_input == "3":
+                    return "Nothing"
                 else:
                     print("invalid input")
 
@@ -178,6 +186,7 @@ def make_new_entry(filename,sr_plus_sheet:dict):
         
         attendese = raid_attendance.get_raid_attendees()
         
+        #change character name to player name
         player_attended = [find_player_by_char(character, player_dict) for character in attendese]
         
         sr_plus_sheet["columns"].append(get_date)
@@ -186,7 +195,10 @@ def make_new_entry(filename,sr_plus_sheet:dict):
             if player != "columns":
                 if player in player_attended:
                     player_attended.remove(player)
-                    sr_plus_sheet[player].append("present")
+                    if sr_plus_sheet[player][1] == "Nothing":
+                        sr_plus_sheet[player].append("-")
+                    else:
+                        sr_plus_sheet[player].append("present")
                 else:
                     sr_plus_sheet[player].append("not")
 
