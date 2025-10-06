@@ -16,7 +16,7 @@ Manage players and their characters:
 
 Manage SR+ sheets:
 - add players to SR+ Sheet with their SR+ [x]
-- add players manually to SR+ Sheets [ ]
+- add players manually to SR+ Sheets [x]
 - get the attendance [x]
 - look for the received loot [?]
 - enter the "raid date" what "raid" and save a log : Data\raidtable-name\date-raid-log.txt (intersection data) [x]
@@ -24,6 +24,7 @@ Manage SR+ sheets:
 - add to the bonus roll [x]
 - check the soft reserved items with the sheet to see if any player changed their SR+ : reset bonus roll to 0 [?]
 - check when the player attended raid, if longer than 2 weeks : Bonus roll -5 [x]
+- edit player entries: SR+ Item, prev rolls, days attended (Bonus roll gets automatically calculated, so no edit possible) [ ]
 
 - export to csv [x]
 - export to google sheet [ ]
