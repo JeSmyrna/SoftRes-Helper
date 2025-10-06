@@ -1,3 +1,5 @@
+import datetime
+
 line_length = 50
 
 def print_line(line_length = 50):
@@ -17,3 +19,7 @@ def print_loaded_file(filename):
 def get_user_input(question:str):
     user_input = input(f"{question}: ")
     return user_input
+
+def get_date() -> str:
+    date = str(datetime.now().strftime('%Y-%m-%d'))
+    return date
