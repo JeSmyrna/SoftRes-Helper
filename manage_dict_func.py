@@ -25,6 +25,7 @@ def combine_character_names(character_names: list) -> str:
 #add new players to dictionary, looping till user ends the loop with key - "q"
 def add_new_players(player_dict:dict):
     while True:
+        general_functions.print_line()
         user_entry_playername = input("new player: ")
         if user_entry_playername == "q":
             print("stop editing...")
@@ -98,18 +99,36 @@ def add_characters_to_player(player_dict, playername = ''):
                 print("Not a valid name")
                 
     player_dict[playername] = combine_character_names(characters)
+    
+def print_dictionary(dictionary:dict):
+    general_functions.print_menu_title("Player Dictionary")
+    for player in dictionary:
+        if len(player) < 16:
+            space = 16 - len(player)
+            player_list = str(dictionary[player]).split(".")
+            player_characters = ""
+            if len(player_list) > 1:
+                for name in player_list:
+                    player_characters += name + " - "
+                player_characters = player_characters[:-3]
+                print(f"Player: {player}{" " * space}| Characters: {player_characters}")
+            else:
+                print(f"Player: {player}{" " * space}| Characters: {dictionary[player]}")
+        else:
+            print(f"Player: {player} | Characters: {dictionary[player]}")
+    general_functions.print_line()
 
 ##Visualising Player and their characters
-def print_player_and_characters(playername, characters):
+def print_player_and_characters(playername:str, characters:list):
     player_characters = ""
     for name in characters:
         player_characters += name + " - "
     player_characters = player_characters[:-3]
 
     space = 16 - len(playername)
-    general_functions.print_line()
+    
     print(f"Player: {playername}{" " * space}| Characters: {player_characters}")
-    general_functions.print_line()
+    general_functions.print_line(80)
 
 def delete_character(player_dict):
     

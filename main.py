@@ -36,24 +36,6 @@ def get_intersect():
         else:
             print("Input not recognized")       
 
-def print_dictionary(dictionary:dict):
-    general_functions.print_menu_title("Player Dictionary")
-    for player in dictionary:
-        if len(player) < 16:
-            space = 16 - len(player)
-            player_list = str(dictionary[player]).split(".")
-            player_characters = ""
-            if len(player_list) > 1:
-                for name in player_list:
-                    player_characters += name + " - "
-                player_characters = player_characters[:-3]
-                print(f"Player: {player}{" " * space}| Characters: {player_characters}")
-            else:
-                print(f"Player: {player}{" " * space}| Characters: {dictionary[player]}")
-        else:
-            print(f"Player: {player} | Characters: {dictionary[player]}")
-    general_functions.print_line()
-
 def mainloop():
 
     print("Loading players...")
@@ -112,7 +94,7 @@ def mainloop():
             
             elif user_entry == 3:
                 player_dict = read_write_csv.read_csv_file_players()
-                print_dictionary(player_dict)
+                manage_dict_func.print_dictionary(player_dict)
 
             elif user_entry == 4:
                 sr_sheet_manager.sheet_manager_start()
