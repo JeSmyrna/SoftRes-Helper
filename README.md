@@ -21,6 +21,7 @@ Manage SR+ sheets:
 - look for the received loot [?]
 - enter the "raid date" what "raid" and save a log : Data\raidtable-name\date-raid-log.txt (intersection data) [x]
 - check if one of the players got their SR+ loot, push the entry to a log [ ]
+- delete player from SR+ Sheets [?]
 - add to the bonus roll [x]
 - check the soft reserved items with the sheet to see if any player changed their SR+ : reset bonus roll to 0 [?]
 - check when the player attended raid, if longer than 2 weeks : Bonus roll -5 [x]
