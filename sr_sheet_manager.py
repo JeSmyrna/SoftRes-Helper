@@ -31,7 +31,8 @@ menu_option = [
     "[3] print SR+ Sheet",
     "[4] save SR+ Sheet",
     "[5] make new entry",
-    "[6] add player to sheet"
+    "[6] add player to sheet",
+    "[7] Player SR+ aquired"
 ]
 def load_sr_sheet(filename) -> dict:
     if filename == "[Empty]":
@@ -131,6 +132,11 @@ def sheet_manager_main(raid_sheet,filename):
 
         elif user_input == "6":
             sr_sheet_manager_func.add_players_manual_to_sheet(filename,raid_sheet)
+            general_functions.print_line()
+            file_edited = True
+            break
+        elif user_input == "7":
+            sr_sheet_manager_func.award_sr_plus(filename,raid_sheet)
             general_functions.print_line()
             file_edited = True
             break

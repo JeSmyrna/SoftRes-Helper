@@ -68,3 +68,24 @@ def safe_sr_sheet_csv(raidname:str,sr_dict:dict):
                     dict_row[column_list[index]] = get_entries[index]
         
                 writer.writerow(dict_row)
+
+def load_sr_awarded_log() -> dict:
+    get_dict = {}
+    with open(f'Data/sr_awarded_log.csv', newline='') as file:
+            reader = csv.reader(file)
+            rows = 0
+            for row in reader:
+                if rows == 0:
+                    get_dict["columns"] = row
+                    rows += 1
+                else:
+                    get_dict[row[0]] = row        
+    return get_dict
+
+def safe_sr_awarded_log(new_log:list):
+    new_log_row = ""
+    for entry in new_log:
+        new_log_row += f'{str(entry)},'
+    print(new_log_row[:-1])
+    with open(f'Data/sr_awarded_log.csv', 'a',newline='') as logfile:
+        logfile.write(f'{new_log_row[:-1]}')

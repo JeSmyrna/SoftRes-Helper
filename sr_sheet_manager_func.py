@@ -205,7 +205,7 @@ def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
                 sr_plus_item = find_choose_sr_plus(player,player_dict)
 
                 gen_func.print_line()
-                
+
                 player_list_part_a = [player, sr_plus_item, 0, 0]
                 player_sr_list = fill_past_days(player_list_part_a,sr_plus_dict,True)
 
@@ -216,7 +216,7 @@ def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
                 print(f"Character {player} needs to be added to dict")
                 mg_dict_func.add_new_players(player_dict)
 
-def find_choose_sr_plus(player,player_dict) -> str: #player name 
+def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name 
     attendeese = raid_attendance.get_raid_attendees()
     raidres = raid_res_import.get_soft_reserve_players()
     
@@ -244,6 +244,51 @@ def find_choose_sr_plus(player,player_dict) -> str: #player name
                     return "Nothing"
                 else:
                     print("invalid input")
+
+def award_sr_plus(filename:str, sr_plus_sheet:dict):
+    gen_func.print_menu_title("SR+ Sheet")
+    print_sr_plus_sheet(sr_plus_sheet)
+    gen_func.print_line()
+
+    #load Log file
+    log_file = rw_csv.load_sr_awarded_log()
+
+    #choose players till satisfied
+    while True:
+        user_entry = input("Which player got their SR+?: ").capitalize()
+        if user_entry == "Q":
+            print("going back...")
+            time.sleep(1)
+            return
+        elif user_entry in sr_plus_sheet:
+            user_entry_1 = input(f'Player "{user_entry}" have won their SR+ "{sr_plus_sheet[user_entry][1]}" on the "{sr_plus_sheet["columns"][-1]}"? (y/n): ')
+            
+            if user_entry_1 == "y":
+
+                log_entry_num = len(log_file)
+                player_name = user_entry
+                sr_item = sr_plus_sheet[user_entry][1]
+                bonus_roll = int(sr_plus_sheet[user_entry][2]) + int(sr_plus_sheet[user_entry][3])
+                date_aquired = sr_plus_sheet["columns"][-1]
+                date_added_to_log = gen_func.get_date()
+
+                new_log_row = [log_entry_num,filename,player_name,sr_item,bonus_roll,date_aquired,date_added_to_log]
+                rw_csv.safe_sr_awarded_log(new_log_row)
+                sr_plus_sheet.pop(user_entry)
+                rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
+                print("entry has been moved to the sr_awarded_log.csv")
+                time.sleep(1)
+                gen_func.print_line(20)
+                pass
+
+            elif user_entry_1 == "n":
+                gen_func.print_line(20)
+                pass
+            else:
+                print("invalid input")
+        else:
+            print("couldn't find player")
+            gen_func.print_line(20)
 
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_plus_sheet:dict):
@@ -330,6 +375,7 @@ test_dict = {"columns":["Player","prev bonus", "bonusroll", "raid", "raid", "rai
              "Player1" : test_row,
              "Player2" : test_row}
 
+#award_sr_plus("Test",test_dict_1)
 #add_players_manual_to_sheet(test_dict_1)
 #make_new_entry()
 #print_sr_plus_sheet(test_dict_1)
