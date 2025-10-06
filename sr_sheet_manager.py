@@ -30,7 +30,8 @@ menu_option = [
     "[2] create new raid SR+ sheet", # create a new SR+ sheet with choosen name, maybe people manage multiple guilds SR sheets so get the name ""
     "[3] print SR+ Sheet",
     "[4] save SR+ Sheet",
-    "[5] make new entry"
+    "[5] make new entry",
+    "[6] add player to sheet"
 ]
 def load_sr_sheet(filename) -> dict:
     if filename == "[Empty]":
@@ -81,6 +82,7 @@ def sheet_manager_start(sheet = {}, sheet_name = "[Empty]"): #get player diction
     
 
 def sheet_manager_main(raid_sheet,filename):
+    file_edited = False
 
     while True:
         general_functions.print_menu_title("SR Sheet Manager")
@@ -88,7 +90,9 @@ def sheet_manager_main(raid_sheet,filename):
         #show menu options, List at the top
         for option in menu_option:
             print(option)
+            time.sleep(0.1)
 
+        general_functions.print_line()
         user_input = input("Choose: ")
         if user_input == "0":
             time.sleep(1)
@@ -107,7 +111,9 @@ def sheet_manager_main(raid_sheet,filename):
         #print SR sheet
         elif user_input == "3":
             general_functions.print_menu_title(filename)
+            time.sleep(0.5)
             sr_sheet_manager_func.print_sr_plus_sheet(raid_sheet)
+            time.sleep(0.5)
         
         #save SR sheet
         elif user_input == "4":
@@ -122,6 +128,18 @@ def sheet_manager_main(raid_sheet,filename):
             general_functions.print_menu_title(f"New Entry to {filename}")
             raid_sheet = sr_sheet_manager_func.make_new_entry(filename,raid_sheet)
             general_functions.print_line()
+
+        elif user_input == "6":
+            sr_sheet_manager_func.add_players_manual_to_sheet(filename,raid_sheet)
+            general_functions.print_line()
+            file_edited = True
+            break
         else:
             print("invalid input")
-    sheet_manager_start()
+
+    #loop break to choose different sheet
+    if file_edited: #Auto select current edited file
+        file, filename = load_sr_sheet(filename)
+        sheet_manager_start(file, filename)
+    else:
+        sheet_manager_start()

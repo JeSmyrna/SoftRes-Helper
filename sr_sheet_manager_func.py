@@ -110,8 +110,90 @@ def find_player_by_char(character_name:str,player_dict:dict) -> str:
     print("Player not found in player dictionary")
     return character_name
 
+def add_players_manual_to_sheet(filename,sr_plus_dict:dict) -> dict:
+    
+    player_dict = rw_csv.read_csv_file_players()
+    gen_func.print_menu_title("Players and Characters")
+    mg_dict_func.print_dictionary(player_dict)
+    
+    #gen_func.print_menu_title("SR+ Sheet")
+    #print_sr_plus_sheet(sr_plus_dict)
+
+    #print("^^^^ List of players and the SR+ sheet printed above ^^^^")
+    time.sleep(1)
+
+    while True:
+
+        player_name = input("Add Player: ").capitalize()
+        if player_name == "Q":
+            print("going back...")
+            time.sleep(1)
+            return
+        
+        elif mg_dict_func.check_if_player_exists(player_name,player_dict):
+            
+            if player_name in sr_plus_dict:
+                print("player already in SR+ Sheet")
+                gen_func.print_line(20)
+
+            else:
+                gen_func.print_line(20)
+                sr_item = input("SR+ Item: ").capitalize()
+                
+                attended = input(f'{player_name} attended last raid ? (y/n): ')
+                if attended == "y":
+                    attended = True
+                else:
+                    attended = False
+
+                ask_permission = input(f'Add "{player_name}" and their SR+ "{sr_item}" to the SR+ Sheet ? (y/n) ')
+
+                if ask_permission == "y":
+                    list_start = [player_name, sr_item, 0, 0]
+                    list_complete = fill_past_days(list_start, sr_plus_dict, attended)
+                    sr_plus_dict[player_name] = list_complete
+                    rw_csv.safe_sr_sheet_csv(filename,sr_plus_dict)
+                    print("file is safed")
+                    time.sleep(1)
+                    return #sr_plus_dict
+
+                elif ask_permission == "n":
+                    print("not adding player...")
+                    gen_func.print_line()
+
+                elif ask_permission == "q":
+                    gen_func.print_line()
+                    return
+                
+                else:
+                    print("invalid input")
+
+        else:
+            print(f'{player_name} not found...')
+            player_dictionary_name = find_player_by_char(player_name,player_dict)
+            print(f'Did you mean player: {player_dictionary_name}? - {player_name} might be an alt')
+            time.sleep(1)
+            gen_func.print_line()
+
+def fill_past_days(list_part_a, sr_plus_dict, attended_last_raid:bool = True) -> list:
+    list_part_b = []
+    for day in range(0,(len(sr_plus_dict["columns"][4:-1]))):
+        list_part_b.append("-") #fill past days with "-" empty space (newly joined player)
+    
+    if list_part_a[1] == "Nothing":
+        list_part_b.append("-")
+    else:
+        if attended_last_raid:
+            list_part_b.append("present") #add new day with "attended"
+        else:
+            list_part_b.append("-")
+
+    player_sr_list = list_part_a + list_part_b
+    return player_sr_list
+
+
 #loop till every player is in the SR+ sheet
-def add_player_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
+def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
     while player_list != []:
 
         for player in player_list:
@@ -204,7 +286,7 @@ def make_new_entry(filename,sr_plus_sheet:dict):
 
         if player_attended != []:
             print(f"{player_attended}: need to be added to sheet")
-            add_player_to_sheet(player_attended, sr_plus_sheet, player_dict)
+            add_players_to_sheet(player_attended, sr_plus_sheet, player_dict)
             pass #add player to sheet
         rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
     return sr_plus_sheet
@@ -256,7 +338,7 @@ test_dict = {"columns":["Player","prev bonus", "bonusroll", "raid", "raid", "rai
              "Player1" : test_row,
              "Player2" : test_row}
 
-
+#add_players_manual_to_sheet(test_dict_1)
 #make_new_entry()
 #print_sr_plus_sheet(test_dict_1)
 #print(f'new bonus + previous: {calc_bonus_roll(test_row)}')
