@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 
 line_length = 50
 
