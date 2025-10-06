@@ -87,5 +87,5 @@ def safe_sr_awarded_log(new_log:list):
     for entry in new_log:
         new_log_row += f'{str(entry)},'
     print(new_log_row[:-1])
-    with open(f'Data/sr_awarded_log.csv', 'a',newline='') as logfile:
-        logfile.write(f'{new_log_row[:-1]}')
+    with open(f'Data/sr_awarded_log.csv', 'a') as logfile:
+        logfile.write(f'\n{new_log_row[:-1]}')
