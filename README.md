@@ -12,19 +12,22 @@ Manage players and their characters:
 - add new characters to existing players [x]
 - delete players [x]
 - delete characters [x]
-- create table for different Raid SR+ Sheets [ ]
+- create table for different Raid SR+ Sheets [x]
 
 Manage SR+ sheets:
-- add players to SR+ Sheet with their SR+ [ ]
-- get the attendance and look for the received loot [ ]
-- enter the "raid date" what "raid" and save a log : Data\raidtable-name\date-raid-log.txt (intersection data) [ ]
-- check if one of the players got their SR+ loot [ ]
-- add to the bonus roll [ ]
-- check the soft reserved items with the sheet to see if any player changed their SR+ : reset bonus roll to 0 [ ]
-- check when the player attended raid, if longer than 2 weeks : Bonus roll -5 [ ]
+- add players to SR+ Sheet with their SR+ [x]
+- add players manually to SR+ Sheets [ ]
+- get the attendance [x]
+- look for the received loot [?]
+- enter the "raid date" what "raid" and save a log : Data\raidtable-name\date-raid-log.txt (intersection data) [x]
+- check if one of the players got their SR+ loot, push the entry to a log [ ]
+- add to the bonus roll [x]
+- check the soft reserved items with the sheet to see if any player changed their SR+ : reset bonus roll to 0 [?]
+- check when the player attended raid, if longer than 2 weeks : Bonus roll -5 [x]
 
-- export to csv, (google sheet) [ ]
-- style the sheet for readability [ ]
+- export to csv [x]
+- export to google sheet [ ]
+- style the sheet for readability [x]
 
 SQL Databank connection: [?]
 - can do, not yet sure if needed. Sticking with base functions (Priority Top to Bottom)
