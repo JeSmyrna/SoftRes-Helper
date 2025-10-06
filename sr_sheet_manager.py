@@ -6,20 +6,6 @@ import sr_sheet_manager_func
 sr_plus_dict = {}
 sr_plus_dict_archive = {}
 
-# SR Sheet IteraitingNumber + Raidname / + Archive
-# functions: load sr sheet active, ask which raid > show available raids
-# loading: columns in list so we can fill new players columns with empty
-# if sum(if not empty/"-" > of attended dates += 1) * 10
-# No available or need more/new raid SR > create new SR raid + archive doc
-# add new player and SR to active sheet
-# new player > fill already entered columns with "-"
-# check attendance
-# check attendance sr in sr sheet, add bonus roll if same sr was made
-# if SR is not the same, SR+ was changed and with that reset bonusroll
-# put into archive when changed
-
-# Archive
-# check if player got sr+ item, if yes > put into archive {1: [Player, item, Bonusroll, status (aquired or changed), status date, dates attendance]}
 
 #Testing file
 sr_sheets = []
