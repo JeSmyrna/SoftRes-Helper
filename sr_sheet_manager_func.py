@@ -199,23 +199,15 @@ def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
         for player in player_list:
 
             if mg_dict_func.check_if_player_exists(player,player_dict):
-                #Idea: get sr sheet function of main menu intersect with SR sheet export so editor doesnt need to write the item, just choose item 1 or 2 to be the SR+
+                
                 print(f"adding {player} to SR+ sheet...")
 
                 sr_plus_item = find_choose_sr_plus(player,player_dict)
 
                 gen_func.print_line()
-                player_list_part_a = [player, sr_plus_item, 0, 0]
-                player_list_part_b = []
-                for day in range(0,(len(sr_plus_dict["columns"][4:-1]))):
-                    player_list_part_b.append("-") #fill past days with "-" empty space (newly joined player)
                 
-                if player_list_part_a[1] == "Nothing":
-                    player_list_part_b.append("-")
-                else:
-                    player_list_part_b.append("present") #add new day with "attended"
-
-                player_sr_list = player_list_part_a + player_list_part_b
+                player_list_part_a = [player, sr_plus_item, 0, 0]
+                player_sr_list = fill_past_days(player_list_part_a,sr_plus_dict,True)
 
                 sr_plus_dict[player] = player_sr_list
                 player_list.remove(player)
