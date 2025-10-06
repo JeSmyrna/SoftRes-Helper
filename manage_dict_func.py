@@ -1,7 +1,8 @@
 import time
 import general_functions
+import read_write_csv as rw_csv
 
-#go through character name check for valid characters in name
+#go through character name check for valid characters in name re.findall("[a-m]", txt)
 valid_characters = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
 def check_if_name_valid(playername: str):
     playername = playername.lower()
@@ -24,9 +25,11 @@ def combine_character_names(character_names: list) -> str:
 #add new players to dictionary, looping till user ends the loop with key - "q"
 def add_new_players(player_dict:dict):
     while True:
+        general_functions.print_line()
         user_entry_playername = input("new player: ")
         if user_entry_playername == "q":
             print("stop editing...")
+            rw_csv.write_csv_file_players(player_dict)
             time.sleep(1)
             break
 
@@ -59,6 +62,7 @@ def add_new_players(player_dict:dict):
                         print("Not a valid name")
                         
             player_dict[user_entry_playername] = combine_character_names(character_list)
+    
 
 def find_player(player_dict):
     while True:
@@ -95,18 +99,36 @@ def add_characters_to_player(player_dict, playername = ''):
                 print("Not a valid name")
                 
     player_dict[playername] = combine_character_names(characters)
+    
+def print_dictionary(dictionary:dict):
+    general_functions.print_menu_title("Player Dictionary")
+    for player in dictionary:
+        if len(player) < 16:
+            space = 16 - len(player)
+            player_list = str(dictionary[player]).split(".")
+            player_characters = ""
+            if len(player_list) > 1:
+                for name in player_list:
+                    player_characters += name + " - "
+                player_characters = player_characters[:-3]
+                print(f"Player: {player}{" " * space}| Characters: {player_characters}")
+            else:
+                print(f"Player: {player}{" " * space}| Characters: {dictionary[player]}")
+        else:
+            print(f"Player: {player} | Characters: {dictionary[player]}")
+    general_functions.print_line()
 
 ##Visualising Player and their characters
-def print_player_and_characters(playername, characters):
+def print_player_and_characters(playername:str, characters:list):
     player_characters = ""
     for name in characters:
         player_characters += name + " - "
     player_characters = player_characters[:-3]
 
     space = 16 - len(playername)
-    general_functions.print_line()
+    
     print(f"Player: {playername}{" " * space}| Characters: {player_characters}")
-    general_functions.print_line()
+    general_functions.print_line(80)
 
 def delete_character(player_dict):
     

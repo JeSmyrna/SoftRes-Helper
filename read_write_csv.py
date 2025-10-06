@@ -20,3 +20,72 @@ def read_csv_file_players() -> dict:
             else:
                 get_dict[row[0]] = row[1]
     return get_dict
+
+def load_sr_sheet(filename):
+    sr_sheet_dict = {}
+    try:
+        with open(f'Data/{filename}.csv', newline='') as file:
+            reader = csv.reader(file)
+            rows = 0
+            for row in reader:
+                if rows == 0:
+                    sr_sheet_dict["columns"] = row
+                    rows += 1
+                else:
+                    sr_sheet_dict[row[0]] = row        
+        return sr_sheet_dict
+    except:
+        print("file does not exist")
+        return sr_sheet_dict
+
+def load_sr_sheets_directory():
+    list_of_sheets = []
+    with open(f'Data/raid_directory.txt', newline='') as sr_directory:
+        list_of_sheets = [line.rstrip("\r\n") for line in sr_directory]
+        return list_of_sheets
+    
+def safe_sr_sheets_directory(sr_sheet_directory:list):
+    with open(f'Data/raid_directory.txt', 'w') as sr_directory:
+        for sheet_name in sr_sheet_directory:
+            sr_directory.write(f'{sheet_name}\n')
+    
+
+def safe_sr_sheet_csv(raidname:str,sr_dict:dict):
+    with open(f'Data/{raidname}.csv', 'w', newline='') as csvfile:
+        fieldnames = sr_dict["columns"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        column_list = []
+        for column_name in sr_dict['columns']:
+            column_list.append(column_name)
+
+        dict_row = {}
+        for entry in sr_dict:
+            if entry != 'columns':
+                get_entries = sr_dict[entry]
+                for index in range(len(get_entries)):
+                    dict_row[column_list[index]] = get_entries[index]
+        
+                writer.writerow(dict_row)
+
+def load_sr_awarded_log() -> dict:
+    get_dict = {}
+    with open(f'Data/sr_awarded_log.csv', newline='') as file:
+            reader = csv.reader(file)
+            rows = 0
+            for row in reader:
+                if rows == 0:
+                    get_dict["columns"] = row
+                    rows += 1
+                else:
+                    get_dict[row[0]] = row        
+    return get_dict
+
+def safe_sr_awarded_log(new_log:list):
+    new_log_row = ""
+    for entry in new_log:
+        new_log_row += f'{str(entry)},'
+    print(new_log_row[:-1])
+    with open(f'Data/sr_awarded_log.csv', 'a') as logfile:
+        logfile.write(f'\n{new_log_row[:-1]}')
