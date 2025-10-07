@@ -40,8 +40,10 @@ def load_sr_sheet(filename) -> dict:
 
 
 def print_available_sheets(raid_sheets):
+    index = 0
     for sheet in raid_sheets:
-        print(sheet)
+        index += 1
+        print(f'[{index}] - {sheet}')
         time.sleep(.15)
     general_functions.print_line()
 
@@ -50,8 +52,19 @@ def print_available_sheets(raid_sheets):
 def choose_sheet():
     sr_sheets = read_write_csv.load_sr_sheets_directory()
     print_available_sheets(sr_sheets)
-    user_input = input("Choose Sheet: ")
-    file, filename = load_sr_sheet(user_input)
+    while True:
+        user_input = input("Choose Sheet: ")#choose by number not by string name
+        try:
+            index = int(user_input) -1
+            if 0 <= index < len(sr_sheets):
+                break  
+            else:
+                print(f'sheet {user_input} not available')
+                general_functions.print_line(20)
+                pass
+        except:
+            print("invald input...")
+    file, filename = load_sr_sheet(sr_sheets[index])
     sheet_manager_start(file, filename)
 
 
