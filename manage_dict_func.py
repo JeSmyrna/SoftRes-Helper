@@ -103,6 +103,7 @@ def add_characters_to_player(player_dict, playername = ''):
 def print_dictionary(dictionary:dict):
     general_functions.print_menu_title("Player Dictionary")
     for player in dictionary:
+        time.sleep(0.1)
         if len(player) < 16:
             space = 16 - len(player)
             player_list = str(dictionary[player]).split(".")

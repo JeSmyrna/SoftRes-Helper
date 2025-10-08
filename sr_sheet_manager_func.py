@@ -68,8 +68,8 @@ def style_row(row:list):
         #dates only, everything after the fixed columns above
         else:
             spaces = 12 - len(value)
-            left = spaces // 2
-            right = spaces - left
+            right = spaces // 2
+            left = spaces - right
             row_to_print += f'{left * " "}{value}{right * " "}|'
             column += 1
 
@@ -176,7 +176,11 @@ def add_players_manual_to_sheet(filename,sr_plus_dict:dict) -> dict:
             gen_func.print_line()
 
 def fill_past_days(list_part_a, sr_plus_dict, attended_last_raid:bool = True) -> list:
+    
     list_part_b = []
+    if len(sr_plus_dict['columns']) <= 4:
+        return list_part_a
+    
     for day in range(0,(len(sr_plus_dict["columns"][4:-1]))):
         list_part_b.append("-") #fill past days with "-" empty space (newly joined player)
     
