@@ -24,6 +24,7 @@ Manage SR+ sheets:
 - delete player from SR+ Sheets [x]
 - add to the bonus roll [x]
 - check the soft reserved items with the sheet to see if any player changed their SR+ : reset bonus roll to 0 [?]
+- check the loot tracker to see which player got their SR+, manual confirmation [ ]
 - check when the player attended raid, if longer than 2 weeks : Bonus roll -5 [x]
 - edit player entries: SR+ Item, prev rolls, days attended (Bonus roll gets automatically calculated, so no edit possible) [ ]
 
