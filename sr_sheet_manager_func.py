@@ -220,6 +220,12 @@ def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
                 print(f"Character {player} needs to be added to dict")
                 mg_dict_func.add_new_players(player_dict)
 
+#delete player, add to log, make note that it got deleted + when
+def delete_player_manually_from_sheet(filename:str, sr_plus_sheet:dict):
+    award_sr_plus(filename,sr_plus_sheet,True)
+    
+
+
 def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name 
     attendeese = raid_attendance.get_raid_attendees()
     raidres = raid_res_import.get_soft_reserve_players()
@@ -249,23 +255,38 @@ def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name
                 else:
                     print("invalid input")
 
-def award_sr_plus(filename:str, sr_plus_sheet:dict):
+def award_sr_plus(filename:str, sr_plus_sheet:dict,delete_sr:bool = False):
     gen_func.print_menu_title("SR+ Sheet")
     print_sr_plus_sheet(sr_plus_sheet)
     gen_func.print_line()
 
     #load Log file
     log_file = rw_csv.load_sr_awarded_log()
+    
+    #change question for deletion or awarding
+    msg_1 = ''
+    if delete_sr:
+        msg_1 = 'Which player SR+ should be deleted?: '
+    else:
+        msg_1 = "Which player got their SR+?: "
 
     #choose players till satisfied
     while True:
-        user_entry = input("Which player got their SR+?: ").capitalize()
+        user_entry = input(msg_1).capitalize()
         if user_entry == "Q":
             print("going back...")
             time.sleep(1)
             return
         elif user_entry in sr_plus_sheet:
-            user_entry_1 = input(f'Player "{user_entry}" have won their SR+ "{sr_plus_sheet[user_entry][1]}" on the "{sr_plus_sheet["columns"][-1]}"? (y/n): ')
+            
+            #change question for deletion or awarding
+            msg_2 = ''
+            if delete_sr:
+                msg_2 = f'Delete Player "{user_entry}" and their SR+ "{sr_plus_sheet[user_entry][1]}" ?: (y/n)'
+            else:
+                msg_2 = f'Player "{user_entry}" have won their SR+ "{sr_plus_sheet[user_entry][1]}" on the "{sr_plus_sheet["columns"][-1]}"? (y/n): '
+
+            user_entry_1 = input(msg_2)
             
             if user_entry_1 == "y":
 
@@ -273,7 +294,12 @@ def award_sr_plus(filename:str, sr_plus_sheet:dict):
                 player_name = user_entry
                 sr_item = sr_plus_sheet[user_entry][1]
                 bonus_roll = int(sr_plus_sheet[user_entry][2]) + int(sr_plus_sheet[user_entry][3])
-                date_aquired = sr_plus_sheet["columns"][-1]
+
+                #note that it got deleted or date aquired
+                if delete_sr:
+                    date_aquired = 'deleted'
+                else:
+                    date_aquired = sr_plus_sheet["columns"][-1]
                 date_added_to_log = gen_func.get_date()
 
                 new_log_row = [log_entry_num,filename,player_name,sr_item,bonus_roll,date_aquired,date_added_to_log]
