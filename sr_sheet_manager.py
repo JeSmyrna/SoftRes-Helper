@@ -12,10 +12,12 @@ sr_sheets = []
 
 menu_option = [
     "[0] return to main menu",
+    "-",
     "[1] load raid sheet", #choose what sheet to load
     "[2] create new raid SR+ sheet", # create a new SR+ sheet with choosen name, maybe people manage multiple guilds SR sheets so get the name ""
     "[3] print SR+ Sheet",
     "[4] save SR+ Sheet",
+    "-",
     "[5] make new entry",
     "[6] add player to sheet",
     "[7] Player SR+ aquired",
