@@ -23,3 +23,19 @@ def get_user_input(question:str):
 def get_date() -> str:
     date = str(datetime.now().strftime('%Y-%m-%d'))
     return date
+
+def color_text(text:str,color:str) -> str:
+    if color == "rd":
+        colored_text = f'\33[31m{text}\033[0m'
+        return colored_text
+    elif color == "yw":
+        colored_text = f'\033[93m{text}\033[0m'
+        return colored_text
+    elif color == "gr":
+        colored_text = f'\33[92m{text}\033[0m'
+        return colored_text
+    elif color == "bl":
+        colored_text = f'\33[94m{text}\033[0m'
+        return colored_text
+    else:
+        print("color option: rd, yw, gr, bl")
