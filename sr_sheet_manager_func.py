@@ -76,7 +76,7 @@ def style_row(row:list):
 
     return row_to_print
 
-def calc_bonus_roll(row_entry):
+def calc_bonus_roll(row_entry:list) -> list:
     #get player row and make a sum after the fixed columns -> only date columns ~12 -> Quartal
     
     bonus_roll = int(row_entry[2])#get bonus roll from previous sheets
@@ -428,6 +428,8 @@ def make_new_entry(filename,sr_plus_sheet:dict):
             print(f"{player_attended}: need to be added to sheet")
             add_players_to_sheet(player_attended, sr_plus_sheet, player_dict)
             pass #add player to sheet
+        
+        print_sr_plus_sheet(sr_plus_sheet)
         rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
     return sr_plus_sheet
 
