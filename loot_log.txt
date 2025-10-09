@@ -1,0 +1,4 @@
+example loot log, overwrite before checking SR+
+25-09-21 19:12:06 - Item: Player1
+25-09-21 19:12:28 - Item_2: Player2
+25-09-21 19:12:28 - Item_3: Player2 > Player3
