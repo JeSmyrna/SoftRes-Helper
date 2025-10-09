@@ -21,7 +21,7 @@ def read_csv_file_players() -> dict:
                 get_dict[row[0]] = row[1]
     return get_dict
 
-def load_sr_sheet(filename):
+def load_sr_sheet(filename) -> dict:
     sr_sheet_dict = {}
     try:
         with open(f'Data/{filename}.csv', newline='') as file:
@@ -86,6 +86,12 @@ def safe_sr_awarded_log(new_log:list):
     new_log_row = ""
     for entry in new_log:
         new_log_row += f'{str(entry)},'
-    print(new_log_row[:-1])
+    #print(new_log_row[:-1])
     with open(f'Data/sr_awarded_log.csv', 'a') as logfile:
         logfile.write(f'\n{new_log_row[:-1]}')
+
+def load_text_file(filename,cut_text:int = 0):
+    
+    with open(f'{filename}.txt', newline='') as text_file:
+        text_as_list = [line[cut_text:].rstrip("\r\n") for line in text_file]
+        return text_as_list
