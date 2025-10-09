@@ -219,13 +219,12 @@ def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
             else:
                 print(f"Character {player} needs to be added to dict")
                 mg_dict_func.add_new_players(player_dict)
+                #recash player dict
 
 #delete player, add to log, make note that it got deleted + when
 def delete_player_manually_from_sheet(filename:str, sr_plus_sheet:dict):
     award_sr_plus(filename,sr_plus_sheet,True)
     
-
-
 def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name 
     attendeese = raid_attendance.get_raid_attendees()
     raidres = raid_res_import.get_soft_reserve_players()
@@ -319,6 +318,80 @@ def award_sr_plus(filename:str, sr_plus_sheet:dict,delete_sr:bool = False):
         else:
             print("couldn't find player")
             gen_func.print_line(20)
+
+def award_through_loot_log(filename:str, sr_plus_sheet:dict):
+    gen_func.print_menu_title("Award through Loot Log")
+    text_file = rw_csv.load_text_file('loot_log',20)
+    final_loot_log = []
+    for line in text_file:
+        edited_line = line.split(": ")
+        traded_line = edited_line[1].split(" > ")
+        edited_line.pop(1)
+        if len(traded_line) > 1:
+            print(f'{gen_func.color_text(traded_line[0],'rd')} traded "{gen_func.color_text(edited_line[0],'yw')}" to {gen_func.color_text(traded_line[1],'gr')}')
+            edited_line.insert(0,traded_line[1])
+            time.sleep(1)
+            final_loot_log.append(edited_line)
+        else:
+            edited_line.insert(0,traded_line[0])
+            final_loot_log.append(edited_line)
+    
+    #look for players in SR sheet with loot log
+    sr_sheet_keys = sr_plus_sheet.keys()
+    players_and_chars = rw_csv.read_csv_file_players()
+    found_a_srplus_loot = False
+    list_of_players = []
+
+    for entry in final_loot_log:
+        name = find_player_by_char(entry[0],players_and_chars)
+        
+        if name in sr_sheet_keys and entry[1] == sr_plus_sheet[name][1]:
+            
+            print(f'{gen_func.color_text(name,'rd')} found: {gen_func.color_text(entry[1],'yw')} dropped on the {gen_func.color_text(sr_plus_sheet['columns'][-1],'gr')} and player {gen_func.color_text(name,'rd')} won the loot')
+            while True:
+                user_input = input('Move to loot log? (y/n): ')
+                if user_input == 'y':
+                    found_a_srplus_loot = True
+                    list_of_players.append(name)
+                    move_to_loot_log(filename,name,sr_plus_sheet)
+                    sr_plus_sheet.pop(name)
+                    break
+                elif user_input == 'n':
+                    print('moving on...')
+                    time.sleep(1)
+                    break
+                else:
+                    print('invalid input')
+                    time.sleep(1)
+            gen_func.print_line(20)
+
+        else:
+            pass
+
+    rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
+    if found_a_srplus_loot:
+        print("entries have been moved to the sr_awarded_log.csv")
+        time.sleep(1)
+        print(f"No more SR+ awarded loot found. Congratulations to {gen_func.color_text(', '.join(list_of_players),'yw')}")
+        time.sleep(1)
+    else:
+        print(f'No SR+ awarded for {filename} on the {sr_plus_sheet["columns"][-1]}...')
+        time.sleep(1)
+
+def move_to_loot_log(filename:str,player,sr_plus_sheet:dict):
+    log_file = rw_csv.load_sr_awarded_log()
+    log_entry_num = len(log_file)
+
+    player_name = player
+    sr_item = sr_plus_sheet[player][1]
+    bonus_roll = int(sr_plus_sheet[player][2]) + int(sr_plus_sheet[player][3])
+    date_aquired = sr_plus_sheet["columns"][-1]
+    date_added_to_log = gen_func.get_date()
+
+    new_log_row = [log_entry_num,filename,player_name,sr_item,bonus_roll,date_aquired,date_added_to_log]
+    rw_csv.safe_sr_awarded_log(new_log_row)
+
+#award_through_loot_log('BWL_Test',rw_csv.load_sr_sheet('BWL_Test'))
 
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_plus_sheet:dict):

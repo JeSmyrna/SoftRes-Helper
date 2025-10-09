@@ -20,8 +20,11 @@ menu_option = [
     "-",
     "[5] make new entry",
     "[6] add player to sheet",
-    "[7] Player SR+ aquired",
-    "[8] Delete Player SR+"
+    "[7] Delete Player SR+",
+    "-",
+    "[8] Award Player SR+",
+    "[9] Award SR+ with loot log"
+    
 ]
 def load_sr_sheet(filename) -> dict:
     if filename == "[Empty]":
@@ -138,12 +141,17 @@ def sheet_manager_main(raid_sheet,filename):
             file_edited = True
             break
         elif user_input == "7":
-            sr_sheet_manager_func.award_sr_plus(filename,raid_sheet)
+            sr_sheet_manager_func.delete_player_manually_from_sheet(filename,raid_sheet)
             general_functions.print_line()
             file_edited = True
             break
         elif user_input == "8":
-            sr_sheet_manager_func.delete_player_manually_from_sheet(filename,raid_sheet)
+            sr_sheet_manager_func.award_sr_plus(filename,raid_sheet)
+            general_functions.print_line()
+            file_edited = True
+            break
+        elif user_input == "9":
+            sr_sheet_manager_func.award_through_loot_log(filename,raid_sheet)
             general_functions.print_line()
             file_edited = True
             break
