@@ -85,7 +85,7 @@ def calc_bonus_roll(row_entry:list) -> list:
         if row_entry[entry] == "present":
             bonus_roll += 10
             consecutive_raids_missing = 0 #reset to 0
-        elif row_entry[entry] == "not":
+        elif row_entry[entry] == "absent":
             #see if the player was missing 2 raids in a row
             #Idea: search player in player dictionary to see if player has attended at least one raid in 1 or 2 weeks to not get the -5
             #not entirely sure where to safe this... maybe add an overall SR sheet that puts the week to true if player attended at least one raid
@@ -93,6 +93,8 @@ def calc_bonus_roll(row_entry:list) -> list:
             if consecutive_raids_missing == 2:
                 bonus_roll -= 5 #reset to 0
                 consecutive_raids_missing = 0
+                if bonus_roll <= 0:
+                    bonus_roll = 0
             #    
         else:
             pass
@@ -228,7 +230,7 @@ def delete_player_manually_from_sheet(filename:str, sr_plus_sheet:dict):
 def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name 
     attendeese = raid_attendance.get_raid_attendees()
     raidres = raid_res_import.get_soft_reserve_players()
-    
+    print(raidres)
     attended_players, not_attended_players = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
     
     characters = str(player_dict[player]).split(".")
@@ -236,6 +238,8 @@ def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name
     for char in attended_players:
         if char in characters:
             items = str(attended_players[char]).split(",")
+            if len(items) < 2:
+                items.append('Nothing')
             print(f"""
 [1] {items[0]}
 [2] {items[1]}
@@ -395,7 +399,7 @@ def move_to_loot_log(filename:str,player,sr_plus_sheet:dict):
 
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_plus_sheet:dict):
-    if len(sr_plus_sheet["columns"])  >= 12: #8weeks/raids ~ 2 months
+    if len(sr_plus_sheet["columns"])  >= 8: #8weeks/raids ~ 2 months
         sr_plus_sheet = make_copy_of_sheet(filename,sr_plus_sheet)
     get_date = gen_func.get_user_input("Raid Date (yyyy-mm-dd): ")
     
@@ -409,24 +413,24 @@ def make_new_entry(filename,sr_plus_sheet:dict):
         attendese = raid_attendance.get_raid_attendees()
         
         #change character name to player name
-        player_attended = [find_player_by_char(character, player_dict) for character in attendese]
+        #player_attended = [find_player_by_char(character, player_dict) for character in attendese]
         
         sr_plus_sheet["columns"].append(get_date)
 
         for player in sr_plus_sheet:
             if player != "columns":
-                if player in player_attended:
-                    player_attended.remove(player)
+                if player in attendese:
+                    attendese.remove(player)
                     if sr_plus_sheet[player][1] == "Nothing":
                         sr_plus_sheet[player].append("-")
                     else:
                         sr_plus_sheet[player].append("present")
                 else:
-                    sr_plus_sheet[player].append("not")
+                    sr_plus_sheet[player].append("absent")
 
-        if player_attended != []:
-            print(f"{player_attended}: need to be added to sheet")
-            add_players_to_sheet(player_attended, sr_plus_sheet, player_dict)
+        if attendese != []:
+            print(f"{attendese}: need to be added to sheet")
+            add_players_to_sheet(attendese, sr_plus_sheet, player_dict)
             pass #add player to sheet
         
         print_sr_plus_sheet(sr_plus_sheet)
