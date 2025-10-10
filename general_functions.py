@@ -37,5 +37,8 @@ def color_text(text:str,color:str) -> str:
     elif color == "bl":
         colored_text = f'\33[94m{text}\033[0m'
         return colored_text
+    elif color == "blwb":
+        colored_text = f'\33[7m{text}\033[0m'
+        return colored_text
     else:
-        print("color option: rd, yw, gr, bl")
+        print("color option: rd, yw, gr, bl, blwb")

@@ -20,14 +20,14 @@ def print_sr_plus_sheet(sr_dict):
     gen_func.print_line(line_length)    
     for row in sr_dict:
         if sr_dict[row][0] == "Player":
-            print(style_row(sr_dict[row]))
+            print(style_row(sr_dict[row],True))
             gen_func.print_line(line_length)
         else:
             sr_dict[row] = calc_bonus_roll(sr_dict[row])
             print(style_row(sr_dict[row]))
             gen_func.print_line(line_length)
 
-def style_row(row:list):
+def style_row(row:list, header:bool = False):
     row_to_print = "|"
     column = 0
     column_length = 36
@@ -70,11 +70,19 @@ def style_row(row:list):
             spaces = 12 - len(value)
             right = spaces // 2
             left = spaces - right
-            row_to_print += f'{left * " "}{value}{right * " "}|'
+            
+            if value == 'present':
+                row_to_print += f'{left * " "}{gen_func.color_text(value,'gr')}{right * " "}|'
+            elif value == 'absent':
+                row_to_print += f'{left * " "}{gen_func.color_text(value,'rd')}{right * " "}|'
+            else:
+                row_to_print += f'{left * " "}{value}{right * " "}|'
             column += 1
 
-
-    return row_to_print
+    if header != True:
+        return row_to_print
+    else:
+        return gen_func.color_text(row_to_print,'blwb')
 
 def calc_bonus_roll(row_entry:list) -> list:
     #get player row and make a sum after the fixed columns -> only date columns ~12 -> Quartal
