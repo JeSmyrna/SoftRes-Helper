@@ -108,7 +108,7 @@ def find_player_by_char(character_name:str,player_dict:dict) -> str:
         character_list = str(player_dict[player]).split(".")
         if character_name in character_list:
             #rint(f"Player {player} found! with character {user_input}.")
-            return player
+            return character_name #player - just return charactername
     print("Player not found in player dictionary")
     return character_name
 
@@ -177,7 +177,7 @@ def add_players_manual_to_sheet(filename,sr_plus_dict:dict) -> dict:
             time.sleep(1)
             gen_func.print_line()
 
-def fill_past_days(list_part_a, sr_plus_dict, attended_last_raid:bool = True) -> list:
+def fill_past_days(list_part_a:list, sr_plus_dict:dict, attended_last_raid:bool = True) -> list:
     
     list_part_b = []
     if len(sr_plus_dict['columns']) <= 4:
@@ -192,7 +192,7 @@ def fill_past_days(list_part_a, sr_plus_dict, attended_last_raid:bool = True) ->
         if attended_last_raid:
             list_part_b.append("present") #add new day with "attended"
         else:
-            list_part_b.append("-")
+            list_part_b.append("absent")
 
     player_sr_list = list_part_a + list_part_b
     return player_sr_list
@@ -230,7 +230,7 @@ def delete_player_manually_from_sheet(filename:str, sr_plus_sheet:dict):
 def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name 
     attendeese = raid_attendance.get_raid_attendees()
     raidres = raid_res_import.get_soft_reserve_players()
-    print(raidres)
+    
     attended_players, not_attended_players = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
     
     characters = str(player_dict[player]).split(".")
@@ -399,8 +399,9 @@ def move_to_loot_log(filename:str,player,sr_plus_sheet:dict):
 
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_plus_sheet:dict):
-    if len(sr_plus_sheet["columns"])  >= 8: #8weeks/raids ~ 2 months
+    if len(sr_plus_sheet["columns"])  >= 9: #4col for player, 1col for last day of last sheet, 4 days = 9
         sr_plus_sheet = make_copy_of_sheet(filename,sr_plus_sheet)
+        #print(sr_plus_sheet)
     get_date = gen_func.get_user_input("Raid Date (yyyy-mm-dd): ")
     
     if get_date == 'q':
@@ -426,7 +427,10 @@ def make_new_entry(filename,sr_plus_sheet:dict):
                     else:
                         sr_plus_sheet[player].append("present")
                 else:
-                    sr_plus_sheet[player].append("absent")
+                    if sr_plus_sheet[player][1] == "Nothing":
+                        sr_plus_sheet[player].append("-")
+                    else:
+                        sr_plus_sheet[player].append("absent")
 
         if attendese != []:
             print(f"{attendese}: need to be added to sheet")
@@ -440,19 +444,25 @@ def make_new_entry(filename,sr_plus_sheet:dict):
 def make_copy_of_sheet(filename:str,sr_sheet:dict) -> dict:
     print("make copy of SR+ sheet")
     time.sleep(1)
+    
     #safe file under different name
     date = str(datetime.now().strftime('%Y-%m-%d'))
     filename_safe = f'{date}_{filename}'
     rw_csv.safe_sr_sheet_csv(filename_safe, sr_sheet)
+    new_sr_sheet = {}
     
-    #make new dictionary for new sheet
-    new_sr_sheet = empty_sheet
+    #make new dictionary for new sheet - add last day to new sheet
+    last_day = sr_sheet['columns'][-1]
+    blueprint = empty_sheet["columns"].copy()
+    blueprint.append(last_day)
 
+    new_sr_sheet['columns'] = blueprint
+    
     for player in sr_sheet:
         if player != "columns":
-            prev_bonus = int(sr_sheet[player][2]) + int(sr_sheet[player][3])
+            prev_bonus = int(sr_sheet[player][3])
             print(prev_bonus)
-            new_sr_sheet[player] = [sr_sheet[player][0],sr_sheet[player][1],prev_bonus,0]
+            new_sr_sheet[player] = [sr_sheet[player][0],sr_sheet[player][1],prev_bonus,0,sr_sheet[player][-1]]
         else:
             pass
     
