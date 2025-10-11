@@ -12,20 +12,50 @@ empty_sheet = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll']}
 #function to calculate line length for styling the sheet
 def get_line_length(row):
     count_columns = len(row)
-    line_length = 63 + (count_columns - 3) * 13
-    return line_length
+    if count_columns > 10:
+        line_length = 63 + (10 - 3) * 13
+        return line_length
+    else:
+        line_length = 63 + (count_columns - 3) * 13
+        return line_length
 
 def print_sr_plus_sheet(sr_dict):
     line_length = get_line_length(sr_dict["columns"])# get how long the entry is and makes the lines longer for styling
     gen_func.print_line(line_length)    
+    
+    list_to_long = False
+    adjusted_list_view = []
+    if len(sr_dict['columns']) > 10:
+        list_to_long = True
+    else:
+        pass
+    
     for row in sr_dict:
         if sr_dict[row][0] == "Player":
-            print(style_row(sr_dict[row],True))
-            gen_func.print_line(line_length)
+            
+            if list_to_long:    
+                adjusted_list_view.extend(sr_dict[row][0:4]) #Player,Item,prev,bonusroll
+                adjusted_list_view.extend(sr_dict[row][-6:]) #last 6 days
+                
+                print(style_row(adjusted_list_view,True))
+                gen_func.print_line(line_length)
+
+            else:
+                print(style_row(sr_dict[row],True))
+                gen_func.print_line(line_length)
         else:
             sr_dict[row] = calc_bonus_roll(sr_dict[row])
-            print(style_row(sr_dict[row]))
-            gen_func.print_line(line_length)
+            
+            if list_to_long:
+                adjusted_list_view.clear()
+                adjusted_list_view.extend(sr_dict[row][0:4])
+                adjusted_list_view.extend(sr_dict[row][-6:])
+                
+                print(style_row(adjusted_list_view))
+                gen_func.print_line(line_length)
+            else:
+                print(style_row(sr_dict[row]))
+                gen_func.print_line(line_length)
 
 def style_row(row:list, header:bool = False):
     row_to_print = "|"
@@ -407,8 +437,8 @@ def move_to_loot_log(filename:str,player,sr_plus_sheet:dict):
 
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_plus_sheet:dict):
-    if len(sr_plus_sheet["columns"])  >= 9: #4col for player, 1col for last day of last sheet, 4 days = 9
-        sr_plus_sheet = make_copy_of_sheet(filename,sr_plus_sheet)
+    #if len(sr_plus_sheet["columns"])  >= 9: #4col for player, 1col for last day of last sheet, 4 days = 9
+    #    sr_plus_sheet, old_sheet = make_copy_of_sheet(filename,sr_plus_sheet)
         #print(sr_plus_sheet)
     get_date = gen_func.get_user_input("Raid Date (yyyy-mm-dd): ")
     
@@ -439,6 +469,8 @@ def make_new_entry(filename,sr_plus_sheet:dict):
                         sr_plus_sheet[player].append("-")
                     else:
                         sr_plus_sheet[player].append("absent")
+                #new calced prev bonus = calculate(old_sheet[player][5:] + sr_plus_sheet[player][6])
+                #sr_plus_sheet[player][3] = difference old prev bonus new prev bonus ?
 
         if attendese != []:
             print(f"{attendese}: need to be added to sheet")
@@ -462,7 +494,7 @@ def make_copy_of_sheet(filename:str,sr_sheet:dict) -> dict:
     #make new dictionary for new sheet - add last day to new sheet
     last_day = sr_sheet['columns'][-1]
     blueprint = empty_sheet["columns"].copy()
-    blueprint.append(last_day)
+    #blueprint.append(last_day)
 
     new_sr_sheet['columns'] = blueprint
     
@@ -470,11 +502,11 @@ def make_copy_of_sheet(filename:str,sr_sheet:dict) -> dict:
         if player != "columns":
             prev_bonus = int(sr_sheet[player][3])
             print(prev_bonus)
-            new_sr_sheet[player] = [sr_sheet[player][0],sr_sheet[player][1],prev_bonus,0,sr_sheet[player][-1]]
+            new_sr_sheet[player] = [sr_sheet[player][0],sr_sheet[player][1],prev_bonus,0]#,sr_sheet[player][-1]]
         else:
             pass
     
-    return new_sr_sheet
+    return new_sr_sheet, sr_sheet
 
 def create_new_sr_plus_sheet():
     gen_func.print_menu_title("Create New Sheet")
