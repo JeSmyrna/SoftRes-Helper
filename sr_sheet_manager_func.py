@@ -145,7 +145,7 @@ def find_player_by_char(character_name:str,player_dict:dict) -> str:
     for player in player_dict:
         character_list = str(player_dict[player]).split(".")
         if character_name in character_list:
-            #rint(f"Player {player} found! with character {user_input}.")
+            #print(f"Player {player} found! with character {user_input}.")
             return character_name #player - just return charactername
     print("Player not found in player dictionary")
     return character_name
@@ -270,21 +270,22 @@ def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name
     raidres = raid_res_import.get_soft_reserve_players()
     
     attended_players, not_attended_players = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
+    #characters = str(player_dict[player]).split(".")
     
-    characters = str(player_dict[player]).split(".")
+    items = attended_players.get(player)
+    if items == None:
+        return 'Nothing'
 
-    for char in attended_players:
-        if char in characters:
-            items = str(attended_players[char]).split(",")
-            if len(items) < 2:
+    else:
+        print(f'SR List {items[0]} and {items[1]}')
+        if len(items) < 2:
                 items.append('Nothing')
-            print(f"""
+        print(f"""
 [1] {items[0]}
 [2] {items[1]}
 [3] Nothing
-            """)
-            #make option for no SR+
-            while True:
+""")
+        while True:
                 user_input = input(f"Choose SR+ for {player}?: ")
                 
                 if user_input == "1":
@@ -471,14 +472,15 @@ def make_new_entry(filename,sr_plus_sheet:dict):
                         sr_plus_sheet[player].append("absent")
                 #new calced prev bonus = calculate(old_sheet[player][5:] + sr_plus_sheet[player][6])
                 #sr_plus_sheet[player][3] = difference old prev bonus new prev bonus ?
-
+            print(f'make new entry: {sr_plus_sheet}')
         if attendese != []:
             print(f"{attendese}: need to be added to sheet")
             add_players_to_sheet(attendese, sr_plus_sheet, player_dict)
             pass #add player to sheet
         
-        print_sr_plus_sheet(sr_plus_sheet)
-        rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
+    print_sr_plus_sheet(sr_plus_sheet)
+    rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
+    
     return sr_plus_sheet
 
 def make_copy_of_sheet(filename:str,sr_sheet:dict) -> dict:
