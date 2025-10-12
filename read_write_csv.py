@@ -65,7 +65,12 @@ def safe_sr_sheet_csv(raidname:str,sr_dict:dict):
             if entry != 'columns':
                 get_entries = sr_dict[entry]
                 for index in range(len(get_entries)):
-                    dict_row[column_list[index]] = get_entries[index]
+                    #print(f'{column_list[index]} - {get_entries[index]}')
+                    if column_list[index] == 'Item':
+                        changed_item_name = str(get_entries[index]).replace(', ',' - ')
+                        dict_row[column_list[index]] = changed_item_name
+                    else:
+                        dict_row[column_list[index]] = get_entries[index]
         
                 writer.writerow(dict_row)
 
@@ -95,3 +100,4 @@ def load_text_file(filename,cut_text:int = 0):
     with open(f'{filename}.txt', newline='') as text_file:
         text_as_list = [line[cut_text:].rstrip("\r\n") for line in text_file]
         return text_as_list
+    
