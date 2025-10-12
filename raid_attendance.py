@@ -1,3 +1,4 @@
+import raid_res_import
 
 def get_raid_attendees():
     attendees_list = []
@@ -8,14 +9,21 @@ def get_raid_attendees():
 
     return attendees_list
 
-def intersect_raidres_and_attendees(attendeese:list, raidres:dict):
+def intersect_raidres_and_attendees(attendeese:list, raidres:dict) -> dict:
     attendees_dict = {}
     not_attended_dict = {}
     for player in raidres:
+        
         if player in attendeese:
-            attendees_dict[player] = raidres[player]
+            items = []
+            items = raidres.get(player)
+            
+            if items == []:
+                print(f'no raidres found for {player}')
+                items = 'Nothing'
+
+            attendees_dict.update({player:items})
         else:
-            not_attended_dict[player] = raidres[player]
-
+            not_attended_dict.update({player:items})
+            
     return attendees_dict,not_attended_dict
-
