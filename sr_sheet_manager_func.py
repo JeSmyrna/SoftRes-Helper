@@ -13,10 +13,10 @@ empty_sheet = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll']}
 def get_line_length(row):
     count_columns = len(row)
     if count_columns > 10:
-        line_length = 63 + (10 - 3) * 13
+        line_length = 72 + (10 - 3) * 13
         return line_length
     else:
-        line_length = 63 + (count_columns - 3) * 13
+        line_length = 72 + (count_columns - 3) * 13
         return line_length
 
 def print_sr_plus_sheet(sr_dict):
@@ -60,7 +60,7 @@ def print_sr_plus_sheet(sr_dict):
 def style_row(row:list, header:bool = False):
     row_to_print = "|"
     column = 0
-    column_length = 36
+    column_length = 45
     for value in row:
         #player name
         if column == 0:
@@ -68,7 +68,8 @@ def style_row(row:list, header:bool = False):
             column += 1
         #Item
         elif column == 1:
-            row_to_print += f'{value}{(column_length - len(value)) * " "}|'
+            item_name = str(value).replace(' - ', ', ')
+            row_to_print += f'{item_name}{(column_length - len(item_name)) * " "}|'
             column += 1
 
         #bonusroll and numbers
