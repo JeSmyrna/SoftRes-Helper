@@ -27,12 +27,13 @@ Manage SR+ sheets:
 - check the loot tracker to see which player got their SR+, manual confirmation [x]
 - check when the player attended raid, if longer than 2 weeks : Bonus roll -5 [x]
 - edit player entries: SR+ Item, prev rolls, days attended (Bonus roll gets automatically calculated, so no edit possible) [ ]
-- use the function for replacing character names with player names, to just search for player names to clarify [ ]
-- make copy function needs last day of the previous sheet, to calculate the decay -5 correct [ ]
-- manual make copy [?]
+- use the function for replacing character names with player names, to just search for player names to clarify, if player already have an SR+ [ ]
+- check if players changed their SR+ via raidres, ask user if player changed SR+, reset SR+ and only give the newest day as bonus. [ ]
+- manual make copy [ ]
+- if 'nothing' is reserved still record attendance but don't calculate bonus roll [ ]
 
 - export to csv [x]
-- export to google sheet [ ]
+- export to google sheet [x]
 - style the sheet for readability [x]
 
 SQL Databank connection: [?]
