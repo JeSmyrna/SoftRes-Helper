@@ -471,7 +471,7 @@ def make_new_entry(filename,sr_plus_sheet:dict):
                     sr_plus_sheet[player].append("absent")
                 #new calced prev bonus = calculate(old_sheet[player][5:] + sr_plus_sheet[player][6])
                 #sr_plus_sheet[player][3] = difference old prev bonus new prev bonus ?
-            print(f'make new entry: {sr_plus_sheet}')
+                
         if attendese != []:
             print(f"{attendese}: need to be added to sheet")
             add_players_to_sheet(attendese, sr_plus_sheet, player_dict)
