@@ -121,20 +121,23 @@ def calc_bonus_roll(row_entry:list) -> list:
     bonus_roll = int(row_entry[2])#get bonus roll from previous sheets
     consecutive_raids_missing = 0
     for entry in range(4,len(row_entry)):
-        if row_entry[entry] == "present":
-            bonus_roll += 10
-            consecutive_raids_missing = 0 #reset to 0
-        elif row_entry[entry] == "absent":
-            #see if the player was missing 2 raids in a row
-            #Idea: search player in player dictionary to see if player has attended at least one raid in 1 or 2 weeks to not get the -5
-            #not entirely sure where to safe this... maybe add an overall SR sheet that puts the week to true if player attended at least one raid
-            consecutive_raids_missing += 1
-            if consecutive_raids_missing == 2:
-                bonus_roll -= 5 #reset to 0
-                consecutive_raids_missing = 0
-                if bonus_roll <= 0:
-                    bonus_roll = 0
-            #    
+        if row_entry[1] != 'Nothing':
+            if row_entry[entry] == "present":
+                bonus_roll += 10
+                consecutive_raids_missing = 0 #reset to 0
+            elif row_entry[entry] == "absent":
+                #see if the player was missing 2 raids in a row
+                #Idea: search player in player dictionary to see if player has attended at least one raid in 1 or 2 weeks to not get the -5
+                #not entirely sure where to safe this... maybe add an overall SR sheet that puts the week to true if player attended at least one raid
+                consecutive_raids_missing += 1
+                if consecutive_raids_missing == 2:
+                    bonus_roll -= 5 #reset to 0
+                    consecutive_raids_missing = 0
+                    if bonus_roll <= 0:
+                        bonus_roll = 0
+                #    
+            else:
+                pass
         else:
             pass
     #gives the current bonus roll, back into the list -> column 3 "Bonusroll"
@@ -225,8 +228,9 @@ def fill_past_days(list_part_a:list, sr_plus_dict:dict, attended_last_raid:bool 
     for day in range(0,(len(sr_plus_dict["columns"][4:-1]))):
         list_part_b.append("-") #fill past days with "-" empty space (newly joined player)
     
-    if list_part_a[1] == "Nothing":
-        list_part_b.append("-")
+    #scratched to record attendance, but have to change the calc_bonus_roll func
+    #if list_part_a[1] == "Nothing":
+        #list_part_b.append("-")
     else:
         if attended_last_raid:
             list_part_b.append("present") #add new day with "attended"
@@ -462,15 +466,9 @@ def make_new_entry(filename,sr_plus_sheet:dict):
             if player != "columns":
                 if player in attendese:
                     attendese.remove(player)
-                    if sr_plus_sheet[player][1] == "Nothing":
-                        sr_plus_sheet[player].append("-")
-                    else:
-                        sr_plus_sheet[player].append("present")
+                    sr_plus_sheet[player].append("present")
                 else:
-                    if sr_plus_sheet[player][1] == "Nothing":
-                        sr_plus_sheet[player].append("-")
-                    else:
-                        sr_plus_sheet[player].append("absent")
+                    sr_plus_sheet[player].append("absent")
                 #new calced prev bonus = calculate(old_sheet[player][5:] + sr_plus_sheet[player][6])
                 #sr_plus_sheet[player][3] = difference old prev bonus new prev bonus ?
             print(f'make new entry: {sr_plus_sheet}')
