@@ -439,7 +439,86 @@ def move_to_loot_log(player:list):
     new_log_row = [log_entry_num,filename,player_name,sr_item,bonus_roll,log_note,date_added_to_log]
     rw_csv.safe_sr_awarded_log(new_log_row)
 
+def make_entry(sr_plus_sheet:dict):#filename:str,sr_plus_sheet:dict):
+    gen_func.print_menu_title('Make New Entry')
+    print('''Have the files been updated for the new raid?
+raidres.txt
+attendeese.txt
+loot_log.txt''')
+    
+    #make sure user updated all the docs
+    gen_func.print_line(10)
+    ask_user = input('(y/n): ')
+    if ask_user == 'y':
+        attendeese = raid_attendance.get_raid_attendees()
+        player_dict = rw_csv.read_csv_file_players()
+        raidres = raid_res_import.get_soft_reserve_players()
+        pass
+    else:
+        print('going back...')
+        time.sleep(1)
+        return
+    gen_func.print_line(10)
 
+    
+    #check if attendeese in player dict
+    char_in_dict = []
+    while attendeese != []:
+        all_characters = player_dict.items()
+        for character in attendeese:
+            for char_list in all_characters:
+                char_list = str(char_list[1]).split('.')
+                if character in char_list:
+                    #print(f'found player {character}')
+                    char_in_dict.append(character)
+                    attendeese.remove(character)
+                    break
+            else:
+                mg_dict_func.add_new_player(character,player_dict)
+    
+    #check if player has already a character in SR+ Sheet
+    #and if player alt accumulates Bonus roll for the other chars SR+
+    print(char_in_dict)
+    for char in char_in_dict:
+        print(char)
+
+    #something broke here ?
+    for char in char_in_dict:
+        if char not in sr_plus_sheet.keys():
+            is_in,char_in,data = check_if_alt_in_sheet(char,sr_plus_sheet)
+            #print(raidres[char])
+            if is_in and data[1] not in raidres[char]:
+                print(f'Player has already {gen_func.color_text(char_in,'yw')} in sheet. SR+ {gen_func.color_text(data[1],'yw')} with a {gen_func.color_text('Bonusroll','gr')} of {gen_func.color_text(data[3],'yw')}')
+                while True:
+                    ask_user_1 = input(f'Replace entry, with character {char}? (y/n): ')
+                    if ask_user_1 == 'y':
+                        pass
+                    elif ask_user_1 == 'n':
+                        pass
+                    else:
+                        print('invalid input')
+            else:
+                char_in_dict.remove(char)
+                char_in_dict.append(char_in)
+    
+    print(char_in_dict)
+    print('End')
+def check_if_same_sr():
+    return
+def check_if_alt_in_sheet(character:str,sr_sheet:dict) -> tuple[bool,str,list]:
+    player_dict = rw_csv.read_csv_file_players()
+    all_characters = player_dict.items()
+    for char_list in all_characters:
+        char_list = str(char_list[1]).split('.')
+        if character in char_list:
+            for char in char_list:
+                if char in sr_sheet.keys():
+                    return True,char,sr_sheet[char]
+        else:
+            return False,character,[]
+
+
+make_entry(rw_csv.load_sr_sheet('Test'))
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_plus_sheet:dict):
     #if len(sr_plus_sheet["columns"])  >= 9: #4col for player, 1col for last day of last sheet, 4 days = 9
