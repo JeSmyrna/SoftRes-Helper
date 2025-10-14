@@ -106,13 +106,8 @@ def find_player_by_char(character_name:str,player_dict:dict) -> tuple [str,list]
     for player in player_dict:
         character_list = str(player_dict[player]).split(".")
         if character_name in character_list:
-<<<<<<< Updated upstream
-            #rint(f"Player {player} found! with character {user_input}.")
-            return player
-=======
             return player, character_list
     
->>>>>>> Stashed changes
     print("Player not found in player dictionary")
     return character_name, []
 
@@ -281,14 +276,6 @@ def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name
     
     attended_players, not_attended_players = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
     
-<<<<<<< Updated upstream
-    characters = str(player_dict[player]).split(".")
-
-    for char in attended_players:
-        if char in characters:
-            items = str(attended_players[char]).split(",")
-            print(f"""
-=======
     items = attended_players.get(player)
 
     if items == None:
@@ -298,23 +285,22 @@ def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name
         if len(items) < 2:
                 items.append('Nothing')
         print(f"""
->>>>>>> Stashed changes
 [1] {items[0]}
 [2] {items[1]}
 [3] Nothing
             """)
-            #make option for no SR+
-            while True:
-                user_input = input(f"Choose SR+ for {player}?: ")
-                
-                if user_input == "1":
-                    return items[0]
-                elif user_input == "2":
-                    return items[1]
-                elif user_input == "3":
-                    return "Nothing"
-                else:
-                    print("invalid input")
+        #make option for no SR+
+        while True:
+            user_input = input(f"Choose SR+ for {player}?: ")
+            
+            if user_input == "1":
+                return items[0]
+            elif user_input == "2":
+                return items[1]
+            elif user_input == "3":
+                return "Nothing"
+            else:
+                print("invalid input")
 
 def award_sr_plus(filename:str, sr_plus_sheet:dict):
     gen_func.print_menu_title("SR+ Sheet")
@@ -361,8 +347,6 @@ def award_sr_plus(filename:str, sr_plus_sheet:dict):
             print("couldn't find player")
             gen_func.print_line(20)
 
-<<<<<<< Updated upstream
-=======
 def award_through_loot_log(filename:str, sr_plus_sheet:dict):
     gen_func.print_menu_title("Award through Loot Log")
     text_file = rw_csv.load_text_file('loot_log',20)
@@ -437,7 +421,6 @@ def move_to_loot_log(filename:str,player,sr_plus_sheet:dict):
 
 #award_through_loot_log('BWL_Test',rw_csv.load_sr_sheet('BWL_Test'))
 
->>>>>>> Stashed changes
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_plus_sheet:dict):
     if len(sr_plus_sheet["columns"])  >= 12: #8weeks/raids ~ 2 months
@@ -452,33 +435,13 @@ def make_new_entry(filename,sr_plus_sheet:dict):
         player_dict = rw_csv.read_csv_file_players()
         
         attendese = raid_attendance.get_raid_attendees()
-<<<<<<< Updated upstream
-        
-        #change character name to player name
-        player_attended = [find_player_by_char(character, player_dict) for character in attendese]
-=======
         raidres_import = raid_res_import.get_soft_reserve_players()
         raidres_dict, not_attended = raid_attendance.intersect_raidres_and_attendees(attendese,raidres_import)
->>>>>>> Stashed changes
         
         sr_plus_sheet["columns"].append(get_date)
 
         for player in sr_plus_sheet:
             if player != "columns":
-<<<<<<< Updated upstream
-                if player in player_attended:
-                    player_attended.remove(player)
-                    if sr_plus_sheet[player][1] == "Nothing":
-                        sr_plus_sheet[player].append("-")
-                    else:
-                        sr_plus_sheet[player].append("present")
-                else:
-                    sr_plus_sheet[player].append("not")
-
-        if player_attended != []:
-            print(f"{player_attended}: need to be added to sheet")
-            add_players_to_sheet(player_attended, sr_plus_sheet, player_dict)
-=======
                 if player in attendese:
                     if sr_plus_sheet[player][1] not in raidres_dict.get(player):
                         print(f'{player} changed SR+ ?')
@@ -493,7 +456,6 @@ def make_new_entry(filename,sr_plus_sheet:dict):
         if attendese != []:
             print(f"{attendese}: need to be added to sheet")
             add_players_to_sheet(filename, attendese, sr_plus_sheet, player_dict)
->>>>>>> Stashed changes
             pass #add player to sheet
         rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
     return sr_plus_sheet
