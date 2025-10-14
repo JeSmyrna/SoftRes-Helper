@@ -264,7 +264,7 @@ def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
             else:
                 print(f"Character {player} needs to be added to dict")
                 mg_dict_func.add_new_players(player_dict)
-                #recash player dict
+                rw_csv.write_csv_file_players(player_dict)
 
 #delete player, add to log, make note that it got deleted + when
 def delete_player_manually_from_sheet(filename:str, sr_plus_sheet:dict):
@@ -275,8 +275,6 @@ def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name
     raidres = raid_res_import.get_soft_reserve_players()
     
     attended_players, not_attended_players = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
-    #characters = str(player_dict[player]).split(".")
-    
     items = attended_players.get(player)
     if items == None:
         return 'Nothing'
