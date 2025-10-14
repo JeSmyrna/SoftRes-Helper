@@ -289,7 +289,7 @@ def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name
 [3] Nothing
 """)
         while True:
-                user_input = input(f"Choose SR+ for {player}?: ")
+                user_input = input(f"Choose SR+ for {gen_func.color_text(player,'yw')}?: ")
                 
                 if user_input == "1":
                     return items[0]
@@ -304,9 +304,6 @@ def award_sr_plus(filename:str, sr_plus_sheet:dict,delete_sr:bool = False):
     gen_func.print_menu_title("SR+ Sheet")
     print_sr_plus_sheet(sr_plus_sheet)
     gen_func.print_line()
-
-    #load Log file
-    log_file = rw_csv.load_sr_awarded_log()
     
     #change question for deletion or awarding
     msg_1 = ''
@@ -327,28 +324,22 @@ def award_sr_plus(filename:str, sr_plus_sheet:dict,delete_sr:bool = False):
             #change question for deletion or awarding
             msg_2 = ''
             if delete_sr:
-                msg_2 = f'Delete Player "{user_entry}" and their SR+ "{sr_plus_sheet[user_entry][1]}" ?: (y/n)'
+                msg_2 = f'Delete Player "{gen_func.color_text(user_entry,'yw')}" and their SR+ "{gen_func.color_text(sr_plus_sheet[user_entry][1],'yw')}" ?: (y/n)'
             else:
-                msg_2 = f'Player "{user_entry}" have won their SR+ "{sr_plus_sheet[user_entry][1]}" on the "{sr_plus_sheet["columns"][-1]}"? (y/n): '
+                msg_2 = f'Player "{gen_func.color_text(user_entry,'yw')}" have won their SR+ "{gen_func.color_text(sr_plus_sheet[user_entry][1],'yw')}" on the "{gen_func.color_text(sr_plus_sheet["columns"][-1],'yw')}"? (y/n): '
 
             user_entry_1 = input(msg_2)
             
             if user_entry_1 == "y":
 
-                log_entry_num = len(log_file)
-                player_name = user_entry
-                sr_item = sr_plus_sheet[user_entry][1]
-                bonus_roll = int(sr_plus_sheet[user_entry][2]) + int(sr_plus_sheet[user_entry][3])
-
                 #note that it got deleted or date aquired
                 if delete_sr:
-                    date_aquired = 'deleted'
+                    note_message = 'deleted'
                 else:
-                    date_aquired = sr_plus_sheet["columns"][-1]
-                date_added_to_log = gen_func.get_date()
+                    note_message = '(manual) aquired'
 
-                new_log_row = [log_entry_num,filename,player_name,sr_item,bonus_roll,date_aquired,date_added_to_log]
-                rw_csv.safe_sr_awarded_log(new_log_row)
+                move_to_loot_log([filename,sr_plus_sheet[user_entry],note_message,sr_plus_sheet["columns"][-1]])
+
                 sr_plus_sheet.pop(user_entry)
                 rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
                 print("entry has been moved to the sr_awarded_log.csv")
@@ -399,7 +390,7 @@ def award_through_loot_log(filename:str, sr_plus_sheet:dict):
                 if user_input == 'y':
                     found_a_srplus_loot = True
                     list_of_players.append(name)
-                    move_to_loot_log(filename,name,sr_plus_sheet)
+                    move_to_loot_log([filename,sr_plus_sheet[name],'aquried through loot log',sr_plus_sheet["columns"][-1]])
                     sr_plus_sheet.pop(name)
                     break
                 elif user_input == 'n':
@@ -424,20 +415,30 @@ def award_through_loot_log(filename:str, sr_plus_sheet:dict):
         print(f'No SR+ awarded for {filename} on the {sr_plus_sheet["columns"][-1]}...')
         time.sleep(1)
 
-def move_to_loot_log(filename:str,player,sr_plus_sheet:dict):
+def move_to_loot_log(player:list):
+    """
+    List items that are needed:
+
+    player[0] = filename\n
+    player[1] = all entries (row) in sheet of mentioned player\n
+    player[2] = log note or message, why it was moved\n
+    player[3] = last day in dict["columns"][-1]\n
+    """
+    #make new format: player = [filename,[all columns],log_message,date_aquired]
+    
     log_file = rw_csv.load_sr_awarded_log()
     log_entry_num = len(log_file)
 
-    player_name = player
-    sr_item = sr_plus_sheet[player][1]
-    bonus_roll = int(sr_plus_sheet[player][2]) + int(sr_plus_sheet[player][3])
-    date_aquired = sr_plus_sheet["columns"][-1]
+    filename = player[0]
+    player_name = player[1][0]
+    sr_item = player[1][1]
+    bonus_roll = int(player[1][3])
+    log_note = player[2]
     date_added_to_log = gen_func.get_date()
 
-    new_log_row = [log_entry_num,filename,player_name,sr_item,bonus_roll,date_aquired,date_added_to_log]
+    new_log_row = [log_entry_num,filename,player_name,sr_item,bonus_roll,log_note,date_added_to_log]
     rw_csv.safe_sr_awarded_log(new_log_row)
 
-#award_through_loot_log('BWL_Test',rw_csv.load_sr_sheet('BWL_Test'))
 
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_plus_sheet:dict):

@@ -7,18 +7,7 @@ def format_sr_players(user_entry):
     player_list = user_entry.split(": ")
     player_list.pop(0)
     player_item = str(player_list[0]).split(" - ")
-    return player_item
-    for player in player_list:
-        first_part = player.split(": ")        
-        secnd_part = first_part[1].split(" - ")
-        item = secnd_part[1]
-        #item = item[:-1]
-        if first_part[0] not in raid_res_player_dict:
-            raid_res_player_dict[first_part[0]] = item
-        else:
-            raid_res_player_dict[first_part[0]] += "," + item
-                        
-    
+    return player_item 
 
 def get_soft_reserve_players():
     with open("raidres.txt") as file_in:
