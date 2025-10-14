@@ -64,7 +64,7 @@ def add_new_players(player_dict:dict):
             player_dict[user_entry_playername] = combine_character_names(character_list)
     
 
-def find_player(player_dict):
+def find_player(player_dict) -> list:
     while True:
         playername = input("Player: ")
         if playername == "q":
@@ -177,6 +177,7 @@ def delete_player(player_dict:dict):
 
 #Checking if key already exists in dictionary
 def check_if_player_exists(playername: str, player_dict: dict) -> bool:
+    
     if playername in player_dict:
         return True
     else:

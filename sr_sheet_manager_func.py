@@ -9,6 +9,7 @@ from datetime import datetime
 
 empty_sheet = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll']}
 
+
 #function to calculate line length for styling the sheet
 def get_line_length(row):
     count_columns = len(row)
@@ -100,15 +101,20 @@ def calc_bonus_roll(row_entry):
     row_entry[3] = bonus_roll
     return row_entry
 
-def find_player_by_char(character_name:str,player_dict:dict) -> str:
+def find_player_by_char(character_name:str,player_dict:dict) -> tuple [str,list]:
     
     for player in player_dict:
         character_list = str(player_dict[player]).split(".")
         if character_name in character_list:
+<<<<<<< Updated upstream
             #rint(f"Player {player} found! with character {user_input}.")
             return player
+=======
+            return player, character_list
+    
+>>>>>>> Stashed changes
     print("Player not found in player dictionary")
-    return character_name
+    return character_name, []
 
 def add_players_manual_to_sheet(filename,sr_plus_dict:dict) -> dict:
     
@@ -170,7 +176,7 @@ def add_players_manual_to_sheet(filename,sr_plus_dict:dict) -> dict:
 
         else:
             print(f'{player_name} not found...')
-            player_dictionary_name = find_player_by_char(player_name,player_dict)
+            player_dictionary_name, player_characters = find_player_by_char(player_name,player_dict)
             print(f'Did you mean player: {player_dictionary_name}? - {player_name} might be an alt')
             time.sleep(1)
             gen_func.print_line()
@@ -191,14 +197,22 @@ def fill_past_days(list_part_a, sr_plus_dict, attended_last_raid:bool = True) ->
     player_sr_list = list_part_a + list_part_b
     return player_sr_list
 
-
+def check_player_already_in_sheet(character_list:list,sr_plus_dict:dict) -> tuple[bool,str]:
+    for char in character_list:
+        if char in sr_plus_dict.keys():
+            return True, char
+        else:
+            return False
+        
 #loop till every player is in the SR+ sheet
-def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
+def add_players_to_sheet(filename:str, player_list:list, sr_plus_dict:dict ,player_dict:dict):
     while player_list != []:
 
         for player in player_list:
+            playername, char_list = find_player_by_char(player,player_dict)
+            already_in_sheet, char_name = check_player_already_in_sheet(char_list,sr_plus_dict)
 
-            if mg_dict_func.check_if_player_exists(player,player_dict):
+            if already_in_sheet == False:
                 
                 print(f"adding {player} to SR+ sheet...")
 
@@ -212,6 +226,51 @@ def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
                 sr_plus_dict[player] = player_sr_list
                 player_list.remove(player)
                 time.sleep(0.5)
+
+            elif already_in_sheet == True:
+                print(f'{playername} has {char_name} in the current sheet.')
+                
+                columns = sr_plus_dict.get('columns')
+                player_entry = sr_plus_dict.get(char_name)
+                player_sr_dict_entry = {'columns':columns,char_name:player_entry}
+
+                print_sr_plus_sheet(player_sr_dict_entry)
+
+                user_entry = input(f'want to change the SR+ to character {player} and delete current SR+ of {char_name}? (y/n): ')
+
+                if user_entry == 'y':
+                    print(f"deleting {char_name}s SR+ from sheet...")
+                    log_file = rw_csv.load_sr_awarded_log()
+                    log_entry_num = len(log_file)
+                    player_name = char_name
+                    sr_item = sr_plus_dict[char_name][1]
+                    bonus_roll = int(sr_plus_dict[char_name][2]) + int(sr_plus_dict[char_name][3])
+                    date_aquired = f'changed SR+ to other char - {player}'
+                    date_added_to_log = gen_func.get_date()
+
+                    new_log_row = [log_entry_num,filename,player_name,sr_item,bonus_roll,date_aquired,date_added_to_log]
+                    rw_csv.safe_sr_awarded_log(new_log_row)
+                    sr_plus_dict.pop(char_name)
+                    rw_csv.safe_sr_sheet_csv(filename,sr_plus_dict)
+                    print("entry has been moved to the sr_awarded_log.csv")
+                    time.sleep(1)
+                    gen_func.print_line(20)
+
+                    print(f"adding {player} to SR+ sheet...")
+                    sr_plus_item = find_choose_sr_plus(player,player_dict)
+
+                    gen_func.print_line()
+
+                    player_list_part_a = [player, sr_plus_item, 0, 0]
+                    player_sr_list = fill_past_days(player_list_part_a,sr_plus_dict,True)
+                    sr_plus_dict.update({player:player_sr_list})
+                    player_list.remove(player)
+                    time.sleep(0.5)
+
+                elif user_entry =='n':
+                    print(f"ignoring {player}")
+                    time.sleep(1)
+                    player_list.remove(player)
             else:
                 print(f"Character {player} needs to be added to dict")
                 mg_dict_func.add_new_players(player_dict)
@@ -222,12 +281,24 @@ def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name
     
     attended_players, not_attended_players = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
     
+<<<<<<< Updated upstream
     characters = str(player_dict[player]).split(".")
 
     for char in attended_players:
         if char in characters:
             items = str(attended_players[char]).split(",")
             print(f"""
+=======
+    items = attended_players.get(player)
+
+    if items == None:
+        return 'Nothing'
+
+    else:
+        if len(items) < 2:
+                items.append('Nothing')
+        print(f"""
+>>>>>>> Stashed changes
 [1] {items[0]}
 [2] {items[1]}
 [3] Nothing
@@ -290,6 +361,83 @@ def award_sr_plus(filename:str, sr_plus_sheet:dict):
             print("couldn't find player")
             gen_func.print_line(20)
 
+<<<<<<< Updated upstream
+=======
+def award_through_loot_log(filename:str, sr_plus_sheet:dict):
+    gen_func.print_menu_title("Award through Loot Log")
+    text_file = rw_csv.load_text_file('loot_log',20)
+    final_loot_log = []
+    for line in text_file:
+        edited_line = line.split(": ")
+        traded_line = edited_line[1].split(" > ")
+        edited_line.pop(1)
+        if len(traded_line) > 1:
+            print(f'{gen_func.color_text(traded_line[0],'rd')} traded "{gen_func.color_text(edited_line[0],'yw')}" to {gen_func.color_text(traded_line[1],'gr')}')
+            edited_line.insert(0,traded_line[1])
+            time.sleep(1)
+            final_loot_log.append(edited_line)
+        else:
+            edited_line.insert(0,traded_line[0])
+            final_loot_log.append(edited_line)
+    
+    #look for players in SR sheet with loot log
+    sr_sheet_keys = sr_plus_sheet.keys()
+    players_and_chars = rw_csv.read_csv_file_players()
+    found_a_srplus_loot = False
+    list_of_players = []
+
+    for entry in final_loot_log:
+        name, charlist = find_player_by_char(entry[0],players_and_chars)
+        
+        if name in sr_sheet_keys and entry[1] == sr_plus_sheet[name][1]:
+            
+            print(f'{gen_func.color_text(name,'rd')} found: {gen_func.color_text(entry[1],'yw')} dropped on the {gen_func.color_text(sr_plus_sheet['columns'][-1],'gr')} and player {gen_func.color_text(name,'rd')} won the loot')
+            while True:
+                user_input = input('Move to loot log? (y/n): ')
+                if user_input == 'y':
+                    found_a_srplus_loot = True
+                    list_of_players.append(name)
+                    move_to_loot_log(filename,name,sr_plus_sheet)
+                    sr_plus_sheet.pop(name)
+                    break
+                elif user_input == 'n':
+                    print('moving on...')
+                    time.sleep(1)
+                    break
+                else:
+                    print('invalid input')
+                    time.sleep(1)
+            gen_func.print_line(20)
+
+        else:
+            pass
+
+    rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
+    if found_a_srplus_loot:
+        print("entries have been moved to the sr_awarded_log.csv")
+        time.sleep(1)
+        print(f"No more SR+ awarded loot found. Congratulations to {gen_func.color_text(', '.join(list_of_players),'yw')}")
+        time.sleep(1)
+    else:
+        print(f'No SR+ awarded for {filename} on the {sr_plus_sheet["columns"][-1]}...')
+        time.sleep(1)
+
+def move_to_loot_log(filename:str,player,sr_plus_sheet:dict):
+    log_file = rw_csv.load_sr_awarded_log()
+    log_entry_num = len(log_file)
+
+    player_name = player
+    sr_item = sr_plus_sheet[player][1]
+    bonus_roll = int(sr_plus_sheet[player][2]) + int(sr_plus_sheet[player][3])
+    date_aquired = sr_plus_sheet["columns"][-1]
+    date_added_to_log = gen_func.get_date()
+
+    new_log_row = [log_entry_num,filename,player_name,sr_item,bonus_roll,date_aquired,date_added_to_log]
+    rw_csv.safe_sr_awarded_log(new_log_row)
+
+#award_through_loot_log('BWL_Test',rw_csv.load_sr_sheet('BWL_Test'))
+
+>>>>>>> Stashed changes
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_plus_sheet:dict):
     if len(sr_plus_sheet["columns"])  >= 12: #8weeks/raids ~ 2 months
@@ -304,14 +452,20 @@ def make_new_entry(filename,sr_plus_sheet:dict):
         player_dict = rw_csv.read_csv_file_players()
         
         attendese = raid_attendance.get_raid_attendees()
+<<<<<<< Updated upstream
         
         #change character name to player name
         player_attended = [find_player_by_char(character, player_dict) for character in attendese]
+=======
+        raidres_import = raid_res_import.get_soft_reserve_players()
+        raidres_dict, not_attended = raid_attendance.intersect_raidres_and_attendees(attendese,raidres_import)
+>>>>>>> Stashed changes
         
         sr_plus_sheet["columns"].append(get_date)
 
         for player in sr_plus_sheet:
             if player != "columns":
+<<<<<<< Updated upstream
                 if player in player_attended:
                     player_attended.remove(player)
                     if sr_plus_sheet[player][1] == "Nothing":
@@ -324,6 +478,22 @@ def make_new_entry(filename,sr_plus_sheet:dict):
         if player_attended != []:
             print(f"{player_attended}: need to be added to sheet")
             add_players_to_sheet(player_attended, sr_plus_sheet, player_dict)
+=======
+                if player in attendese:
+                    if sr_plus_sheet[player][1] not in raidres_dict.get(player):
+                        print(f'{player} changed SR+ ?')
+                    else:
+                        attendese.remove(player)
+                        sr_plus_sheet[player].append("present")
+                else:
+                    sr_plus_sheet[player].append("absent")
+                #new calced prev bonus = calculate(old_sheet[player][5:] + sr_plus_sheet[player][6])
+                #sr_plus_sheet[player][3] = difference old prev bonus new prev bonus ?
+
+        if attendese != []:
+            print(f"{attendese}: need to be added to sheet")
+            add_players_to_sheet(filename, attendese, sr_plus_sheet, player_dict)
+>>>>>>> Stashed changes
             pass #add player to sheet
         rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
     return sr_plus_sheet
