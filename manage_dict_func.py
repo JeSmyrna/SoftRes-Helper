@@ -22,6 +22,43 @@ def combine_character_names(character_names: list) -> str:
         name_string = str(character_names[0])
         return name_string
 
+
+def add_new_player(char_name:str,player_dict:dict):
+    general_functions.print_line(10)
+    print(f'''
+[1] Add {char_name} as Player
+[2] Add {char_name} as Alt
+[3] Nevermind''')
+    general_functions.print_line(10)
+    ask_user = input('Option: ')
+    if ask_user == '1':
+        player_dict[char_name] = char_name
+        pass
+    
+    elif ask_user == '2':
+        print_dictionary(player_dict)
+        general_functions.print_line(20)
+        while True:
+            ask_user_2 = input('Add to Player: ')
+            try:
+                char_list = str(player_dict.get(ask_user_2)).split('.')
+                char_list.append(char_name)
+                char_str = combine_character_names(char_list)
+                player_dict.update({ask_user_2:char_str})
+                break
+            except KeyError:
+                print(f'Player {ask_user_2} does not exist')
+            except:
+                print('mg_dict_func_0001')
+        pass
+        
+    elif ask_user == '3':
+        print('going back...')
+        time.sleep(1)
+        return
+    
+    rw_csv.write_csv_file_players(player_dict)
+
 #add new players to dictionary, looping till user ends the loop with key - "q"
 def add_new_players(player_dict:dict):
     while True:
