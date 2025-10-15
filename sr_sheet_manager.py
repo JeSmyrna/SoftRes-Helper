@@ -132,7 +132,7 @@ def sheet_manager_main(raid_sheet,filename):
         #make new entry in SR sheet
         elif user_input == "5":
             general_functions.print_menu_title(f"New Entry to {filename}")
-            raid_sheet = sr_sheet_manager_func.make_new_entry(filename,raid_sheet)
+            raid_sheet = sr_sheet_manager_func.make_entry(filename,raid_sheet)
             general_functions.print_line()
 
         elif user_input == "6":

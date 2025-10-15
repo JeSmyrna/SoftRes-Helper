@@ -581,7 +581,7 @@ loot_log.txt''')
     print('Saving SR+ Sheet...')
     time.sleep(1)
     rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
-    return
+    return sr_plus_sheet
 
 def check_if_alt_in_sheet(character:str,sr_sheet:dict) -> tuple[bool,str,list]:
     player_dict = rw_csv.read_csv_file_players()
