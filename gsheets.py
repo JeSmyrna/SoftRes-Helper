@@ -7,13 +7,19 @@ def gspread_overwrite(link:str,row_data:dict,start_cell:str = 'A1'):
     gc = gspread.oauth()
     sh = gc.open_by_url(f'{link}')
     worksheet = sh.get_worksheet(1)
-
-    end_col_row = calc_sheet_length(row_data,start_cell)
+    data_no_nothing = {}
+    for row in row_data:
+        if row_data[row][1] == 'Nothing':
+            pass
+        else:
+            data_no_nothing.update({row:row_data[row]})
+    
+    end_col_row = calc_sheet_length(data_no_nothing,start_cell)
     lists = []
 
-    for entry in row_data:
+    for entry in data_no_nothing:
+        #ignore player who have no SR+
         lists.append(row_data[entry])
-
     worksheet.update(lists, f'{start_cell}:{end_col_row}')
 
 #function is here just for testing
@@ -39,7 +45,7 @@ def calc_sheet_length( sr_sheet:dict, start_cell:str = 'A1'):
 def testing_input():
     entered_url = input('GSheet URL: ')
     entered_starting_cell = input('Starting Cell (Header:Player -> etc) like "A1": ')
-    data = load_sr_sheet_data('BWL_Test')
+    data = load_sr_sheet_data('Test')
     gspread_overwrite(entered_url,data,entered_starting_cell)
 
 testing_input()
