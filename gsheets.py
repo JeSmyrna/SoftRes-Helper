@@ -11,6 +11,9 @@ def gspread_overwrite(link:str,row_data:dict,start_cell:str = 'A1'):
     for row in row_data:
         if row_data[row][1] == 'Nothing':
             pass
+        elif '-' in row_data[row][1]:
+            row_data[row][1] = str(row_data[row][1]).replace(' - ',', ')
+            data_no_nothing.update({row:row_data[row]})
         else:
             data_no_nothing.update({row:row_data[row]})
     
