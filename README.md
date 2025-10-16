@@ -55,11 +55,11 @@ Manage SR+ sheets:
 - add players manually to SR+ Sheets [x]
 - get the attendance [x]
 - look for the received loot [x]
-- enter the "raid date" what "raid" and save a log : Data\raidtable-name\date-raid-log.txt (intersection data) [x]
+- enter the "raid date" what "raid" and save a log [x]
 - check if one of the players got their SR+ loot, push the entry to a log [x]
 - delete player from SR+ Sheets [x]
 - add to the bonus roll [x]
-- check the soft reserved items with the sheet to see if any player changed their SR+ : reset bonus roll to 0 [?]
+- check the soft reserved items with the sheet to see if any player changed their SR+ : reset bonus roll to 0 [x]
 - check the loot tracker to see which player got their SR+, manual confirmation [x]
 - check when the player attended raid, if longer than 2 weeks : Bonus roll -5 [x]
 - edit player entries: SR+ Item, prev rolls, days attended (Bonus roll gets automatically calculated, so no edit possible) [ ]
@@ -73,4 +73,4 @@ Manage SR+ sheets:
 - style the sheet for readability [x]
 
 SQL Databank connection: [?]
-- can do, not yet sure if needed. Sticking with base functions (Priority Top to Bottom)
+- can do, not yet sure if needed. Sticking with base functions
