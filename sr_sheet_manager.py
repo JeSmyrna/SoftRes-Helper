@@ -13,16 +13,17 @@ sr_sheets = []
 
 menu_option = [
     "[0] return to main menu",
-    "-",
+    "",
     "[1] load raid sheet", #choose what sheet to load
     "[2] create new raid SR+ sheet", # create a new SR+ sheet with choosen name, maybe people manage multiple guilds SR sheets so get the name ""
     "[3] print SR+ Sheet",
     "[4] export to gsheet",
-    "-",
+    "",
     "[5] make new entry",
-    "[6] add player to sheet",
-    "[7] Delete Player SR+",
-    "-",
+    "",
+    "--- manual changes ---",
+    "[6] Delete Player SR+",
+    "[7] add player to sheet",
     "[8] Award Player SR+",
     "[9] Award SR+ with loot log"
     
@@ -151,13 +152,14 @@ def sheet_manager_main(raid_sheet,filename):
             raid_sheet = sr_sheet_manager_func.make_entry(filename,raid_sheet)
             general_functions.print_line()
 
+        
         elif user_input == "6":
-            sr_sheet_manager_func.add_players_manual_to_sheet(filename,raid_sheet)
+            sr_sheet_manager_func.delete_player_manually_from_sheet(filename,raid_sheet)
             general_functions.print_line()
             file_edited = True
             break
         elif user_input == "7":
-            sr_sheet_manager_func.delete_player_manually_from_sheet(filename,raid_sheet)
+            sr_sheet_manager_func.add_players_manual_to_sheet(filename,raid_sheet)
             general_functions.print_line()
             file_edited = True
             break
