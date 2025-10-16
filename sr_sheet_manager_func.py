@@ -386,8 +386,16 @@ def award_through_loot_log(filename:str, sr_plus_sheet:dict):
     gen_func.print_menu_title("Award through Loot Log")
     text_file = rw_csv.load_text_file('loot_log',20)
     final_loot_log = []
+
+    #special cases - crafting items
+    exception_list = ['Formula','Recipe','Plans']
+
     for line in text_file:
         edited_line = line.split(": ")
+        #catch special naming conventions for carfting items
+        if edited_line[0] in exception_list:
+            item_name = ': '.join([edited_line[0],edited_line[1]])
+            edited_line = [item_name,edited_line[-1]]
         traded_line = edited_line[1].split(" > ")
         edited_line.pop(1)
         if len(traded_line) > 1:
@@ -398,7 +406,7 @@ def award_through_loot_log(filename:str, sr_plus_sheet:dict):
         else:
             edited_line.insert(0,traded_line[0])
             final_loot_log.append(edited_line)
-    
+
     #look for players in SR sheet with loot log
     sr_sheet_keys = sr_plus_sheet.keys()
     players_and_chars = rw_csv.read_csv_file_players()
