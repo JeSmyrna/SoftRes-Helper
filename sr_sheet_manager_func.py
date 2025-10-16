@@ -19,7 +19,7 @@ def get_line_length(row):
         line_length = 72 + (count_columns - 3) * 13
         return line_length
 
-def print_sr_plus_sheet(sr_dict):
+def print_sr_plus_sheet(sr_dict) -> dict:
     line_length = get_line_length(sr_dict["columns"])# get how long the entry is and makes the lines longer for styling
     gen_func.print_line(line_length)    
     
@@ -56,6 +56,7 @@ def print_sr_plus_sheet(sr_dict):
             else:
                 print(style_row(sr_dict[row]))
                 gen_func.print_line(line_length)
+    return sr_dict
 
 def style_row(row:list, header:bool = False):
     row_to_print = "|"
@@ -499,7 +500,7 @@ loot_log.txt''')
             else:
                 mg_dict_func.add_new_player(character,player_dict)
     char_in_dict.sort()
-    
+
     #check if player has already a character in SR+ Sheet
     for char_id in range(len(char_in_dict)):
         char = char_in_dict[char_id]
@@ -581,6 +582,7 @@ loot_log.txt''')
     fill_raid_day_attendance(char_in_dict,sr_plus_sheet)
     print('Saving SR+ Sheet...')
     time.sleep(1)
+    sr_plus_sheet = print_sr_plus_sheet(sr_plus_sheet)
     rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
     return sr_plus_sheet
 
