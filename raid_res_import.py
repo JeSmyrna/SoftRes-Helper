@@ -37,7 +37,7 @@ def get_soft_reserve_players():
 
     return raid_res_player_dict
 
-raid_res_player_dict = get_soft_reserve_players()
-for entry in raid_res_player_dict:
-    print(f"{entry} : {raid_res_player_dict[entry]}")
+#raid_res_player_dict = get_soft_reserve_players()
+#for entry in raid_res_player_dict:
+#    print(f"{entry} : {raid_res_player_dict[entry]}")
 
