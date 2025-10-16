@@ -16,25 +16,7 @@ menu_options = [
     "[4] Manage SR+ Sheet"
                 ]
 
-player_dict = {}
-
-def get_intersect():
-    while True:
-        user_entry = input("Updated >raidres.txt< and >attendeese.txt< ? (y/n): ")
-        if user_entry == "y":
-            raid_res_dict = raid_res_import.get_soft_reserve_players()
-            attendeese_list = raid_attendance.get_raid_attendees()
-
-            attended_players, not_attended_players = raid_attendance.intersect_raidres_and_attendees(attendeese_list,raid_res_dict)
-            print(attended_players)
-            break
-        
-        elif user_entry == "n":
-            print("Pls update >raidres.txt<")
-            time.sleep(3)
-            break
-        else:
-            print("Input not recognized")       
+player_dict = {}  
 
 def mainloop():
 
