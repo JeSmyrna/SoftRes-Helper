@@ -47,6 +47,11 @@ def order_dict_alphabetically(dictionary:dict) -> dict:
     
     dict_keys = list(dictionary.keys())
     dict_keys.sort()
+
+    if 'columns' in dict_keys:
+        dict_keys.remove('columns')
+        dict_keys.insert(0,'columns')
+
     sorted_dict = {}
     for key in dict_keys:
         sorted_dict.update({key:dictionary[key]})
