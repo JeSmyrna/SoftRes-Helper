@@ -424,7 +424,7 @@ def award_through_loot_log(filename:str, sr_plus_sheet:dict):
                 if user_input == 'y':
                     found_a_srplus_loot = True
                     list_of_players.append(name)
-                    move_to_loot_log([filename,sr_plus_sheet[name],'aquried through loot log',sr_plus_sheet["columns"][-1]])
+                    move_to_loot_log([filename,sr_plus_sheet[name],'aquried through loot log',sr_plus_sheet["columns"][-1]],True)
                     sr_plus_sheet.pop(name)
                     break
                 elif user_input == 'n':
