@@ -114,7 +114,7 @@ def sheet_manager_main(raid_sheet,filename):
         elif user_input == "2":
             sr_sheet_manager_func.create_new_sr_plus_sheet()
             time.sleep(1)
-            print_available_sheets(read_write_csv.load_sr_sheets_directory())
+            break
 
         #print SR sheet
         elif user_input == "3":
@@ -133,22 +133,17 @@ def sheet_manager_main(raid_sheet,filename):
             #time.sleep(1)
         elif user_input == '4':
             general_functions.print_line()
-            print('currently unavailable')
-            time.sleep(1)
-            
-            """ask_user_export = input(f'Export current sheet {general_functions.color_text(filename,'yw')} to gsheets? (y/n): ')
+            ask_user_export = input(f'Export current sheet {general_functions.color_text(filename,'yw')} to gsheets? (y/n): ')
             if ask_user_export == 'y':
                 general_functions.print_line(20)
                 print('exporting file to gsheets...')
                 gsheets.export_to_gsheet(raid_sheet)
-                print('successfully exported')
                 time.sleep(1)
             else:
                 print('canceling export...')
                 time.sleep(1)
                 pass
-            general_functions.print_line()"""
-        
+            general_functions.print_line()
         #make new entry in SR sheet
         elif user_input == "5":
             general_functions.print_menu_title(f"New Entry to {filename}")
