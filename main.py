@@ -74,6 +74,8 @@ def mainloop():
                     manage_dict_func.add_characters_to_player(player_dict)
                 else:
                     print("invalid input")
+
+                player_dict = general_functions.order_dict_alphabetically(player_dict)
                 read_write_csv.write_csv_file_players(player_dict)
 
             elif user_entry == 2:
@@ -93,6 +95,8 @@ def mainloop():
                     read_write_csv.write_csv_file_players(player_dict)
                 else:
                     print("invalid input")
+                    
+                player_dict = general_functions.order_dict_alphabetically(player_dict)
                 read_write_csv.write_csv_file_players(player_dict)
             
             elif user_entry == 3:
