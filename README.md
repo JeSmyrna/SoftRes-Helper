@@ -1,8 +1,44 @@
 # SoftRes-Helper
 privat project working on a SR+ sheet helper
 
-At the moment, this program only manages users and can give the intersect of players
-who have put an SR in raidres and were present at raid
+This program can now manage users and their alts.
+- Add player, Add character to player
+- Delete player or Delete character alt
+- print the whole dictionary to show all the players and their characters
+
+Tool can now manage SR+ sheets in form of csv files.
+- Create new sheets (Do that for first time users), fill with column names
+- print the whole sheet to show all the SR+ of every player.
+  Will show you the last 6 raid days attendance, if sheet has to many raid days recorded
+- export to google spread sheet (currently not working)
+
+SR+ Sheet - Make New Entry
+- make new entry (reads raidres export, attendeese and lootlog), asks if you have updated those files.
+- It then looks who was there in attendeese and gets the soft reserve from the raidres
+- It checks if player exists in player dictionary and asks you to add them. Either as player or alt.
+- It checks if an alt of player already has a SR+ in this sheet and asks if you wanna replace the current SR+
+  if they haven't reserved the same items. Will move it to the log file with a note 'replaced'
+- It checks if player is not yet in the Sheet and you can choose what to put in (item 1, item 2, nothing)
+  Note: "Nothing" is for players who don't want anything or have reserved a mount.
+        So the tool wont ask you to add this character everytime.
+- Checks if players reserved same item to not loose their SR+
+- Asks you to give it a date (recommended) to name the new column entry
+- It checks after this the lootlog to see if anyone has got their SR+
+- if thats the case it asks you if you wanna move it to the log file
+- After everything it will fill anyones attendance for the day with (absent/present)
+  and calc the new bonus roll for next raid
+
+Manual editing:
+- add new player manually and fill all days with empty attendance
+- delete player from sheet, move it to the logfile with the note 'deleted'
+- award a player the SR+ and move it to the logfile
+- award through loot log again, if needed
+
+This program is hardcoded for the loot rules of Stonewall Inn.
+- for every 2 weeks of not attending adds -5 to the Bonusroll
+- 2 SR for each raid, one of them is the SR+ and has to be always the same, even attending with an alt
+- no double SR
+- no SR+ on mounts (can be ignored with this tool)
 
 Current and future features:
 
