@@ -6,7 +6,13 @@ raid_res_player_dict = {}
 def format_sr_players(user_entry):
     player_list = user_entry.split(": ")
     player_list.pop(0)
+    player_list = [': '.join(player_list)]
     player_item = str(player_list[0]).split(" - ")
+    if len(player_item) > 2:
+        formula_name = player_item[1] + ' - ' + player_item[2]
+        player_name = player_item[0]
+        player_item.clear()
+        player_item = [player_name,formula_name]
     return player_item 
 
 def get_soft_reserve_players():
@@ -31,6 +37,7 @@ def get_soft_reserve_players():
 
     return raid_res_player_dict
 
-#for entry in raid_res_player_dict:
-#    print(f"{entry} : {raid_res_player_dict[entry]}")
+raid_res_player_dict = get_soft_reserve_players()
+for entry in raid_res_player_dict:
+    print(f"{entry} : {raid_res_player_dict[entry]}")
 
