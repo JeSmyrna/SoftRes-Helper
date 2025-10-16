@@ -59,6 +59,7 @@ def mainloop():
                 break                
 
             elif user_entry == 1:
+                manage_dict_func.print_dictionary(player_dict)
                 general_functions.print_line()
                 print("[1] Add new player")
                 print("[2] Add new characters")
@@ -73,6 +74,7 @@ def mainloop():
                     manage_dict_func.add_characters_to_player(player_dict)
                 else:
                     print("invalid input")
+                read_write_csv.write_csv_file_players(player_dict)
 
             elif user_entry == 2:
                 general_functions.print_line()
@@ -91,6 +93,7 @@ def mainloop():
                     read_write_csv.write_csv_file_players(player_dict)
                 else:
                     print("invalid input")
+                read_write_csv.write_csv_file_players(player_dict)
             
             elif user_entry == 3:
                 #player_dict = read_write_csv.read_csv_file_players()
