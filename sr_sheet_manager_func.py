@@ -68,7 +68,7 @@ def style_row(row:list, header:bool = False):
             column += 1
         #Item
         elif column == 1:
-            item_name = str(value).replace(' - ', ', ')
+            item_name = str(value).replace('.', ', ')
             row_to_print += f'{item_name}{(column_length - len(item_name)) * " "}|'
             column += 1
 
@@ -554,7 +554,7 @@ loot_log.txt''')
             if sr_plus_sheet[char][1] == 'Nothing':
                 pass
             
-            elif str(sr_plus_sheet[char][1]).replace(' - ',', ') not in raidres.get(char):
+            elif str(sr_plus_sheet[char][1]).replace('.',', ') not in raidres.get(char):
                 print(f"Player {gen_func.color_text(char,'yw')} didn't reserve the same SR+")
                 ask_user_2 = input('Choose new SR+ ? (y/n): ')
                 while True:
