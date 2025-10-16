@@ -449,7 +449,7 @@ def award_through_loot_log(filename:str, sr_plus_sheet:dict):
         print(f'No SR+ awarded for {filename} on the {sr_plus_sheet["columns"][-1]}...')
         time.sleep(1)
 
-def move_to_loot_log(player:list):
+def move_to_loot_log(player:list,malus:bool = False):
     """
     List items that are needed:
 
@@ -466,7 +466,9 @@ def move_to_loot_log(player:list):
     filename = player[0]
     player_name = player[1][0]
     sr_item = player[1][1]
-    bonus_roll = int(player[1][3])
+    bonus_roll = int(player[1][3])#because of awarding through log
+    if malus:
+        bonus_roll -= 10
     log_note = player[2]
     date_added_to_log = gen_func.get_date()
 
@@ -592,6 +594,15 @@ loot_log.txt''')
     time.sleep(1)
     sr_plus_sheet = print_sr_plus_sheet(sr_plus_sheet)
     rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
+
+    #add func to check loot log before adding new entry
+    gen_func.print_line(10)
+    print('Looking through loot log...')
+    time.sleep(1)
+    award_through_loot_log(filename,sr_plus_sheet)
+    sr_plus_sheet = print_sr_plus_sheet(sr_plus_sheet)
+    rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
+
     return sr_plus_sheet
 
 def check_if_alt_in_sheet(character:str,sr_sheet:dict) -> tuple[bool,str,list]:
