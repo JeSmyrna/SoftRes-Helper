@@ -39,7 +39,7 @@ def get_intersect():
 def mainloop():
 
     print("Loading players...")
-    player_dict = read_write_csv.read_csv_file_players()
+    player_dict = general_functions.order_dict_alphabetically(read_write_csv.read_csv_file_players())
     
     while True:
         general_functions.print_menu_title("Main Menu")
@@ -93,7 +93,7 @@ def mainloop():
                     print("invalid input")
             
             elif user_entry == 3:
-                player_dict = read_write_csv.read_csv_file_players()
+                #player_dict = read_write_csv.read_csv_file_players()
                 manage_dict_func.print_dictionary(player_dict)
 
             elif user_entry == 4:

@@ -42,3 +42,12 @@ def color_text(text:str,color:str) -> str:
         return colored_text
     else:
         print("color option: rd, yw, gr, bl, blwb")
+
+def order_dict_alphabetically(dictionary:dict) -> dict:
+    
+    dict_keys = list(dictionary.keys())
+    dict_keys.sort()
+    sorted_dict = {}
+    for key in dict_keys:
+        sorted_dict.update({key:dictionary[key]})
+    return sorted_dict
