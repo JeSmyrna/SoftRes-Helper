@@ -211,6 +211,7 @@ def delete_player(player_dict:dict):
             
             else:
                 print("invalid input")
+        general_functions.print_line()
 
 #Checking if key already exists in dictionary
 def check_if_player_exists(playername: str, player_dict: dict) -> bool:

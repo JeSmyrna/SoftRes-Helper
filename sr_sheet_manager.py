@@ -16,7 +16,7 @@ menu_option = [
     "",
     "[1] load raid sheet", #choose what sheet to load
     "[2] create new raid SR+ sheet", # create a new SR+ sheet with choosen name, maybe people manage multiple guilds SR sheets so get the name ""
-    "[3] print SR+ Sheet",
+    "[3] print SR+ Sheet",            
     "[4] export to gsheet",
     "",
     "[5] make new entry",
@@ -133,7 +133,10 @@ def sheet_manager_main(raid_sheet,filename):
             #time.sleep(1)
         elif user_input == '4':
             general_functions.print_line()
-            ask_user_export = input(f'Export current sheet {general_functions.color_text(filename,'yw')} to gsheets? (y/n): ')
+            print('currently unavailable')
+            time.sleep(1)
+            
+            """ask_user_export = input(f'Export current sheet {general_functions.color_text(filename,'yw')} to gsheets? (y/n): ')
             if ask_user_export == 'y':
                 general_functions.print_line(20)
                 print('exporting file to gsheets...')
@@ -144,7 +147,7 @@ def sheet_manager_main(raid_sheet,filename):
                 print('canceling export...')
                 time.sleep(1)
                 pass
-            general_functions.print_line()
+            general_functions.print_line()"""
         
         #make new entry in SR sheet
         elif user_input == "5":
