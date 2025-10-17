@@ -1,4 +1,3 @@
-import time
 import read_write_csv as rw_csv
 
 raid_res_player_dict = {}
@@ -37,7 +36,30 @@ def get_soft_reserve_players():
 
     return raid_res_player_dict
 
-#raid_res_player_dict = get_soft_reserve_players()
+def get_players_sr_and_comments():
+    raidres_list = rw_csv.load_raidres('raidres')
+    raid_res_player_dict = {}
+
+    #make key list
+    keys = [attendee[1] for attendee in raidres_list if attendee[1] != 'Attendee']
+    keys.sort()
+    for key in keys:
+        items = []
+        comments = []
+        for item in raidres_list:
+            if key == item[1]:
+                items.append(item[0])
+                comments.append(item[2])
+        if len(items) == 1:
+            items.append(items[0])
+            comments.append('')
+        items.extend(comments)
+        raid_res_player_dict.update({key:items})
+    
+    return raid_res_player_dict
+
+
+#raid_res_player_dict = get_players_sr_and_comments()
 #for entry in raid_res_player_dict:
 #    print(f"{entry} : {raid_res_player_dict[entry]}")
 
