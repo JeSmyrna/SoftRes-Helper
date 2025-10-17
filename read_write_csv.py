@@ -38,6 +38,14 @@ def load_sr_sheet(filename) -> dict:
         print("file does not exist")
         return sr_sheet_dict
 
+def load_raidres(filename:str) -> list:
+    raidres_list_items = []
+    with open (f'{filename}.csv',newline='') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            raidres_list_items.append(row)
+    return raidres_list_items
+
 def load_sr_sheets_directory():
     list_of_sheets = []
     with open(f'Data/raid_directory.txt', newline='') as sr_directory:
