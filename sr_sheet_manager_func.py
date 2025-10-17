@@ -242,7 +242,7 @@ def fill_raid_day_attendance(attendance:list,sr_plus_sheet:dict):
                 row.append('present')
                 sr_plus_sheet.update({player:row})
             else:
-                row.append('abssent')
+                row.append('absent')
                 sr_plus_sheet.update({player:row})
 
 def fill_past_days(list_part_a:list, sr_plus_dict:dict, attended_last_raid:bool = True) -> list:
