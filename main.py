@@ -1,5 +1,3 @@
-import raid_attendance
-import raid_res_import
 import read_write_csv
 import manage_dict_func
 import sr_sheet_manager

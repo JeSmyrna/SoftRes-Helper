@@ -1,4 +1,5 @@
 import gspread
+import general_functions as gen_func
 
 alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
 
@@ -68,6 +69,6 @@ def export_to_gsheet(sr_plus_sheet:dict):
         success = gspread_overwrite(entered_url,sr_plus_sheet,entered_starting_cell,entered_worksheet)
 
     if success:
-        print('successfully exported')
+        print(gen_func.color_text('successfully exported','gr'))
     else:
-        print('export failed')
+        print(gen_func.color_text('export failed','rd'))

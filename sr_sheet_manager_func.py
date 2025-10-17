@@ -298,7 +298,8 @@ def delete_player_manually_from_sheet(filename:str, sr_plus_sheet:dict):
     
 def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name 
     attendeese = raid_attendance.get_raid_attendees()
-    raidres = raid_res_import.get_soft_reserve_players()
+    #raidres = raid_res_import.get_soft_reserve_players()
+    raidres = raid_res_import.get_players_sr_and_comments()
     
     attended_players, not_attended_players = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
     items = attended_players.get(player)
@@ -307,11 +308,10 @@ def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name
 
     else:
         print(f'{gen_func.color_text(player,'yw')} raidres: {gen_func.color_text(items[0],'yw')} and {gen_func.color_text(items[1],'yw')}')
-        if len(items) < 2:
-                items.append('Nothing')
+        longest_item = max([len(items[0]),len(items[1])]) + 5
         print(f"""
-[1] {items[0]}
-[2] {items[1]}
+[1] {items[0]}{(longest_item - len(items[0])) * ' '}- "{items[2]}"
+[2] {items[1]}{(longest_item - len(items[1])) * ' '}- "{items[3]}"
 [3] Nothing
 """)
         while True:
@@ -424,7 +424,7 @@ def award_through_loot_log(filename:str, sr_plus_sheet:dict):
                 if user_input == 'y':
                     found_a_srplus_loot = True
                     list_of_players.append(name)
-                    move_to_loot_log([filename,sr_plus_sheet[name],'aquried through loot log',sr_plus_sheet["columns"][-1]],True)
+                    move_to_loot_log([filename,sr_plus_sheet[name],'aquried through loot log ',sr_plus_sheet["columns"][-1]],True)
                     sr_plus_sheet.pop(name)
                     break
                 elif user_input == 'n':
@@ -488,7 +488,8 @@ loot_log.txt''')
     if ask_user == 'y':
         attendeese = raid_attendance.get_raid_attendees()
         player_dict = rw_csv.read_csv_file_players()
-        raidres = raid_res_import.get_soft_reserve_players()
+        #raidres = raid_res_import.get_soft_reserve_players()
+        raidres = raid_res_import.get_players_sr_and_comments()
         pass
     else:
         print('going back...')
