@@ -69,7 +69,7 @@ def style_row(row:list, header:bool = False):
             column += 1
         #Item
         elif column == 1:
-            item_name = str(value).replace('.', ', ')
+            item_name = str(value).strip('"')
             row_to_print += f'{item_name}{(column_length - len(item_name)) * " "}|'
             column += 1
 
@@ -152,7 +152,7 @@ def find_player_by_char(character_name:str,player_dict:dict) -> str:
         if character_name in character_list:
             #print(f"Player {player} found! with character {user_input}.")
             return character_name #player - just return charactername
-    print("Player not found in player dictionary")
+    print(f"Player {character_name} not found in player dictionary")
     return character_name
 
 def add_players_manual_to_sheet(filename,sr_plus_dict:dict) -> dict:
@@ -277,7 +277,7 @@ def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
                 
                 print(f"adding {player} to SR+ sheet...")
 
-                sr_plus_item = find_choose_sr_plus(player,player_dict)
+                sr_plus_item = f'{find_choose_sr_plus(player,player_dict)}'
 
                 gen_func.print_line()
 
@@ -503,20 +503,19 @@ loot_log.txt''')
         for character in attendeese:
             for char_list in all_characters:
                 char_list = str(char_list[1]).split('.')
-                if character in char_list:
-                    #print(f'found player {character}')
+                if character in char_list:  
                     char_in_dict.append(character)
                     attendeese.remove(character)
                     break
             else:
                 mg_dict_func.add_new_player(character,player_dict)
     char_in_dict.sort()
-
+    
     #check if player has already a character in SR+ Sheet
     for char_id in range(len(char_in_dict)):
         char = char_in_dict[char_id]
+        #print(sr_plus_sheet.keys())
         if char not in sr_plus_sheet.keys():
-            
             #check if player has alts in sheet
             is_in,char_in,data = check_if_alt_in_sheet(char,sr_plus_sheet)
             if is_in:
@@ -529,6 +528,7 @@ loot_log.txt''')
 
                 #check if player alt doesn't accumulates Bonus roll for the other chars SR+
                 if data[1] not in raid_res_item_list:
+                    #print(data[1],' - ',raid_res_item_list)
                     print(f'Player of {gen_func.color_text(char,'yw')} did not reserve the same item as their alt {gen_func.color_text(char_in,'yw')}')
                     time.sleep(1)
                     print(f'Player has already {gen_func.color_text(char_in,'yw')} in sheet. SR+ {gen_func.color_text(data[1],'yw')} with a {gen_func.color_text('Bonusroll','gr')} of {gen_func.color_text(data[3],'yw')}')
@@ -540,7 +540,7 @@ loot_log.txt''')
                             move_to_loot_log([filename,data,f'{char} replaced {char_in}',sr_plus_sheet['columns'][-1]])
                             sr_plus_sheet.pop(char_in)
                             gen_func.print_line(10)
-                            new_sr_item = find_choose_sr_plus(char,player_dict)
+                            new_sr_item = f'{find_choose_sr_plus(char,player_dict)}'
                             new_sr_entry = fill_just_past_days([char,new_sr_item,0,0],sr_plus_sheet)
                             sr_plus_sheet.update({char:new_sr_entry})
                             break
@@ -558,35 +558,42 @@ loot_log.txt''')
                     raidres.update({char_in:raidres.get(char)})
             else:
                 gen_func.print_line(10)
-                new_sr_item = find_choose_sr_plus(char,player_dict)
+                new_sr_item = f'{find_choose_sr_plus(char,player_dict)}'
                 new_sr_entry = fill_just_past_days([char,new_sr_item,0,0],sr_plus_sheet)
                 sr_plus_sheet.update({char:new_sr_entry})
         
         #finds char in SR+ Sheet
         else:
-            if sr_plus_sheet[char][1] == 'Nothing':
-                pass
+            print(f'found {char} in SR+ Sheet')
+            #print((sr_plus_sheet[char][1]),' - ',raidres.get(char))
             
-            elif str(sr_plus_sheet[char][1]).replace('.',', ') not in raidres.get(char):
-                print(f"Player {gen_func.color_text(char,'yw')} didn't reserve the same SR+")
-                ask_user_2 = input('Choose new SR+ ? (y/n): ')
-                while True:
-                    if ask_user_2 == 'y':
-                        print('moving to log')
-                        time.sleep(1)
-                        move_to_loot_log([filename,sr_plus_sheet[char],f'{char} choose new SR+',sr_plus_sheet['columns'][-1]])
-                        sr_plus_sheet.pop(char)
-                        gen_func.print_line(10)
-                        new_sr_item = find_choose_sr_plus(char,player_dict)
-                        new_sr_entry = fill_just_past_days([char,new_sr_item,0,0],sr_plus_sheet)
-                        sr_plus_sheet.update({char:new_sr_entry})
-                        break
-                    elif ask_user_2 == 'n':
-                        break
-                    else:
-                        print('try again')
-            else:
-                pass
+            try:
+                if sr_plus_sheet[char][1] == 'Nothing':
+                    pass
+
+                elif str(sr_plus_sheet[char][1]) not in raidres.get(char):
+                    print(f"Player {gen_func.color_text(char,'yw')} didn't reserve the same SR+")
+                    ask_user_2 = input('Choose new SR+ ? (y/n): ')
+                    while True:
+                        if ask_user_2 == 'y':
+                            print('moving to log')
+                            time.sleep(1)
+                            move_to_loot_log([filename,sr_plus_sheet[char],f'{char} choose new SR+',sr_plus_sheet['columns'][-1]])
+                            sr_plus_sheet.pop(char)
+                            gen_func.print_line(10)
+                            new_sr_item = f'{find_choose_sr_plus(char,player_dict)}'
+                            new_sr_entry = fill_just_past_days([char,new_sr_item,0,0],sr_plus_sheet)
+                            sr_plus_sheet.update({char:new_sr_entry})
+                            break
+                        elif ask_user_2 == 'n':
+                            break
+                        else:
+                            print('try again')
+                else:
+                    pass
+            except:
+                print(f'{char} not in raidres found')
+
     gen_func.print_line(10)
 
     #func to ask for new day and add to every entry the attendance
@@ -609,6 +616,7 @@ loot_log.txt''')
 def check_if_alt_in_sheet(character:str,sr_sheet:dict) -> tuple[bool,str,list]:
     player_dict = rw_csv.read_csv_file_players()
     all_characters = player_dict.items()
+    print(f'searching player {character}')
     for char_list in all_characters:
         char_list = str(char_list[1]).split('.')
         if character in char_list:
@@ -619,7 +627,25 @@ def check_if_alt_in_sheet(character:str,sr_sheet:dict) -> tuple[bool,str,list]:
         return False,character,[]
 
 #make_entry('Test',rw_csv.load_sr_sheet('Test'))
+def find_double_chars(attendeese:list,player_dict:dict) -> list:
 
+    dict_keys = list(player_dict.keys())
+    dict_keys.sort()
+    new_player_dict = {}
+    for key in dict_keys:
+        char_list = str(player_dict.get(key)).split('.')
+        new_player_dict.update({key:char_list})
+        
+    no_doubles = []
+    for attendee in attendeese:
+        for char_list in new_player_dict:
+            if attendee in new_player_dict[char_list]:
+                if new_player_dict[char_list][-1] != True:
+                    no_doubles.append(attendee)
+                    add_bool_list = new_player_dict[char_list].append(True)
+                else:
+                    pass
+    return no_doubles
 #new column for the SR+ Sheet
 def make_new_entry(filename,sr_plus_sheet:dict):
     #if len(sr_plus_sheet["columns"])  >= 9: #4col for player, 1col for last day of last sheet, 4 days = 9

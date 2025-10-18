@@ -75,7 +75,7 @@ def safe_sr_sheet_csv(raidname:str,sr_dict:dict):
                 for index in range(len(get_entries)):
                     #print(f'{column_list[index]} - {get_entries[index]}')
                     if column_list[index] == 'Item':
-                        changed_item_name = str(get_entries[index]).replace(', ','.')
+                        changed_item_name = f'{str(get_entries[index])}'
                         dict_row[column_list[index]] = changed_item_name
                     else:
                         dict_row[column_list[index]] = get_entries[index]
