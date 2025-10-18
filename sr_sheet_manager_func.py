@@ -424,7 +424,7 @@ def award_through_loot_log(filename:str, sr_plus_sheet:dict):
                 if user_input == 'y':
                     found_a_srplus_loot = True
                     list_of_players.append(name)
-                    move_to_loot_log([filename,sr_plus_sheet[name],'aquried through loot log ',sr_plus_sheet["columns"][-1]],True)
+                    move_to_loot_log([filename,sr_plus_sheet[name],f'lootlog: aquried on {sr_plus_sheet["columns"][-1]} ',sr_plus_sheet["columns"][-1]],True)
                     sr_plus_sheet.pop(name)
                     break
                 elif user_input == 'n':
@@ -564,7 +564,7 @@ loot_log.txt''')
         
         #finds char in SR+ Sheet
         else:
-            print(f'found {char} in SR+ Sheet')
+            #print(f'found {char} in SR+ Sheet')
             #print((sr_plus_sheet[char][1]),' - ',raidres.get(char))
             
             try:
@@ -573,6 +573,7 @@ loot_log.txt''')
 
                 elif str(sr_plus_sheet[char][1]) not in raidres.get(char):
                     print(f"Player {gen_func.color_text(char,'yw')} didn't reserve the same SR+")
+                    print(f'RaidRes: {raidres.get(char)} - On Sheet: {sr_plus_sheet[char][1]}')
                     ask_user_2 = input('Choose new SR+ ? (y/n): ')
                     while True:
                         if ask_user_2 == 'y':
@@ -616,7 +617,7 @@ loot_log.txt''')
 def check_if_alt_in_sheet(character:str,sr_sheet:dict) -> tuple[bool,str,list]:
     player_dict = rw_csv.read_csv_file_players()
     all_characters = player_dict.items()
-    print(f'searching player {character}')
+    #print(f'searching player {character}')
     for char_list in all_characters:
         char_list = str(char_list[1]).split('.')
         if character in char_list:
