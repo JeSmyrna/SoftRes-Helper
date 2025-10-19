@@ -568,12 +568,21 @@ loot_log.txt''')
             #print((sr_plus_sheet[char][1]),' - ',raidres.get(char))
             
             try:
-                if sr_plus_sheet[char][1] == 'Nothing':
-                    pass
+                if str(sr_plus_sheet[char][1]) not in raidres.get(char):
+                    print(f"Player {gen_func.color_text(char,'yw')} didn't reserve the same SR+ or had no SR+")
+                    time.sleep(1)
 
-                elif str(sr_plus_sheet[char][1]) not in raidres.get(char):
-                    print(f"Player {gen_func.color_text(char,'yw')} didn't reserve the same SR+")
-                    print(f'RaidRes: {raidres.get(char)} - On Sheet: {sr_plus_sheet[char][1]}')
+                    gen_func.print_line(20)
+                    raidres_items = raidres.get(char)
+                    sr_sheet_item = sr_plus_sheet[char][1]
+                    longest_item = max([len(raidres_items[0]),len(raidres_items[1]),len(sr_sheet_item),]) + 5
+                    print(f'''
+{raidres_items[0]}{(longest_item - len(raidres_items[0])) * ' '}- "{raidres_items[2]}"
+{raidres_items[1]}{(longest_item - len(raidres_items[1])) * ' '}- "{raidres_items[3]}"''')
+                    gen_func.print_line(20)
+                    print(f'{sr_sheet_item}{(longest_item - len(sr_sheet_item)) * ' '}- "Current SR+"')
+                    gen_func.print_line(20)
+                    
                     ask_user_2 = input('Choose new SR+ ? (y/n): ')
                     while True:
                         if ask_user_2 == 'y':
