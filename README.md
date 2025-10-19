@@ -43,7 +43,7 @@ This program is hardcoded for the loot rules of Stonewall Inn.
 
 Recommended Addons to use this tool:
 - https://github.com/Road-block/LootTracker/tree/master/LootTracker (Tracks all loot and trades)
-- https://raw.githubusercontent.com/Road-block/Select_AddOns/refs/heads/master/EkRaidAttend_2.42_11200.zip (takes not of attendeese, timed or manual while in raid)
+- https://raw.githubusercontent.com/Road-block/Select_AddOns/refs/heads/master/EkRaidAttend_2.42_11200.zip (takes note of attendeese, timed or manual while in raid)
 
 Current and future features:
 
