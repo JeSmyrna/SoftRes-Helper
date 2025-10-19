@@ -10,7 +10,7 @@ Tool can now manage SR+ sheets in form of csv files.
 - Create new sheets (Do that for first time users), fill with column names
 - print the whole sheet to show all the SR+ of every player.
   Will show you the last 6 raid days attendance, if sheet has to many raid days recorded
-- export to google spread sheet (currently not working)
+- export to google spread sheet
 
 SR+ Sheet - Make New Entry
 - make new entry (reads raidres export, attendeese and lootlog), asks if you have updated those files. -> (Import/files_to_update)
@@ -24,10 +24,11 @@ SR+ Sheet - Make New Entry
         Tool will ask you if this char/player has changed their mind about SR+ anything
 - Checks if players reserved same item to not loose their SR+
 - Asks you to give it a date (recommended) to name the new column entry
-- It checks after this the lootlog to see if anyone has got their SR+
-- if thats the case it asks you if you wanna move it to the log file
 - After everything it will fill anyones attendance for the day with (absent/present)
   and calc the new bonus roll for next raid
+- It checks after this the lootlog to see if anyone has got their SR+
+- if thats the case it asks you if you wanna move it to the log file
+
 
 Manual editing:
 - add new player manually and fill all days with empty attendance
