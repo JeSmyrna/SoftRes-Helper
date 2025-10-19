@@ -13,7 +13,7 @@ Tool can now manage SR+ sheets in form of csv files.
 - export to google spread sheet (currently not working)
 
 SR+ Sheet - Make New Entry
-- make new entry (reads raidres export, attendeese and lootlog), asks if you have updated those files.
+- make new entry (reads raidres export, attendeese and lootlog), asks if you have updated those files. -> (Import/files_to_update)
 - It then looks who was there in attendeese and gets the soft reserve from the raidres
 - It checks if player exists in player dictionary and asks you to add them. Either as player or alt.
 - It checks if an alt of player already has a SR+ in this sheet and asks if you wanna replace the current SR+
@@ -21,6 +21,7 @@ SR+ Sheet - Make New Entry
 - It checks if player is not yet in the Sheet and you can choose what to put in (item 1, item 2, nothing)
   Note: "Nothing" is for players who don't want anything or have reserved a mount.
         So the tool wont ask you to add this character everytime.
+        Tool will ask you if this char/player has changed their mind about SR+ anything
 - Checks if players reserved same item to not loose their SR+
 - Asks you to give it a date (recommended) to name the new column entry
 - It checks after this the lootlog to see if anyone has got their SR+
@@ -39,6 +40,10 @@ This program is hardcoded for the loot rules of Stonewall Inn.
 - 2 SR for each raid, one of them is the SR+ and has to be always the same, even attending with an alt
 - no double SR
 - no SR+ on mounts (can be ignored with this tool)
+
+Recommended Addons to use this tool:
+- https://github.com/Road-block/LootTracker/tree/master/LootTracker (Tracks all loot and trades)
+- https://raw.githubusercontent.com/Road-block/Select_AddOns/refs/heads/master/EkRaidAttend_2.42_11200.zip (takes not of attendeese, timed or manual while in raid)
 
 Current and future features:
 
@@ -65,11 +70,11 @@ Manage SR+ sheets:
 - edit player entries: SR+ Item, prev rolls, days attended (Bonus roll gets automatically calculated, so no edit possible) [ ]
 - use the function for replacing character names with player names, to just search for player names to clarify, if player already have an SR+ [x]
 - check if players changed their SR+ via raidres, ask user if player changed SR+, reset SR+ and only give the newest day as bonus. [x]
-- manual make copy [ ]
+- manual make copy [x]
 - if 'nothing' is reserved still record attendance but don't calculate bonus roll [x]
 
 - export to csv [x]
-- export to google sheet [?] no idea why it broke
+- export to google sheet [x]
 - style the sheet for readability [x]
 
 SQL Databank connection: [?]
