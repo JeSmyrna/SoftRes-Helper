@@ -1,6 +1,6 @@
 import time
-import general_functions
-import read_write_csv as rw_csv
+import scripts.general_functions as general_functions
+import scripts.read_write_csv as rw_csv
 
 #go through character name check for valid characters in name re.findall("[a-m]", txt)
 valid_characters = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]

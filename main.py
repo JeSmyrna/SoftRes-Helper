@@ -1,7 +1,7 @@
-import read_write_csv
-import manage_dict_func
-import sr_sheet_manager
-import general_functions
+import scripts.read_write_csv as read_write_csv
+import scripts.manage_dict_func as manage_dict_func
+import scripts.sr_sheet_manager as sr_sheet_manager
+import scripts.general_functions as general_functions
 import time
 
 

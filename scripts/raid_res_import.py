@@ -1,4 +1,4 @@
-import read_write_csv as rw_csv
+import scripts.read_write_csv as rw_csv
 
 raid_res_player_dict = {}
 
@@ -37,7 +37,7 @@ def get_soft_reserve_players():
     return raid_res_player_dict
 
 def get_players_sr_and_comments():
-    raidres_list = rw_csv.load_raidres('raidres')
+    raidres_list = rw_csv.load_raidres('Import/raidres')
     raid_res_player_dict = {}
 
     #make key list

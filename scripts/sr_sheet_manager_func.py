@@ -1,8 +1,8 @@
-import general_functions as gen_func
-import read_write_csv as rw_csv
-import raid_attendance
-import raid_res_import
-import manage_dict_func as mg_dict_func
+import scripts.general_functions as gen_func
+import scripts.read_write_csv as rw_csv
+import scripts.raid_attendance as raid_attendance
+import scripts.raid_res_import as raid_res_import
+import scripts.manage_dict_func as mg_dict_func
 
 import time
 from datetime import datetime
@@ -384,7 +384,7 @@ def award_sr_plus(filename:str, sr_plus_sheet:dict,delete_sr:bool = False):
 
 def award_through_loot_log(filename:str, sr_plus_sheet:dict):
     gen_func.print_menu_title("Award through Loot Log")
-    text_file = rw_csv.load_text_file('loot_log',20)
+    text_file = rw_csv.load_text_file('Import/loot_log',20)
     final_loot_log = []
 
     #special cases - crafting items
@@ -582,7 +582,7 @@ loot_log.txt''')
                     gen_func.print_line(20)
                     print(f'{sr_sheet_item}{(longest_item - len(sr_sheet_item)) * ' '}- "Current SR+"')
                     gen_func.print_line(20)
-                    
+
                     ask_user_2 = input('Choose new SR+ ? (y/n): ')
                     while True:
                         if ask_user_2 == 'y':

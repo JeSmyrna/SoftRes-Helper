@@ -1,8 +1,8 @@
 import time
-import general_functions
-import read_write_csv
-import sr_sheet_manager_func
-import gsheets
+import scripts.general_functions as general_functions
+import scripts.read_write_csv as read_write_csv
+import scripts.sr_sheet_manager_func as sr_sheet_manager_func
+import scripts.gsheets as gsheets
 
 sr_plus_dict = {}
 sr_plus_dict_archive = {}

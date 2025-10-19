@@ -1,9 +1,7 @@
-import raid_res_import
-
 def get_raid_attendees():
     attendees_list = []
 
-    with open("attendeese.txt") as file_in:
+    with open("Import/attendeese.txt") as file_in:
         for line in file_in:
             attendees_list.append(line.rstrip("\n"))
     attendees_list.sort()
