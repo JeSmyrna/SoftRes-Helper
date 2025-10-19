@@ -25,7 +25,8 @@ menu_option = [
     "[6] Delete Player SR+",
     "[7] add player to sheet",
     "[8] Award Player SR+",
-    "[9] Award SR+ with loot log"
+    "[9] Award SR+ with loot log",
+    "[10] Make Copy"
     
 ]
 def load_sr_sheet(filename) -> dict:
@@ -98,7 +99,6 @@ def sheet_manager_main(raid_sheet,filename):
         #show menu options, List at the top
         for option in menu_option:
             print(option)
-            time.sleep(0.1)
 
         general_functions.print_line()
         user_input = input("Choose: ")
@@ -172,6 +172,12 @@ def sheet_manager_main(raid_sheet,filename):
             general_functions.print_line()
             file_edited = True
             break
+        elif user_input == "10":
+            print('Making copy...')
+            time.sleep(1)
+            read_write_csv.safe_sr_sheet_csv(f'{general_functions.get_date()}-{filename}',raid_sheet)
+            print('Copied successfully')
+            time.sleep(1)
         else:
             print("invalid input")
 
