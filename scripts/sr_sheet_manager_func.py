@@ -593,8 +593,8 @@ loot_log.txt''')
                     print(f'{sr_sheet_item}{(longest_item - len(sr_sheet_item)) * ' '}- "Current SR+"')
                     gen_func.print_line(20)
 
-                    ask_user_2 = input('Choose new SR+ ? (y/n): ')
                     while True:
+                        ask_user_2 = input('Choose new SR+ ? (y/n): ')
                         if ask_user_2 == 'y':
                             print('moving to log')
                             time.sleep(1)
