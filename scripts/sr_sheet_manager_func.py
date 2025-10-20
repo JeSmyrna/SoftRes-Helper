@@ -495,6 +495,16 @@ loot_log.txt''')
         print('going back...')
         time.sleep(1)
         return
+    
+    #make safe copy
+    print('Making safety copy...')
+    time.sleep(1)
+    try:
+        rw_csv.make_safety_copy(f'{gen_func.get_date()}-{filename}',filename,sr_plus_sheet)
+    except:
+        print('Failed to copy the SR+ Sheet')
+    print('Copied successfully')
+    time.sleep(1)
 
     #check if attendeese in player dict
     char_in_dict = []

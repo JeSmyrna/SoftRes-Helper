@@ -1,4 +1,5 @@
 import csv
+import os
 
 def write_csv_file_players(dictionary):
     with open('Data/player_chars.csv', 'w', newline='') as csvfile:
@@ -108,3 +109,8 @@ def load_text_file(filename,cut_text:int = 0):
         text_as_list = [line[cut_text:].rstrip("\r\n") for line in text_file]
         return text_as_list
     
+def make_safety_copy(filename:str,dir_name:str,sr_sheet:dir):
+    if not os.path.exists(f'./Data/Logs-{dir_name}'):
+        os.makedirs(f'./Data/Logs-{dir_name}')
+
+    safe_sr_sheet_csv(f'Logs-{dir_name}/{filename}',sr_sheet)

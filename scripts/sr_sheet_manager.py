@@ -175,7 +175,7 @@ def sheet_manager_main(raid_sheet,filename):
         elif user_input == "10":
             print('Making copy...')
             time.sleep(1)
-            read_write_csv.safe_sr_sheet_csv(f'{general_functions.get_date()}-{filename}',raid_sheet)
+            read_write_csv.make_safety_copy(f'{general_functions.get_date()}-{filename}',filename,raid_sheet)
             print('Copied successfully')
             time.sleep(1)
         else:
