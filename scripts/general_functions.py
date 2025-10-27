@@ -1,5 +1,5 @@
 from datetime import datetime
-import scripts.general_functions as gen_func
+
 
 line_length = 50
 
@@ -15,7 +15,7 @@ def print_menu_title(title):
 def print_loaded_file(filename):
     message = "Loaded: "
     max_length = line_length - len(filename) - len(message)
-    print("-" * max_length + message + gen_func.color_text(filename,'yw'))
+    print("-" * max_length + message + color_text(filename,'yw'))
 
 def get_user_input(question:str):
     user_input = input(f"{question}: ")
