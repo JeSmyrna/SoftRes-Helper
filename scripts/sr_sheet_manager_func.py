@@ -125,12 +125,14 @@ def calc_bonus_roll(row_entry:list) -> list:
         if row_entry[1] != 'Nothing':
             if row_entry[entry] == "present":
                 bonus_roll += 10
-                consecutive_raids_missing = 0 #reset to 0
+                #consecutive_raids_missing = 0 #reset to 0
+            elif row_entry[entry] == "half run":
+                bonus_roll += 5
             elif row_entry[entry] == "absent":
                 #see if the player was missing 2 raids in a row
                 #Idea: search player in player dictionary to see if player has attended at least one raid in 1 or 2 weeks to not get the -5
                 #not entirely sure where to safe this... maybe add an overall SR sheet that puts the week to true if player attended at least one raid
-                consecutive_raids_missing += 1
+                #consecutive_raids_missing += 1 <--- disabled
                 if consecutive_raids_missing == 2:
                     bonus_roll -= 5 #reset to 0
                     consecutive_raids_missing = 0
@@ -229,6 +231,17 @@ def fill_just_past_days(list_part_a:list, sr_plus_sheet:dict) -> list:
 
 def fill_raid_day_attendance(attendance:list,sr_plus_sheet:dict):
     ask_user_date = input('Raid Date - yyyy-mm-dd: ')
+    half_raid = False
+    while True:
+        ask_user_for_raid = input('Full Clear or half?: (y/n)')
+        if ask_user_for_raid == 'y':
+            break
+        elif ask_user_for_raid == 'n':
+            half_raid = True
+            break
+        else:
+            print('invalid input')
+    
     get_keys = sr_plus_sheet.keys()
 
     for player in get_keys:
@@ -238,7 +251,10 @@ def fill_raid_day_attendance(attendance:list,sr_plus_sheet:dict):
             sr_plus_sheet.update({'columns':row})
         else:
             row = sr_plus_sheet.get(player)
-            if player in attendance:
+            if player in attendance and half_raid == True:
+                row.append('half run')
+                sr_plus_sheet.update({player:row})
+            elif player in attendance and half_raid != True:
                 row.append('present')
                 sr_plus_sheet.update({player:row})
             else:
@@ -270,7 +286,7 @@ def fill_past_days(list_part_a:list, sr_plus_dict:dict, attended_last_raid:bool 
 #loop till every player is in the SR+ sheet
 def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
     while player_list != []:
-
+        #ask user if raid day was full clear or half clear
         for player in player_list:
 
             if mg_dict_func.check_if_player_exists(player,player_dict):
@@ -532,7 +548,7 @@ loot_log.txt''')
                 try:
                     raid_res_item_list = raidres[char]
                 except KeyError:
-                    print('couldnt find key')
+                    print('couldnt find key',' ',char)
                 except:
                     print('something else must ve gone wrong')
 
