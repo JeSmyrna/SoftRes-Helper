@@ -185,7 +185,7 @@ def add_players_manual_to_sheet(filename,sr_plus_dict:dict) -> dict:
 
             else:
                 gen_func.print_line(20)
-                sr_item = input("SR+ Item: ").capitalize()
+                sr_item = input("SR+ Item: ")
                 
                 attended = input(f'{player_name} attended last raid ? (y/n): ')
                 if attended == "y":
@@ -233,7 +233,7 @@ def fill_raid_day_attendance(attendance:list,sr_plus_sheet:dict):
     ask_user_date = input('Raid Date - yyyy-mm-dd: ')
     half_raid = False
     while True:
-        ask_user_for_raid = input('Full Clear or half?: (y/n)')
+        ask_user_for_raid = input('Full Clear? (y/n): ')
         if ask_user_for_raid == 'y':
             break
         elif ask_user_for_raid == 'n':
@@ -311,36 +311,90 @@ def add_players_to_sheet(player_list:list, sr_plus_dict:dict ,player_dict:dict):
 #delete player, add to log, make note that it got deleted + when
 def delete_player_manually_from_sheet(filename:str, sr_plus_sheet:dict):
     award_sr_plus(filename,sr_plus_sheet,True)
-    
+
+def print_player_raidres(raidreserve:list,just_show:bool = False) -> int:
+    raidres_amount = len(raidreserve) // 2
+    longest_item_name = len(max([item for item in raidreserve[0:raidres_amount]]))
+    counter = 0
+    gen_func.print_line()
+    for item in raidreserve:
+        if counter >= raidres_amount:
+            break
+        else:
+            print(f'[{counter + 1}] {item}{' ' * ((longest_item_name - len(item))+ 5)}- "{raidreserve[raidres_amount + counter]}"')
+            counter += 1
+    if just_show == False:
+        gen_func.print_line(20)
+        print(f'[{counter + 1}] Nothing')
+        gen_func.print_line()
+        return raidres_amount
+    else:
+        return
+
+
 def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name 
     attendeese = raid_attendance.get_raid_attendees()
     #raidres = raid_res_import.get_soft_reserve_players()
     raidres = raid_res_import.get_players_sr_and_comments()
-    
     attended_players, not_attended_players = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
-    items = attended_players.get(player)
-    if items == None:
-        return 'Nothing'
+    try:
+        items = attended_players[player]
+    except:
+        print(f"couldn't find {player} in raidres")
+        time.sleep(1)
+        gen_func.print_line(20)
+        return "Nothing"
+    
+    raidres_amount = print_player_raidres(items)
 
-    else:
-        print(f'{gen_func.color_text(player,'yw')} raidres: {gen_func.color_text(items[0],'yw')} and {gen_func.color_text(items[1],'yw')}')
-        longest_item = max([len(items[0]),len(items[1])]) + 5
-        print(f"""
-[1] {items[0]}{(longest_item - len(items[0])) * ' '}- "{items[2]}"
-[2] {items[1]}{(longest_item - len(items[1])) * ' '}- "{items[3]}"
-[3] Nothing
-""")
-        while True:
-                user_input = input(f"Choose SR+ for {gen_func.color_text(player,'yw')}?: ")
-                
-                if user_input == "1":
-                    return items[0]
-                elif user_input == "2":
-                    return items[1]
-                elif user_input == "3":
-                    return "Nothing"
-                else:
-                    print("invalid input")
+    while True:
+        user_input = input(f"Choose SR+ for {gen_func.color_text(player,'yw')}?: ")
+        try:
+            user_input = int(user_input) -1
+            if user_input < raidres_amount:
+                gen_func.print_line(20)
+                print(f'New SR+ for {gen_func.color_text((player),'yw')}: {gen_func.color_text(items[user_input],'yw')}')
+                return items[user_input]
+            elif user_input == raidres_amount:
+                return "Nothing"
+            else:
+                print(f"choose between 0 - {raidres_amount + 1}")
+                time.sleep(1)
+                gen_func.print_line(20)
+        except ValueError:
+            print("ERROR: input must be an integer")
+            time.sleep(1)
+            gen_func.print_line(20)
+        except:
+            print("ERROR: sr_sheet_manager_func.py - FCSRP")
+            
+#    if items == None:
+#        return 'Nothing'
+#
+#    else:
+#        print(f'{gen_func.color_text(player,'yw')} raidres: {gen_func.color_text(items[0],'yw')} and {gen_func.color_text(items[1],'yw')}')
+#        longest_item = max([len(items[0]),len(items[1]),len(items[2])]) + 5
+#        print(f"""
+#[1] {items[0]}{(longest_item - len(items[0])) * ' '}- "{items[3]}"
+#[2] {items[1]}{(longest_item - len(items[1])) * ' '}- "{items[4]}"
+#[3] {items[2]}{(longest_item - len(items[2])) * ' '}- "{items[5]}"
+#[4] Nothing
+#""")
+#        while True:
+#                user_input = input(f"Choose SR+ for {gen_func.color_text(player,'yw')}?: ")
+#                
+#                if user_input == "1":
+#                    return items[0]
+#                elif user_input == "2":
+#                    return items[1]
+#                elif user_input == "3":
+#                    return items[2]
+#                elif user_input == "4":
+#                    return "Nothing"
+#                else:
+#                    print("invalid input")
+
+
 
 def award_sr_plus(filename:str, sr_plus_sheet:dict,delete_sr:bool = False):
     gen_func.print_menu_title("SR+ Sheet")
@@ -536,7 +590,6 @@ loot_log.txt''')
             else:
                 mg_dict_func.add_new_player(character,player_dict)
     char_in_dict.sort()
-    
     #check if player has already a character in SR+ Sheet
     for char_id in range(len(char_in_dict)):
         char = char_in_dict[char_id]
@@ -548,7 +601,9 @@ loot_log.txt''')
                 try:
                     raid_res_item_list = raidres[char]
                 except KeyError:
-                    print('couldnt find key',' ',char)
+                    print(f'couldnt find key {gen_func.color_text(char,"yw")}')
+                    time.sleep(1)
+                    continue
                 except:
                     print('something else must ve gone wrong')
 
@@ -601,12 +656,14 @@ loot_log.txt''')
                     gen_func.print_line(20)
                     raidres_items = raidres.get(char)
                     sr_sheet_item = sr_plus_sheet[char][1]
-                    longest_item = max([len(raidres_items[0]),len(raidres_items[1]),len(sr_sheet_item),]) + 5
-                    print(f'''
-{raidres_items[0]}{(longest_item - len(raidres_items[0])) * ' '}- "{raidres_items[2]}"
-{raidres_items[1]}{(longest_item - len(raidres_items[1])) * ' '}- "{raidres_items[3]}"''')
+#                    longest_item = max([len(raidres_items[0]),len(raidres_items[1]),len(raidres_items[2]),len(sr_sheet_item),]) + 5
+#                    print(f'''
+#{raidres_items[0]}{(longest_item - len(raidres_items[0])) * ' '}- "{raidres_items[3]}"
+#{raidres_items[1]}{(longest_item - len(raidres_items[1])) * ' '}- "{raidres_items[4]}"
+#{raidres_items[2]}{(longest_item - len(raidres_items[2])) * ' '}- "{raidres_items[5]}"''')
+                    print_player_raidres(raidres_items,True)
                     gen_func.print_line(20)
-                    print(f'{sr_sheet_item}{(longest_item - len(sr_sheet_item)) * ' '}- "Current SR+"')
+                    print(f'{sr_sheet_item}{(len(sr_sheet_item)+5) * ' '}- "Current SR+"')
                     gen_func.print_line(20)
 
                     while True:
@@ -628,7 +685,8 @@ loot_log.txt''')
                 else:
                     pass
             except:
-                print(f'{char} not in raidres found')
+                print(f'{gen_func.color_text(char,"yw")} not found in raidres, adding with "Nothing"')
+                pass
 
     gen_func.print_line(10)
 

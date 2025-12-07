@@ -50,12 +50,11 @@ def get_players_sr_and_comments():
             if key == item[1]:
                 items.append(item[0])
                 comments.append(item[2])
-        if len(items) == 1:
+        """ if len(items) == 1:
             items.append(items[0])
-            comments.append('')
+            comments.append('') """
         items.extend(comments)
         raid_res_player_dict.update({key:items})
-    
     return raid_res_player_dict
 
 
