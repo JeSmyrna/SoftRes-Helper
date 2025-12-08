@@ -26,6 +26,13 @@ def get_date() -> str:
     return date
 
 def color_text(text:str,color:str) -> str:
+    """
+    Red = rd\n
+    Yellow = yw\n
+    Green = gr\n
+    Blue = bl\n
+    Black text on white background = blwb
+    """
     if color == "rd":
         colored_text = f'\33[31m{text}\033[0m'
         return colored_text
