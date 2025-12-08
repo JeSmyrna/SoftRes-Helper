@@ -849,22 +849,3 @@ def show_raidres_overview(raidres:dict,sr_sheet:dict):
         except:
             print(f'|{' '*15}| - |{longest_itemname * ' '}| {longest_comment * ' '}|')
         print('='*line_length)
-        #time.sleep(0.25)
-
-####################### Test Cases ##############################
-test_dict_1 = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll', '2025-09-28', '2025-09-21', '2025-09-16'],
-               'Gwynn': ['Gwynn', 'Hammer', '0', '30', 'present', 'present', 'present'],
-               'Nutbath': ['Nutbath', 'staff of awesomeness', '0', '20', 'present', 'not', 'present']}
-
-test_row = ["Hammer",10,20,"present","present","present","not","not","present","not","present","not"]
-test_dict = {"columns":["Player","prev bonus", "bonusroll", "raid", "raid", "raid", "raid", "raid", "raid", "raid", "raid", "raid"],
-             "Gwynn": test_row,
-             "Player1" : test_row,
-             "Player2" : test_row}
-
-#award_sr_plus("Test",test_dict_1)
-#add_players_manual_to_sheet(test_dict_1)
-#make_new_entry()
-#print_sr_plus_sheet(test_dict_1)
-#print(f'new bonus + previous: {calc_bonus_roll(test_row)}')
-#print(find_player_by_char(str(gen_func.get_user_input("Character")).capitalize()))
