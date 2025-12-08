@@ -667,15 +667,35 @@ loot_log.txt''')
     #this part checks the raidres import, maybe someone noted to change SR+ to a different item
     show_raidres_overview(raidres,sr_plus_sheet)
 
-    gen_func.print_line(20)
     while True:
-        ask_user_3 = input("continue (y/n): ")
-        if ask_user_3 == 'y':
+        gen_func.print_line(20)
+        print("[0] continue\n[ ] write Playername to change SR+")
+        gen_func.print_line(20)
+        ask_user_3 = input("input: ")
+        if ask_user_3 == '0':
             break
-        elif ask_user_3 == 'n':
-            pass
+        # Part not yet tested
         else:
-            print('ask_user_3: input invalid')
+            try:
+                player_sr_entry = sr_plus_sheet.get(ask_user_3)
+                player_raidres = raidres.get(ask_user_3)
+            except:
+                print("ask_user_3: couldn't find player in SR+ Sheet")
+                time.sleep(1)
+            print(f'Current SR+ of {player_sr_entry[0]}: {player_sr_entry[1]} with a Bonusroll of {player_sr_entry[3]}')
+            ask_user_4 = input(f'Choose new SR+ for {gen_func.color_text(ask_user_3,'yw')}? (y/n): ')
+            if ask_user_4 == 'y':
+                new_sr_plus = find_choose_sr_plus(ask_user_3,player_dict)
+                item_index = player_raidres.index(new_sr_plus)
+                item_comment = len(player_raidres)//2 + item_index
+                
+                move_to_loot_log([filename,player_sr_entry,f'Changed SR+ because of raidres comment "{item_comment}"',raidres['columns'][-1]])
+                
+                sr_plus_sheet.pop(ask_user_3)
+                new_sr_entry = fill_just_past_days([ask_user_3,new_sr_plus,0,0],sr_plus_sheet)
+                sr_plus_sheet.update({char:new_sr_entry})
+            else:
+                pass
     gen_func.print_line(20)
 
     #add func to check loot log before adding new entry
