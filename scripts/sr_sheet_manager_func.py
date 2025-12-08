@@ -368,33 +368,6 @@ def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name
         except:
             print("ERROR: sr_sheet_manager_func.py - FCSRP")
             
-#    if items == None:
-#        return 'Nothing'
-#
-#    else:
-#        print(f'{gen_func.color_text(player,'yw')} raidres: {gen_func.color_text(items[0],'yw')} and {gen_func.color_text(items[1],'yw')}')
-#        longest_item = max([len(items[0]),len(items[1]),len(items[2])]) + 5
-#        print(f"""
-#[1] {items[0]}{(longest_item - len(items[0])) * ' '}- "{items[3]}"
-#[2] {items[1]}{(longest_item - len(items[1])) * ' '}- "{items[4]}"
-#[3] {items[2]}{(longest_item - len(items[2])) * ' '}- "{items[5]}"
-#[4] Nothing
-#""")
-#        while True:
-#                user_input = input(f"Choose SR+ for {gen_func.color_text(player,'yw')}?: ")
-#                
-#                if user_input == "1":
-#                    return items[0]
-#                elif user_input == "2":
-#                    return items[1]
-#                elif user_input == "3":
-#                    return items[2]
-#                elif user_input == "4":
-#                    return "Nothing"
-#                else:
-#                    print("invalid input")
-
-
 
 def award_sr_plus(filename:str, sr_plus_sheet:dict,delete_sr:bool = False):
     gen_func.print_menu_title("SR+ Sheet")
@@ -702,7 +675,7 @@ loot_log.txt''')
         elif ask_user_3 == 'n':
             pass
         else:
-            print('input invalid')
+            print('ask_user_3: input invalid')
     gen_func.print_line(20)
 
     #add func to check loot log before adding new entry
