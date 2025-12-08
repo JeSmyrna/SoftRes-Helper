@@ -828,8 +828,12 @@ def create_new_sr_plus_sheet():
         rw_csv.safe_sr_sheet_csv(filename,empty_sheet)
     gen_func.print_line()
 
+
 def show_raidres_overview(raidres:dict,sr_sheet:dict):
-    
+    """
+    Prints raidres items of each attended player and their current SR+ in the sheet.\n
+    For a better overview to compare if something was overloocked.
+    """
     gen_func.print_line()
     print("Showing RaidRes sheet to double check...")
     time.sleep(2)
@@ -873,3 +877,43 @@ def show_raidres_overview(raidres:dict,sr_sheet:dict):
         except:
             print(f'|{' '*15}| - |{longest_itemname * ' '}| {longest_comment * ' '}|')
         print('='*line_length)
+
+def cut_sr_plus_sheet(sr_sheet:dict) -> dict:
+    sr_sheet_copy = sr_sheet.copy()
+    cut_till_date = ""
+    sr_sheet_columns = sr_sheet['columns']
+    columns_deleted = 0
+    cancel = False
+    #print_sr_plus_sheet(sr_sheet_copy)
+
+    for column in sr_sheet_columns[4:]:
+        sr_sheet_index = sr_sheet_columns.index(column)
+        for entry in sr_sheet_copy:
+            if entry != 'columns':
+                checked_day = (sr_sheet_copy[entry][sr_sheet_index])
+                if checked_day != '-':
+                    cancel = True
+                    break
+        
+        if cancel == False:
+            cut_till_date = sr_sheet_columns[sr_sheet_index +1]  
+        
+    list_of_days = []
+    for column in sr_sheet_columns[4:]:
+        if column == cut_till_date or cut_till_date == "":
+            break
+        else:
+            list_of_days.append(column)
+            columns_deleted += 1
+            for entry in sr_sheet_copy:
+                sr_sheet_copy[entry].pop(4)
+            
+    print_sr_plus_sheet(sr_sheet_copy)
+    if list_of_days != []:
+        print('='*50)
+        print(gen_func.color_text(f"columns deleted: {columns_deleted}",'rd') + ' - ' + f'{gen_func.color_text(list_of_days,'yw')}')
+        print('='*50)
+    else:
+        print(gen_func.color_text("Was not able to cut days off.",'yw'))
+        print('='*50)
+    return sr_sheet_copy
