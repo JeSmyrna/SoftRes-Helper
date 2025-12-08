@@ -233,7 +233,7 @@ def fill_raid_day_attendance(attendance:list,sr_plus_sheet:dict):
     ask_user_date = input('Raid Date - yyyy-mm-dd: ')
     half_raid = False
     while True:
-        ask_user_for_raid = input('Full Clear? (y/n): ')
+        ask_user_for_raid = input('Full Clear? y (+10) or n (+5): ')
         if ask_user_for_raid == 'y':
             break
         elif ask_user_for_raid == 'n':
