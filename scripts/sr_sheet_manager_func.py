@@ -688,12 +688,16 @@ loot_log.txt''')
                 new_sr_plus = find_choose_sr_plus(ask_user_3,player_dict)
                 item_index = player_raidres.index(new_sr_plus)
                 item_comment = len(player_raidres)//2 + item_index
-                
+
+                print('moving to log...')
                 move_to_loot_log([filename,player_sr_entry,f'Changed SR+ because of raidres comment "{item_comment}"',raidres['columns'][-1]])
+                time.sleep(1)
                 
                 sr_plus_sheet.pop(ask_user_3)
                 new_sr_entry = fill_just_past_days([ask_user_3,new_sr_plus,0,0],sr_plus_sheet)
                 sr_plus_sheet.update({char:new_sr_entry})
+                print(f'updated SR+ for player {ask_user_3}')
+                time.sleep(1)
             else:
                 pass
     gen_func.print_line(20)
