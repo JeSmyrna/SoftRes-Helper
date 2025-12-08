@@ -645,8 +645,6 @@ loot_log.txt''')
         
         #finds char in SR+ Sheet
         else:
-            #print(f'found {char} in SR+ Sheet')
-            #print((sr_plus_sheet[char][1]),' - ',raidres.get(char))
             
             try:
                 if str(sr_plus_sheet[char][1]) not in raidres.get(char):
@@ -656,11 +654,7 @@ loot_log.txt''')
                     gen_func.print_line(20)
                     raidres_items = raidres.get(char)
                     sr_sheet_item = sr_plus_sheet[char][1]
-#                    longest_item = max([len(raidres_items[0]),len(raidres_items[1]),len(raidres_items[2]),len(sr_sheet_item),]) + 5
-#                    print(f'''
-#{raidres_items[0]}{(longest_item - len(raidres_items[0])) * ' '}- "{raidres_items[3]}"
-#{raidres_items[1]}{(longest_item - len(raidres_items[1])) * ' '}- "{raidres_items[4]}"
-#{raidres_items[2]}{(longest_item - len(raidres_items[2])) * ' '}- "{raidres_items[5]}"''')
+
                     print_player_raidres(raidres_items,True)
                     gen_func.print_line(20)
                     print(f'{sr_sheet_item}{(len(sr_sheet_item)+5) * ' '}- "Current SR+"')
@@ -696,6 +690,20 @@ loot_log.txt''')
     time.sleep(1)
     sr_plus_sheet = print_sr_plus_sheet(sr_plus_sheet)
     rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
+
+    #this part checks the raidres import, maybe someone noted to change SR+ to a different item
+    show_raidres_overview(raidres,sr_plus_sheet)
+
+    gen_func.print_line(20)
+    while True:
+        ask_user_3 = input("continue (y/n): ")
+        if ask_user_3 == 'y':
+            break
+        elif ask_user_3 == 'n':
+            pass
+        else:
+            print('input invalid')
+    gen_func.print_line(20)
 
     #add func to check loot log before adding new entry
     gen_func.print_line(10)
@@ -822,6 +830,53 @@ def create_new_sr_plus_sheet():
         rw_csv.safe_sr_sheets_directory(sr_sheets)
         rw_csv.safe_sr_sheet_csv(filename,empty_sheet)
     gen_func.print_line()
+
+def show_raidres_overview(raidres:dict,sr_sheet:dict):
+    
+    gen_func.print_line()
+    print("Showing RaidRes sheet to double check...")
+    time.sleep(2)
+
+    #calc longest itemname and comment
+    raidres_item_list = [raidres[sr_items] for sr_items in raidres]
+    longest_itemname = []
+    longest_comment = []
+    for item_list in raidres_item_list:
+        for i in range(0,len(item_list)//2):
+            longest_itemname.append(len(item_list[i]))
+        for i in range(len(item_list)//2,len(item_list)):
+            longest_comment.append(len(item_list[i]))
+    longest_itemname = max(longest_itemname) + 2
+    longest_comment = max(longest_comment) + 1
+    
+    header_line = "| Player Name   |Pos|"
+    header_line += 'Item Name'+(' ' * (longest_itemname - 9))
+    header_line += '| comments'+(' ' * (longest_comment - 8)) + '|'
+
+    line_length = len(header_line)
+    gen_func.print_line(line_length)
+    print(gen_func.color_text(header_line,'blwb'))
+    gen_func.print_line(line_length)
+
+    for entry in raidres:
+        count = 0
+
+        for i in range(0,len(raidres[entry])//2):
+            item_comment = raidres[entry][(len(raidres[entry])//2)+count]
+            if count == 0:
+                print(f'| {entry}{' '*(14 - len(entry))}| {count +1 } | {raidres[entry][count]}{' '*((longest_itemname - 1) - len(raidres[entry][count]))}| {item_comment}{' '*(longest_comment - len(item_comment))}|')
+                count += 1
+            else:
+                print(f'|{' '*15}| {count + 1} | {raidres[entry][count]}{' '*((longest_itemname - 1) - len(raidres[entry][count]))}| {item_comment}{' '*(longest_comment - len(item_comment))}|')
+                count += 1
+        sr_sheet_entry = sr_sheet.get(entry)
+        gen_func.print_line(line_length)
+        try:
+            print(f'|-> current SR+ | - | {gen_func.color_text(sr_sheet_entry[1],'yw')}{' '*((longest_itemname - 1) - len(sr_sheet_entry[1]))}|{longest_comment * ' '} |')
+        except:
+            print(f'|{' '*15}| - |{longest_itemname * ' '}| {longest_comment * ' '}|')
+        print('='*line_length)
+        #time.sleep(0.25)
 
 ####################### Test Cases ##############################
 test_dict_1 = {'columns': ['Player', 'Item', 'prev_sheet', 'Bonusroll', '2025-09-28', '2025-09-21', '2025-09-16'],
