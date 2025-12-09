@@ -36,8 +36,8 @@ def get_soft_reserve_players():
 
     return raid_res_player_dict
 
-def get_players_sr_and_comments():
-    raidres_list = rw_csv.load_raidres('Import/raidres')
+def get_players_sr_and_comments(filename="raidres"):
+    raidres_list = rw_csv.load_raidres(f'Import/{filename}')
     raid_res_player_dict = {}
 
     #make key list
