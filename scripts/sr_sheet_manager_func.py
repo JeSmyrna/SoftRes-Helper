@@ -3,6 +3,7 @@ import scripts.read_write_csv as rw_csv
 import scripts.raid_attendance as raid_attendance
 import scripts.raid_res_import as raid_res_import
 import scripts.manage_dict_func as mg_dict_func
+from scripts.import_raidlogs import import_logs,safe_imported_logs
 
 import time
 from datetime import datetime
@@ -332,13 +333,17 @@ def print_player_raidres(raidreserve:list,just_show:bool = False) -> int:
         return
 
 
-def find_choose_sr_plus(player:str,player_dict:dict) -> str: #player name 
-    attendeese = raid_attendance.get_raid_attendees()
+def find_choose_sr_plus(player:str,player_dict:dict,raidres:dict,attendeese:list) -> str: #player name 
+    #attendeese = raid_attendance.get_raid_attendees()
     #raidres = raid_res_import.get_soft_reserve_players()
-    raidres = raid_res_import.get_players_sr_and_comments()
+    #raidres = raid_res_import.get_players_sr_and_comments()
     attended_players, not_attended_players = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
+    print(attended_players)
+    print(raidres)
+    print(player)
     try:
         items = attended_players[player]
+        print(items)
     except:
         print(f"couldn't find {player} in raidres")
         time.sleep(1)
@@ -425,9 +430,10 @@ def award_sr_plus(filename:str, sr_plus_sheet:dict,delete_sr:bool = False):
             print("couldn't find player")
             gen_func.print_line(20)
 
-def award_through_loot_log(filename:str, sr_plus_sheet:dict):
+def award_through_loot_log(filename:str, sr_plus_sheet:dict,loot_log):
     gen_func.print_menu_title("Award through Loot Log")
-    text_file = rw_csv.load_text_file('Import/loot_log',20)
+    #text_file = rw_csv.load_text_file('Import/loot_log',20)
+    text_file = loot_log
     final_loot_log = []
 
     #special cases - crafting items
@@ -520,10 +526,9 @@ def move_to_loot_log(player:list,malus:bool = False):
 
 def make_entry(filename:str,sr_plus_sheet:dict):
     gen_func.print_menu_title('Make New Entry')
-    print('''Have the files been updated for the new raid?
-raidres.txt
-attendeese.txt
-loot_log.txt''')
+    """ print('''Does Import folder have 3 log files?
+2 txt files one with loot in the name
+1 csv export file from raidres?''')
     
     #make sure user updated all the docs
     gen_func.print_line(10)
@@ -537,8 +542,18 @@ loot_log.txt''')
     else:
         print('going back...')
         time.sleep(1)
-        return
+        return """
     
+    gen_func.print_line(10)
+    ask_user = input('(y/n): ')
+    if ask_user == 'y':
+        sorted_list, attendeese, loot_log, raidres = import_logs()
+        player_dict = rw_csv.read_csv_file_players()
+    else:
+        print('going back...')
+        time.sleep(1)
+        return
+
     #make safe copy
     print('Making safety copy...')
     time.sleep(1)
@@ -567,6 +582,7 @@ loot_log.txt''')
     for char_id in range(len(char_in_dict)):
         char = char_in_dict[char_id]
         #print(sr_plus_sheet.keys())
+        #print(char)
         if char not in sr_plus_sheet.keys():
             #check if player has alts in sheet
             is_in,char_in,data = check_if_alt_in_sheet(char,sr_plus_sheet)
@@ -594,7 +610,7 @@ loot_log.txt''')
                             move_to_loot_log([filename,data,f'{char} replaced {char_in}',sr_plus_sheet['columns'][-1]])
                             sr_plus_sheet.pop(char_in)
                             gen_func.print_line(10)
-                            new_sr_item = f'{find_choose_sr_plus(char,player_dict)}'
+                            new_sr_item = f'{find_choose_sr_plus(char,player_dict,raidres,attendeese)}'
                             new_sr_entry = fill_just_past_days([char,new_sr_item,0,0],sr_plus_sheet)
                             sr_plus_sheet.update({char:new_sr_entry})
                             break
@@ -612,7 +628,7 @@ loot_log.txt''')
                     raidres.update({char_in:raidres.get(char)})
             else:
                 gen_func.print_line(10)
-                new_sr_item = f'{find_choose_sr_plus(char,player_dict)}'
+                new_sr_item = f'{find_choose_sr_plus(char,player_dict,raidres,attendeese)}'
                 new_sr_entry = fill_just_past_days([char,new_sr_item,0,0],sr_plus_sheet)
                 sr_plus_sheet.update({char:new_sr_entry})
         
@@ -641,7 +657,7 @@ loot_log.txt''')
                             move_to_loot_log([filename,sr_plus_sheet[char],f'{char} choose new SR+',sr_plus_sheet['columns'][-1]])
                             sr_plus_sheet.pop(char)
                             gen_func.print_line(10)
-                            new_sr_item = f'{find_choose_sr_plus(char,player_dict)}'
+                            new_sr_item = f'{find_choose_sr_plus(char,player_dict,raidres,attendeese)}'
                             new_sr_entry = fill_just_past_days([char,new_sr_item,0,0],sr_plus_sheet)
                             sr_plus_sheet.update({char:new_sr_entry})
                             break
@@ -685,7 +701,7 @@ loot_log.txt''')
             print(f'Current SR+ of {player_sr_entry[0]}: {player_sr_entry[1]} with a Bonusroll of {player_sr_entry[3]}')
             ask_user_4 = input(f'Choose new SR+ for {gen_func.color_text(ask_user_3,'yw')}? (y/n): ')
             if ask_user_4 == 'y':
-                new_sr_plus = find_choose_sr_plus(ask_user_3,player_dict)
+                new_sr_plus = find_choose_sr_plus(ask_user_3,player_dict,raidres,attendeese)
                 item_index = player_raidres.index(new_sr_plus)
                 item_comment = len(player_raidres)//2 + item_index
 
@@ -706,9 +722,11 @@ loot_log.txt''')
     gen_func.print_line(10)
     print('Looking through loot log...')
     time.sleep(1)
-    award_through_loot_log(filename,sr_plus_sheet)
+    award_through_loot_log(filename,sr_plus_sheet,loot_log)
     sr_plus_sheet = print_sr_plus_sheet(sr_plus_sheet)
     rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
+
+    safe_imported_logs(filename,sr_plus_sheet['columns'][-1],sorted_list)    
 
     return sr_plus_sheet
 

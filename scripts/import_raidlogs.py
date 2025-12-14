@@ -60,7 +60,10 @@ def manually_choose_files(input_list:list) -> list:
             sorted_list.insert(0,file)
     return sorted_list
 
-def import_logs() -> tuple[list,list,dict]:
+def import_logs() -> tuple[list,list,list,dict]:
+    """
+    return: sorted list, attendeese, loot log, raidres
+    """
     import_list = os.listdir("./Import/")
     sorted_list = sort_files_attendance_loot_raidres(import_list)
     while True:
@@ -78,32 +81,22 @@ def import_logs() -> tuple[list,list,dict]:
             sorted_list = manually_choose_files(import_list)
     
     attendeese = load_text_file(f'./Import/{sorted_list[0][:-4]}')
-    loot_log = load_text_file(f'./Import/{sorted_list[1][:-4]}')
+    loot_log = load_text_file(f'./Import/{sorted_list[1][:-4]}',20)
     raidres = get_players_sr_and_comments(f'{sorted_list[2][:-4]}')
     
-    return attendeese,loot_log,raidres
+    return sorted_list,attendeese,loot_log,raidres
 
-def safe_imported_logs(filename:str,date:str,logs:tuple):
+def safe_imported_logs(filename:str,date:str,logs):
 
-    folder_content = os.listdir("./Import")
-    csv_file = [file for file in folder_content if file[-3:] == 'csv'][0]
-    print(csv_file)
-    identifier = ['','Loot',csv_file]
-    filepath = filepath = f'./Data/Logs-{filename}/Logs'
+    filepath = f'./Data/Logs-{filename}/Logs'
 
     if not os.path.exists(filepath):
         os.makedirs(filepath)
 
-    for log in range(0,len(logs)-1):
-        with open(f'{filepath}/{filename}_{date}_{identifier[log]}.txt','w',encoding='utf-8') as file:
-            for row in logs[log]:
-                file.write(f'{row}\n')
+    shutil.move(f"./Import/{logs[0]}",f'{filepath}/{filename}_{date}.txt')
+    shutil.move(f"./Import/{logs[1]}",f'{filepath}/{filename}_{date}_Loot.txt')
+    shutil.move(f'./Import/{logs[2]}',f'{filepath}/{filename}_{date}_{logs[2][-10:]}')
     
-    shutil.move(f'./Import/{csv_file}',f'{filepath}/{filename}_{date}_{identifier[2][-10:]}')
-    
-    folder_content = os.listdir("./Import")
-    for file in folder_content:
-        os.remove(f'./Import/{file}')
     print(f"saved logs in: {filepath}")
     
     
