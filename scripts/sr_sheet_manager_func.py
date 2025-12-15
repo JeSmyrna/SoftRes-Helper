@@ -46,17 +46,17 @@ def print_sr_plus_sheet(sr_dict) -> dict:
                 gen_func.print_line(line_length)
         else:
             sr_dict[row] = calc_bonus_roll(sr_dict[row])
-            
-            if list_to_long:
-                adjusted_list_view.clear()
-                adjusted_list_view.extend(sr_dict[row][0:4])
-                adjusted_list_view.extend(sr_dict[row][-6:])
-                
-                print(style_row(adjusted_list_view))
-                gen_func.print_line(line_length)
-            else:
-                print(style_row(sr_dict[row]))
-                gen_func.print_line(line_length)
+            if sr_dict[row][1] != "Nothing":
+                if list_to_long:
+                    adjusted_list_view.clear()
+                    adjusted_list_view.extend(sr_dict[row][0:4])
+                    adjusted_list_view.extend(sr_dict[row][-6:])
+                    
+                    print(style_row(adjusted_list_view))
+                    gen_func.print_line(line_length)
+                else:
+                    print(style_row(sr_dict[row]))
+                    gen_func.print_line(line_length)
     return sr_dict
 
 def style_row(row:list, header:bool = False):
@@ -492,29 +492,13 @@ def move_to_loot_log(player:list,malus:bool = False):
 
 def make_entry(filename:str,sr_plus_sheet:dict):
     gen_func.print_menu_title('Make New Entry')
-    """ print('''Does Import folder have 3 log files?
-2 txt files one with loot in the name
-1 csv export file from raidres?''')
-    
-    #make sure user updated all the docs
-    gen_func.print_line(10)
-    ask_user = input('(y/n): ')
-    if ask_user == 'y':
-        attendeese = raid_attendance.get_raid_attendees()
-        player_dict = rw_csv.read_csv_file_players()
-        #raidres = raid_res_import.get_soft_reserve_players()
-        raidres = raid_res_import.get_players_sr_and_comments()
-        pass
-    else:
-        print('going back...')
-        time.sleep(1)
-        return """
     
     gen_func.print_line(10)
-    ask_user = input('(y/n): ')
+    ask_user = input('Updated/imported files? (y/n): ')
     if ask_user == 'y':
         sorted_list, attendeese, loot_log, raidres = import_logs()
-        attended_raidres = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
+        attended_raidres, not_attended_raidres = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
+        print(attended_raidres)
         player_dict = rw_csv.read_csv_file_players()
     else:
         print('going back...')
