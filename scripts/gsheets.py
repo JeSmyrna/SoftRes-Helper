@@ -36,7 +36,7 @@ def gspread_overwrite(link:str,row_data:dict,start_cell:str = 'A1',worksheet_num
                     #ignore player who have no SR+
                     lists.append(row_data[entry])
 
-                worksheet.batch_clear([f"A{start_cell[1]}:L50"])
+                worksheet.batch_clear([f"A{start_cell[1]}:X50"])
                 worksheet.update(lists, f'{start_cell}:{end_col_row}')
                 return True
     return False
@@ -53,7 +53,22 @@ def calc_sheet_length( sr_sheet:dict, start_cell:str = 'A1'):
 
     return end_row_col
 
+def shorten_row_data(sr_sheet:dict) -> dict:
+    if len(sr_sheet['columns'] ) <= 10:
+        return sr_sheet
+    
+    else:
+        edited_sr_sheet = {}
+        for row in sr_sheet:
+            new_row = []
+            new_row.extend(sr_sheet[row][0:4])
+            new_row.extend(sr_sheet[row][-6:])
+            edited_sr_sheet.update({row:new_row})
+        return edited_sr_sheet
+        
+
 def export_to_gsheet(sr_plus_sheet:dict):
+    sr_plus_sheet = shorten_row_data(sr_plus_sheet)
     success = False
     entered_url = input('GSheet URL: ')
     try:
