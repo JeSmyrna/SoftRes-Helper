@@ -491,9 +491,6 @@ def move_to_loot_log(player:list,malus:bool = False):
     rw_csv.safe_sr_awarded_log(new_log_row)
 
 def make_entry(filename:str,sr_plus_sheet:dict):
-    gen_func.print_menu_title('Make New Entry')
-    
-    gen_func.print_line(10)
     ask_user = input('Updated/imported files? (y/n): ')
     if ask_user == 'y':
         sorted_list, attendeese, loot_log, raidres = import_logs()
@@ -559,7 +556,7 @@ def make_entry(filename:str,sr_plus_sheet:dict):
                     time.sleep(1)
                     print(f'Player has already {gen_func.color_text(char_in,'yw')} in sheet. SR+ {gen_func.color_text(data[1],'yw')} with a {gen_func.color_text('Bonusroll','gr')} of {gen_func.color_text(data[3],'yw')}')
                     while True:
-                        ask_user_1 = input(f'{gen_func.color_text('Replace entry','rd')}, with character {gen_func.color_text(char,'yw')}? (y/n): ')
+                        ask_user_1 = input(f'{gen_func.color_text('Replace entry','rd')}, with character {gen_func.color_text(char,'yw')}? [0] Details\n(y/n): ')
                         if ask_user_1 == 'y':
                             print('moving to log')
                             time.sleep(1)
@@ -575,6 +572,17 @@ def make_entry(filename:str,sr_plus_sheet:dict):
                             char_in_dict[char_id] = char_in
                             attended_raidres.update({char_in:attended_raidres.get(char)})
                             break
+
+                        elif ask_user_1 == '0':
+                            try:
+                                char_items = attended_raidres.get(char)
+                                char_items_2 = raidres.get(char_in)
+                                if char_items_2 == None:
+                                    char_items_2 = ['-','-']
+                                show_raidres_overview({char:char_items,char_in:char_items_2},{char:'-',char_in:[char_in,data[1]]})
+                            except:
+                                print(f"Couldn't get details on {char} or {char_in}")
+                                time.sleep(1)
                         else:
                             print('invalid input')
 
