@@ -498,7 +498,6 @@ def make_entry(filename:str,sr_plus_sheet:dict):
     if ask_user == 'y':
         sorted_list, attendeese, loot_log, raidres = import_logs()
         attended_raidres, not_attended_raidres = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
-        print(attended_raidres)
         player_dict = rw_csv.read_csv_file_players()
     else:
         print('going back...')
@@ -539,7 +538,7 @@ def make_entry(filename:str,sr_plus_sheet:dict):
             is_in,char_in,data = check_if_alt_in_sheet(char,sr_plus_sheet)
             if is_in:
                 try:
-                    raid_res_item_list = raidres[char]
+                    raid_res_item_list = attended_raidres[char]
                 except KeyError:
                     print(f'couldnt find key {gen_func.color_text(char,"yw")}')
                     time.sleep(1)
@@ -568,7 +567,7 @@ def make_entry(filename:str,sr_plus_sheet:dict):
 
                         elif ask_user_1 == 'n':
                             char_in_dict[char_id] = char_in
-                            raidres.update({char_in:raidres.get(char)})
+                            attended_raidres.update({char_in:attended_raidres.get(char)})
                             break
                         else:
                             print('invalid input')
@@ -587,12 +586,12 @@ def make_entry(filename:str,sr_plus_sheet:dict):
         else:
             
             try:
-                if str(sr_plus_sheet[char][1]) not in raidres.get(char):
+                if str(sr_plus_sheet[char][1]) not in attended_raidres.get(char):
                     print(f"Player {gen_func.color_text(char,'yw')} didn't reserve the same SR+ or had no SR+")
                     time.sleep(1)
 
                     gen_func.print_line(20)
-                    raidres_items = raidres.get(char)
+                    raidres_items = attended_raidres.get(char)
                     sr_sheet_item = sr_plus_sheet[char][1]
 
                     print_player_raidres(raidres_items,True)
@@ -632,7 +631,7 @@ def make_entry(filename:str,sr_plus_sheet:dict):
     rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
 
     #this part checks the raidres import, maybe someone noted to change SR+ to a different item
-    show_raidres_overview(raidres,sr_plus_sheet)
+    show_raidres_overview(attended_raidres,sr_plus_sheet)
 
     while True:
         gen_func.print_line(20)
@@ -645,7 +644,7 @@ def make_entry(filename:str,sr_plus_sheet:dict):
         else:
             try:
                 player_sr_entry = sr_plus_sheet.get(ask_user_3)
-                player_raidres = raidres.get(ask_user_3)
+                player_raidres = attended_raidres.get(ask_user_3)
             except:
                 print("ask_user_3: couldn't find player in SR+ Sheet")
                 time.sleep(1)
@@ -654,15 +653,15 @@ def make_entry(filename:str,sr_plus_sheet:dict):
             if ask_user_4 == 'y':
                 new_sr_plus = find_choose_sr_plus(ask_user_3,attended_raidres)
                 item_index = player_raidres.index(new_sr_plus)
-                item_comment = len(player_raidres)//2 + item_index
-
+                item_comment = player_raidres[(len(player_raidres)//2 + item_index)]
                 print('moving to log...')
-                move_to_loot_log([filename,player_sr_entry,f'Changed SR+ because of raidres comment "{item_comment}"',raidres['columns'][-1]])
+                move_to_loot_log([filename,player_sr_entry,f'Changed SR+ because of raidres comment "{item_comment}"',sr_plus_sheet['columns'][-1]])
                 time.sleep(1)
                 
-                sr_plus_sheet.pop(ask_user_3)
-                new_sr_entry = fill_just_past_days([ask_user_3,new_sr_plus,0,0],sr_plus_sheet)
-                sr_plus_sheet.update({char:new_sr_entry})
+                #sr_plus_sheet.pop(ask_user_3)
+                new_sr_entry = fill_past_days([ask_user_3,new_sr_plus,0,0],sr_plus_sheet)
+                sr_plus_sheet.update({ask_user_3:new_sr_entry})
+                rw_csv.safe_sr_sheet_csv(filename,sr_plus_sheet)
                 print(f'updated SR+ for player {ask_user_3}')
                 time.sleep(1)
             else:
