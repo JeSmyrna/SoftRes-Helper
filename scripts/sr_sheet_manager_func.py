@@ -480,7 +480,7 @@ def move_to_loot_log(player:list,malus:bool = False):
 
     filename = player[0]
     player_name = player[1][0]
-    sr_item = player[1][1]
+    sr_item = f"{player[1][1]}"
     bonus_roll = int(player[1][3])#because of awarding through log
     if malus:
         bonus_roll -= 10
@@ -499,6 +499,12 @@ def make_entry(filename:str,sr_plus_sheet:dict):
         sorted_list, attendeese, loot_log, raidres = import_logs()
         attended_raidres, not_attended_raidres = raid_attendance.intersect_raidres_and_attendees(attendeese,raidres)
         player_dict = rw_csv.read_csv_file_players()
+        if sorted_list == []:
+            print('Nothing foung in Import folder')
+            time.sleep(1)
+            print("going back...")
+            time.sleep(1)
+            return
     else:
         print('going back...')
         time.sleep(1)
