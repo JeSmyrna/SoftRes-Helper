@@ -84,6 +84,8 @@ def import_logs() -> tuple[list,list,list,dict]:
     loot_log = load_text_file(f'./Import/{sorted_list[1][:-4]}',20)
     raidres = get_players_sr_and_comments(f'{sorted_list[2][:-4]}')
     
+    attendeese.sort()
+
     return sorted_list,attendeese,loot_log,raidres
 
 def safe_imported_logs(filename:str,date:str,logs):
