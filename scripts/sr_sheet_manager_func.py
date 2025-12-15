@@ -508,7 +508,7 @@ def make_entry(filename:str,sr_plus_sheet:dict):
     print('Making safety copy...')
     time.sleep(1)
     try:
-        rw_csv.make_safety_copy(f'{gen_func.get_date()}-{filename}',filename,sr_plus_sheet)
+        rw_csv.make_safety_copy(f'{sr_plus_sheet["columns"][-1]}-{filename}',filename,sr_plus_sheet)
     except:
         print('Failed to copy the SR+ Sheet')
     print('Copied successfully')
