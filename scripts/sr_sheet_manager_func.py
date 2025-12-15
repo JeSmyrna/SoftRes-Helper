@@ -1,7 +1,6 @@
 import scripts.general_functions as gen_func
 import scripts.read_write_csv as rw_csv
 import scripts.raid_attendance as raid_attendance
-import scripts.raid_res_import as raid_res_import
 import scripts.manage_dict_func as mg_dict_func
 from scripts.import_raidlogs import import_logs,safe_imported_logs
 
@@ -706,27 +705,6 @@ def check_if_alt_in_sheet(character:str,sr_sheet:dict) -> tuple[bool,str,list]:
                     return True,char,sr_sheet[char]
     else:
         return False,character,[]
-
-#make_entry('Test',rw_csv.load_sr_sheet('Test'))
-def find_double_chars(attendeese:list,player_dict:dict) -> list:
-
-    dict_keys = list(player_dict.keys())
-    dict_keys.sort()
-    new_player_dict = {}
-    for key in dict_keys:
-        char_list = str(player_dict.get(key)).split('.')
-        new_player_dict.update({key:char_list})
-        
-    no_doubles = []
-    for attendee in attendeese:
-        for char_list in new_player_dict:
-            if attendee in new_player_dict[char_list]:
-                if new_player_dict[char_list][-1] != True:
-                    no_doubles.append(attendee)
-                    add_bool_list = new_player_dict[char_list].append(True)
-                else:
-                    pass
-    return no_doubles
 
 def make_copy_of_sheet(filename:str,sr_sheet:dict) -> dict:
     print("make copy of SR+ sheet")
