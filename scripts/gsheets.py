@@ -5,6 +5,7 @@ alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q",
 
 def gspread_overwrite(link:str,row_data:dict,start_cell:str = 'A1',worksheet_num:int = 0) -> bool:
     try:
+        #User might need to delete the "authorized_user.json" to get auth again
         gc = gspread.oauth()
     except:
         print('Google Connection Error')
