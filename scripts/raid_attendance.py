@@ -1,12 +1,3 @@
-def get_raid_attendees():
-    attendees_list = []
-
-    with open("Import/attendeese.txt") as file_in:
-        for line in file_in:
-            attendees_list.append(line.rstrip("\n"))
-    attendees_list.sort()
-    return attendees_list
-
 def intersect_raidres_and_attendees(attendeese:list, raidres:dict) -> tuple[dict,dict]:
     attendees_dict = {}
     not_attended_dict = {}
