@@ -719,7 +719,8 @@ def make_copy_of_sheet(filename:str,sr_sheet:dict) -> dict:
     time.sleep(1)
     
     #safe file under different name
-    date = str(datetime.now().strftime('%Y-%m-%d'))
+    #date = str(datetime.now().strftime('%Y-%m-%d'))
+    date = sr_sheet['columns'][-1]
     filename_safe = f'{date}_{filename}'
     rw_csv.safe_sr_sheet_csv(filename_safe, sr_sheet)
     new_sr_sheet = {}
