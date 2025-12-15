@@ -33,6 +33,7 @@ def add_new_player(char_name:str,player_dict:dict):
     ask_user = input('Option: ')
     if ask_user == '1':
         player_dict[char_name] = char_name
+        rw_csv.write_csv_file_players(player_dict)
         pass
     
     elif ask_user == '2':
@@ -45,6 +46,7 @@ def add_new_player(char_name:str,player_dict:dict):
                 char_list.append(char_name)
                 char_str = combine_character_names(char_list)
                 player_dict.update({ask_user_2:char_str})
+                rw_csv.write_csv_file_players(player_dict)
                 break
             except KeyError:
                 print(f'Player {ask_user_2} does not exist')
@@ -55,9 +57,7 @@ def add_new_player(char_name:str,player_dict:dict):
     elif ask_user == '3':
         print('going back...')
         time.sleep(1)
-        return
-    
-    rw_csv.write_csv_file_players(player_dict)
+        return  
 
 #add new players to dictionary, looping till user ends the loop with key - "q"
 def add_new_players(player_dict:dict):
