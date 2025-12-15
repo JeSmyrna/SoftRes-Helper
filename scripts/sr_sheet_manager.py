@@ -26,7 +26,9 @@ menu_option = [
     "[7] add player to sheet",
     "[8] Award Player SR+",
     "[9] Award SR+ with loot log",
-    "[10] Make Copy"
+    "[10] Make Copy",
+    "",
+    "[11] Shorten SR+ Sheet"
     
 ]
 def load_sr_sheet(filename) -> dict:
@@ -125,13 +127,6 @@ def sheet_manager_main(raid_sheet,filename):
             read_write_csv.safe_sr_sheet_csv(filename,raid_sheet)
             time.sleep(0.5)
         
-        #save SR sheet
-        #elif user_input == "4": "[4] save SR+ Sheet"
-            #print("saving file...")
-            #read_write_csv.safe_sr_sheet_csv(filename,raid_sheet)
-            #print("file is safed")
-            #general_functions.print_line()
-            #time.sleep(1)
         elif user_input == '4':
             general_functions.print_line()
             ask_user_export = input(f'Export current sheet {general_functions.color_text(filename,'yw')} to gsheets? (y/n): ')
@@ -178,6 +173,13 @@ def sheet_manager_main(raid_sheet,filename):
             read_write_csv.make_safety_copy(f'{general_functions.get_date()}-{filename}',filename,raid_sheet)
             print('Copied successfully')
             time.sleep(1)
+
+        elif user_input == "11":
+            raid_sheet = sr_sheet_manager_func.cut_sr_plus_sheet(raid_sheet)
+            read_write_csv.safe_sr_sheet_csv(filename,raid_sheet)
+            general_functions.print_line()
+            file_edited = True
+            break
         else:
             print("invalid input")
 
