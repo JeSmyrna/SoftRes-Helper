@@ -1,8 +1,7 @@
 import os,shutil
 from time import sleep
 
-from scripts.raid_res_import import get_players_sr_and_comments
-from scripts.read_write_csv import load_text_file
+from scripts.read_write_csv import load_text_file, load_raidres
 
 def print_list(file_list:list,show_identifier:bool=False):
     counter = 0
@@ -87,6 +86,27 @@ def import_logs() -> tuple[list,list,list,dict]:
     attendeese.sort()
 
     return sorted_list,attendeese,loot_log,raidres
+
+def get_players_sr_and_comments(filename="raidres"):
+    raidres_list = load_raidres(f'Import/{filename}')
+    raid_res_player_dict = {}
+
+    #make key list
+    keys = [attendee[1] for attendee in raidres_list if attendee[1] != 'Attendee']
+    keys.sort()
+    for key in keys:
+        items = []
+        comments = []
+        for item in raidres_list:
+            if key == item[1]:
+                items.append(item[0])
+                comments.append(item[2])
+        """ if len(items) == 1:
+            items.append(items[0])
+            comments.append('') """
+        items.extend(comments)
+        raid_res_player_dict.update({key:items})
+    return raid_res_player_dict
 
 def safe_imported_logs(filename:str,date:str,logs):
 
