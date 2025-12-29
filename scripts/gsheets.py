@@ -22,7 +22,7 @@ def gspread_overwrite(link:str,row_data:dict,start_cell:str = 'A1',worksheet_num
             else:
                 data_no_nothing = {}
                 for row in row_data:
-                    if row_data[row][1] == 'Nothing':
+                    if row_data[row][1].lower() == 'nothing':
                         pass
                     elif '-' in row_data[row][1]:
                         row_data[row][1] = str(row_data[row][1]).replace(' - ',', ')
@@ -37,7 +37,7 @@ def gspread_overwrite(link:str,row_data:dict,start_cell:str = 'A1',worksheet_num
                     #ignore player who have no SR+
                     lists.append(row_data[entry])
 
-                worksheet.batch_clear([f"A{start_cell[1]}:X50"])
+                worksheet.batch_clear([f"A{start_cell[1]}:X100"])
                 worksheet.update(lists, f'{start_cell}:{end_col_row}')
                 return True
     return False
