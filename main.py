@@ -16,7 +16,7 @@ menu_options = [
 
 player_dict = {}  
 
-def mainloop():
+def main():
 
     print("Loading players...")
     player_dict = general_functions.order_dict_alphabetically(read_write_csv.read_csv_file_players())
@@ -80,7 +80,6 @@ def mainloop():
                 read_write_csv.write_csv_file_players(player_dict)
             
             elif user_entry == 3:
-                #player_dict = read_write_csv.read_csv_file_players()
                 manage_dict_func.print_dictionary(player_dict)
 
             elif user_entry == 4:
@@ -93,4 +92,4 @@ def mainloop():
             print("invalid option")
 
 
-mainloop()
+#main()

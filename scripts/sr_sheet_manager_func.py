@@ -546,7 +546,7 @@ def make_entry(filename:str,sr_plus_sheet:dict):
                     time.sleep(1)
                     continue
                 except:
-                    print('something else must ve gone wrong')
+                    print('ERROR: Make Entry - something else must ve gone wrong')
 
                 #check if player alt doesn't accumulates Bonus roll for the other chars SR+
                 if data[1] not in raid_res_item_list:

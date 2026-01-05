@@ -17,7 +17,7 @@ def print_list(file_list:list,show_identifier:bool=False):
             print(part_a)
     print("="*50)
 
-def sort_files_attendance_loot_raidres(files:list):
+def sort_files_attendance_loot_raidres(files:list) -> list:
     for file in files:
         if file[-3:] == 'csv':
             raidres_file = file
@@ -61,6 +61,7 @@ def manually_choose_files(input_list:list) -> list:
 
 def import_logs() -> tuple[list,list,list,dict]:
     """
+    gets files from Import folder. Make sure its 3.\n
     return: sorted list, attendeese, loot log, raidres
     """
     import_list = os.listdir("./Import/")
