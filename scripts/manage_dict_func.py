@@ -32,7 +32,7 @@ def add_new_player(char_name:str,player_dict:dict):
     general_functions.print_line(10)
     ask_user = input('Option: ')
     if ask_user == '1':
-        player_dict[char_name] = char_name
+        player_dict.update({char_name:char_name})
         rw_csv.write_csv_file_players(player_dict)
         pass
     
@@ -181,11 +181,6 @@ def delete_character(player_dict):
             characters.remove(user_input)
         else:
             print("invalid input")
-
-
-#test_dict = {"player" : "player1.player2.player3"}
-#delete_character(test_dict)
-#add_characters_to_player("player",test_dict)
 
 def delete_player(player_dict:dict):
     while True:
