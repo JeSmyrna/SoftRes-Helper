@@ -19,9 +19,10 @@ player_dict = {}
 def main():
 
     print("Loading players...")
-    player_dict = general_functions.order_dict_alphabetically(read_write_csv.read_csv_file_players())
+    
     
     while True:
+        player_dict = general_functions.order_dict_alphabetically(read_write_csv.read_csv_file_players())
         general_functions.print_menu_title("Main Menu")
         for menu_opt in menu_options:
             print(menu_opt)
@@ -92,4 +93,4 @@ def main():
             print("invalid option")
 
 
-#main()
+main()
