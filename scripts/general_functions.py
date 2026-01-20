@@ -64,3 +64,34 @@ def order_dict_alphabetically(dictionary:dict) -> dict:
     for key in dict_keys:
         sorted_dict.update({key:dictionary[key]})
     return sorted_dict
+
+
+def sort_dict_by(dictionary:dict, slice_to:int, descend:bool = False) -> dict:
+    dict_index = 0
+    key_list = dictionary["columns"][0:slice_to]
+    dict_copy = dictionary.copy()
+    removed_header = dict_copy.pop("columns")
+
+    while True:
+        for cat in key_list:
+            print(f'[{dict_index}] - {cat}')
+            dict_index += 1
+
+        try:
+            user_input = int(input("option: "))
+        except ValueError:
+            print("Input needs to be a number")
+        except:
+            print("What?")
+
+        if user_input < len(key_list) and user_input >= 0:
+            break
+    
+    sorted_dict = {}
+    sorted_dict.update({"columns":removed_header})
+    sorted_dict.update(dict(sorted(dict_copy.items(), key=lambda item: item[1][user_input],reverse=descend)))
+
+    """ for entry in sorted_dict:
+        print(sorted_dict[entry][0:4]) """
+    
+    return sorted_dict
