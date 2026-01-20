@@ -13,21 +13,31 @@ Tool can now manage SR+ sheets in form of csv files.
 - export to google spread sheet
 
 SR+ Sheet - Make New Entry
-- make new entry (reads raidres export, attendeese and lootlog), asks if you have updated those files. -> (Import/files_to_update)
+- make new entry (reads raidres export, attendeese and lootlog), asks if you have updated those files. -> (Import/...)
+- place new text files in this folder and call one of them loot.txt. With this the programm will automatically search
+  for attendeese doc and the csv file from raidres.
 - It then looks who was there in attendeese and gets the soft reserve from the raidres
 - It checks if player exists in player dictionary and asks you to add them. Either as player or alt.
 - It checks if an alt of player already has a SR+ in this sheet and asks if you wanna replace the current SR+
   if they haven't reserved the same items. Will move it to the log file with a note 'replaced'
 - It checks if player is not yet in the Sheet and you can choose what to put in (item 1, item 2, nothing)
+
   Note: "Nothing" is for players who don't want anything or have reserved a mount.
         So the tool wont ask you to add this character everytime.
         Tool will ask you if this char/player has changed their mind about SR+ anything
+  
 - Checks if players reserved same item to not loose their SR+
 - Asks you to give it a date (recommended) to name the new column entry
+
+- New: It will give you an overview of everyone attended and their raidres entry, to check comments, if players want to change something.
+      The user can edit from here, if needed. Otherwise continue with the loot log.
+  
 - After everything it will fill anyones attendance for the day with (absent/present)
   and calc the new bonus roll for next raid
 - It checks after this the lootlog to see if anyone has got their SR+
 - if thats the case it asks you if you wanna move it to the log file
+
+- after everything is done, it will move every file in the import folder into the corresponding SR sheet folder, to log those files.
 
 
 Manual editing:
