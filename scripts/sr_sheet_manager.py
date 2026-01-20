@@ -28,7 +28,8 @@ menu_option = [
     "[9] Award SR+ with loot log",
     "[10] Make Copy",
     "",
-    "[11] Shorten SR+ Sheet"
+    "[11] Shorten SR+ Sheet",
+    "[12] Sort Sheet"
     
 ]
 def load_sr_sheet(filename) -> dict:
@@ -122,7 +123,7 @@ def sheet_manager_main(raid_sheet,filename):
         elif user_input == "3":
             general_functions.print_menu_title(filename)
             time.sleep(0.5)
-            raid_sheet = general_functions.order_dict_alphabetically(raid_sheet)
+#            raid_sheet = general_functions.order_dict_alphabetically(raid_sheet)
             raid_sheet = sr_sheet_manager_func.print_sr_plus_sheet(raid_sheet)
             read_write_csv.safe_sr_sheet_csv(filename,raid_sheet)
             time.sleep(0.5)
@@ -180,6 +181,11 @@ def sheet_manager_main(raid_sheet,filename):
             general_functions.print_line()
             file_edited = True
             break
+        elif user_input == "12":
+            raid_sheet = general_functions.sort_dict_by(raid_sheet,4)
+            read_write_csv.safe_sr_sheet_csv(filename,raid_sheet)
+            general_functions.print_line()
+            file_edited = True
         else:
             print("invalid input")
 

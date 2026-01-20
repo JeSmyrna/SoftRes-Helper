@@ -66,7 +66,8 @@ def order_dict_alphabetically(dictionary:dict) -> dict:
     return sorted_dict
 
 
-def sort_dict_by(dictionary:dict, slice_to:int, descend:bool = False) -> dict:
+def sort_dict_by(dictionary:dict, slice_to:int) -> dict:
+    descend = False
     dict_index = 0
     key_list = dictionary["columns"][0:slice_to]
     dict_copy = dictionary.copy()
@@ -86,10 +87,35 @@ def sort_dict_by(dictionary:dict, slice_to:int, descend:bool = False) -> dict:
 
         if user_input < len(key_list) and user_input >= 0:
             break
-    
+
+    menu_opt = ["[0] back",
+                "",
+                ["[1] Ascending",
+                 "[2] Descending"]]
+    while True:
+        
+        for opt in menu_opt:
+            print(opt)
+        input_sorting = input("option: ")
+        
+        if input_sorting == "0":
+            return
+        elif input_sorting == "1":
+            break
+        elif input_sorting == "2":
+            descend = True
+            break
+        else:
+            print("not an option")
+            print_line(10)
+
     sorted_dict = {}
     sorted_dict.update({"columns":removed_header})
-    sorted_dict.update(dict(sorted(dict_copy.items(), key=lambda item: item[1][user_input],reverse=descend)))
+    try:
+        sorted_dict.update(sorted(dict_copy.items(), key=lambda item: item[1][user_input],reverse=descend))
+    except:
+        print("????")
+        return dictionary
 
     """ for entry in sorted_dict:
         print(sorted_dict[entry][0:4]) """
