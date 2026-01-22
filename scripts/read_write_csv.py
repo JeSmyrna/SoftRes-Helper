@@ -33,7 +33,12 @@ def load_sr_sheet(filename) -> dict:
                     sr_sheet_dict["columns"] = row
                     rows += 1
                 else:
-                    sr_sheet_dict[row[0]] = row        
+                    new_row = []
+                    new_row.extend(row[0:2])
+                    new_row.append(int(row[2]))
+                    new_row.append(int(row[3]))
+                    new_row.extend(row[4:])
+                    sr_sheet_dict[new_row[0]] = new_row
         return sr_sheet_dict
     except:
         print("file does not exist")
