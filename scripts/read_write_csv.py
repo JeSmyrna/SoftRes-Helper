@@ -41,7 +41,7 @@ def load_sr_sheet(filename) -> dict:
                     sr_sheet_dict[new_row[0]] = new_row
         return sr_sheet_dict
     except:
-        print("file does not exist")
+        print("Error: while loading file/data")
         return sr_sheet_dict
 
 def load_raidres(filename:str) -> list:
