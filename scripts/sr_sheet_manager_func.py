@@ -531,6 +531,8 @@ def make_entry(filename:str,sr_plus_sheet:dict):
                     break
             else:
                 mg_dict_func.add_new_player(character,player_dict)
+                char_in_dict.append(character)
+                attendeese.remove(character)
     char_in_dict.sort()
     #check if player has already a character in SR+ Sheet
     for char_id in range(len(char_in_dict)):
