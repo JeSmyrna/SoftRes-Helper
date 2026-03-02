@@ -1,6 +1,6 @@
 import csv
 import os, shutil
-from general_functions import get_date
+from scripts.general_functions import get_date
 
 def write_csv_file_players(dictionary):
     with open('Data/player_chars.csv', 'w', newline='') as csvfile:
