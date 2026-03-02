@@ -476,6 +476,8 @@ def move_to_loot_log(player:list,malus:bool = False):
     
     log_file = rw_csv.load_sr_awarded_log()
     log_entry_num = len(log_file)
+    if log_entry_num > 100:
+        rw_csv.make_new_loot_log()
 
     filename = player[0]
     player_name = player[1][0]

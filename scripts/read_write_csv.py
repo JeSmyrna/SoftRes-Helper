@@ -1,5 +1,6 @@
 import csv
-import os
+import os, shutil
+from general_functions import get_date
 
 def write_csv_file_players(dictionary):
     with open('Data/player_chars.csv', 'w', newline='') as csvfile:
@@ -119,3 +120,17 @@ def make_safety_copy(filename:str,dir_name:str,sr_sheet:dir):
         os.makedirs(f'./Data/Logs-{dir_name}')
 
     safe_sr_sheet_csv(f'Logs-{dir_name}/{filename}',sr_sheet)
+
+def make_new_loot_log():
+    path = f'./Data/_Logs-Loot'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    #get first date in loot log
+    current_log = load_sr_awarded_log()
+    first_date_entry = current_log['1'][6]
+
+    shutil.move('./Data/sr_awarded_log.csv',f'{path}/loot_log_{first_date_entry} - {get_date()}.csv')
+
+    with open(f'Data/sr_awarded_log.csv', 'w') as logfile:
+        logfile.write("Entry,SR Sheet,Player,SR Item,Bonusroll,Note,Added to log on")
