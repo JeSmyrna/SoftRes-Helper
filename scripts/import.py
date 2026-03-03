@@ -1,0 +1,57 @@
+import os, shutil, csv
+from time import sleep
+
+def load_text_file(filename,cut_text:int = 0):
+    
+    with open(f'{filename}.txt', newline='') as text_file:
+        text_as_list = [line[cut_text:].rstrip("\r\n") for line in text_file]
+        return text_as_list
+
+def load_csv(filename:str) -> list:
+    csv_file = []
+    with open (f'{filename}.csv',newline='') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            csv_file.append(row)
+    return csv_file
+
+def get_raidres_data(filename:str) -> dict:
+    raidres_data = load_csv(f'./Import/{filename}')
+    
+    print(raidres_data)
+    keys = list(set([attendee[1] for attendee in raidres_data if attendee[1] != 'Attendee']))
+    keys.sort()
+    print(keys)
+
+    final_raidres_data = {}
+
+    for key in keys:
+        items = []
+        comments = []
+        char_class = ""
+        for item in raidres_data:
+            if item[1] == key:
+                items.append(item[0])
+                comments.append(item[3])
+                char_class = item[2]
+        final_raidres_data.update({key:{'class':char_class, 'items':items, 'comments':comments}})
+    
+    return final_raidres_data
+    """for entry in final_raidres_data:
+        print(f'{entry} : {final_raidres_data[entry]}')"""
+
+get_raidres_data('raidres_AQ40_NSDH29')
+
+
+def safe_imported_logs(filename:str,date:str,logs):
+
+    filepath = f'./Data/Logs-{filename}/Logs'
+
+    if not os.path.exists(filepath):
+        os.makedirs(filepath)
+
+    shutil.move(f"./Import/{logs[0]}",f'{filepath}/{filename}_{date}.txt')
+    shutil.move(f"./Import/{logs[1]}",f'{filepath}/{filename}_{date}_Loot.txt')
+    shutil.move(f'./Import/{logs[2]}',f'{filepath}/{filename}_{date}_{logs[2][-10:]}')
+    
+    print(f"saved logs in: {filepath}")
