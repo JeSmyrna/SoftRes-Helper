@@ -1,4 +1,4 @@
-import os, shutil, csv
+import os, shutil, csv, json
 from time import sleep
 
 def load_text_file(filename,cut_text:int = 0):
@@ -15,13 +15,21 @@ def load_csv(filename:str) -> list:
             csv_file.append(row)
     return csv_file
 
+def load_json(filename:str) -> list:
+    filepath = f'{filename}.json'
+    
+    if not os.path.exists(filepath):
+        print("File not found.")
+    else:
+        with open(filepath, "r", encoding="utf-8") as data:
+            doc = json.load(data)
+        return doc
+
 def get_raidres_data(filename:str) -> dict:
     raidres_data = load_csv(f'./Import/{filename}')
     
-    print(raidres_data)
     keys = list(set([attendee[1] for attendee in raidres_data if attendee[1] != 'Attendee']))
     keys.sort()
-    print(keys)
 
     final_raidres_data = {}
 
@@ -37,10 +45,8 @@ def get_raidres_data(filename:str) -> dict:
         final_raidres_data.update({key:{'class':char_class, 'items':items, 'comments':comments}})
     
     return final_raidres_data
-    """for entry in final_raidres_data:
-        print(f'{entry} : {final_raidres_data[entry]}')"""
 
-get_raidres_data('raidres_AQ40_NSDH29')
+#get_raidres_data('raidres_AQ40_NSDH29')
 
 
 def safe_imported_logs(filename:str,date:str,logs):
