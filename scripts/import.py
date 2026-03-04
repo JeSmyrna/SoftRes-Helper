@@ -46,12 +46,10 @@ def get_raidres_data(filename:str) -> dict:
     
     return final_raidres_data
 
-#get_raidres_data('raidres_AQ40_NSDH29')
 
+def save_imported_logs(filename:str,date:str,logs):
 
-def safe_imported_logs(filename:str,date:str,logs):
-
-    filepath = f'./Data/Logs-{filename}/Logs'
+    filepath = f'./Data/{filename}/Logs'
 
     if not os.path.exists(filepath):
         os.makedirs(filepath)
