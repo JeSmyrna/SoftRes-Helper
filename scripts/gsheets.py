@@ -5,8 +5,8 @@ import os, time
 alphabet = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
 
 def check_age_of_file() -> bool:
-    if os.path.exists("./Data/_User/authorized_user.json"):
-        time_file = os.path.getmtime("./Data/_User/authorized_user.json")
+    if os.path.exists("./Data/_user/authorized_user.json"):
+        time_file = os.path.getmtime("./Data/_user/authorized_user.json")
         rightnow = time.time()
         return 7 < ((rightnow - time_file)/86400)
     else:
@@ -16,8 +16,8 @@ def gspread_overwrite(link:str,row_data:dict,start_cell:str = 'A1',worksheet_num
     try:
         #Auto check if authorized user file is to old and needs to be refreshed.
         if check_age_of_file():
-            os.remove('./Data/_User/authorized_user.json')
-        gc = gspread.oauth(authorized_user_filename='./Data/_User/authorized_user.json')
+            os.remove('./Data/_user/authorized_user.json')
+        gc = gspread.oauth(authorized_user_filename='./Data/_user/authorized_user.json')
     except:
         print('Google Connection Error')
     else:
