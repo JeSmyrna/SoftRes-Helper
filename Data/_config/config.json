@@ -1,0 +1,24 @@
+[
+    {
+        "name":"class_color",
+        "warrior":"",
+        "priest":"",
+        "shaman":"",
+        "paladin":"",
+        "hunter":"",
+        "warlock":"",
+        "mage":"",
+        "druid":""
+    },
+    {
+        "name":"sr_sheet",
+        "columns":["player","char","item","class","bonus"],
+        "settings":{
+            "bonus":10,
+            "bonus_half":5,
+            "decay":false,
+            "multichar":false,
+            "sr_amount":1
+        }
+    }
+]
