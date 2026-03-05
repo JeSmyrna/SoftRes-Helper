@@ -1,9 +1,11 @@
 from file_import import load_json
 from export import save_json
+from general_functions import color_text
 
 class PlayerManager():
     def __init__(self):
         self.__player_dict = []
+        self.__print_config = [settings for settings in load_json("./Data/_config/config") if settings["name"] == "col_lengths"][0]
         self.load_player_dict()
 
     def load_player_dict(self):
@@ -11,6 +13,16 @@ class PlayerManager():
 
     def save_player_dict(self):
         save_json("./Data/_config/player_dict",self.__player_dict)
+
+    def _ask_user(self, warning_text:str="Are you sure?"):
+        while True:
+            ask_user = input(f"{warning_text} (y/n): ")
+            if ask_user == "y":
+                return True
+            elif ask_user == "n":
+                return False
+            else:
+                print("-"*10)
 
     def add_player(self,player:dict):
         """
@@ -27,28 +39,33 @@ class PlayerManager():
             print("nothing to delete")
         else:
             new_player_dict = []
+            dict_changed = False
             if del_all:
                 if self.get_chars_of_player(name) == []:
                     print("Character owner not found.")
                 else:
-                    for entry in self.__player_dict:
-                        if entry["owner"] != name:
-                            new_player_dict.append(entry)
+                    if self._ask_user(f"Are you sure you want to delete player {name} and all their characters ?"):
+                        dict_changed = True
+                        for entry in self.__player_dict:
+                            if entry["owner"] != name:
+                                new_player_dict.append(entry)
             else:
                 if self.get_chars_of_player(name,False) == []:
                     print("Character not found.")
                 else:
                     check_for_owner = self.get_chars_of_player(name)
                     if len(check_for_owner) == 1:
-                        for entry in self.__player_dict:
-                            if entry["name"] != name:
-                                new_player_dict.append(entry)
+                        if self._ask_user(f"Are you sure you want to delete {name}"):
+                            dict_changed = True
+                            for entry in self.__player_dict:
+                                if entry["name"] != name:
+                                    new_player_dict.append(entry)
                     else:
                         print(f"Character {name} is owner of another Character:")
                         self.print_all_chars(name)
         
             #if there are changes to the dict, save it           
-            if new_player_dict != []:
+            if dict_changed:
                 self.__player_dict = new_player_dict
                 self.save_player_dict()
 
@@ -61,15 +78,29 @@ class PlayerManager():
         search_result = [entry for entry in self.__player_dict if entry[search_key].lower() == name.lower()]
         return search_result
 
-    def print_all_chars(self,name:str=""):
+    def print_chars(self,name:str="",owner:bool=False):
         print_this = {}
         if name != "":
-            print_this = self.get_chars_of_player(name)
+            print_this = self.get_chars_of_player(name,owner)
         else:
             print_this = self.__player_dict
 
+        #print main row
+        main_row_keys = list(print_this[0].keys())
+        main_row = f"|{color_text(str(main_row_keys[0]).center(self.__print_config['player'] - len(main_row_keys[0]) - 1),"blwb")}|"
+        main_row += f"{color_text(str(main_row_keys[1]).center(self.__print_config['class'] - len(main_row_keys[1]) - 1),"blwb")}|"
+        main_row += f"{color_text(str(main_row_keys[2]).center(self.__print_config['player'] - len(main_row_keys[2]) - 1),"blwb")}|"
+        line_length = len(main_row) -24
+        print(main_row)
+
+        #print characters
         for entry in print_this:
-            print(entry)
+            print((line_length)*"-")
+            char_row = f"| {str(entry["name"])}{(self.__print_config['player'] - len(entry["name"]) - 6)*" "}|"
+            char_row += f" {str(entry["class"])}{(self.__print_config['class'] - len(entry["class"]) - 7)*" "}|"
+            char_row += f" {str(entry["owner"])}{(self.__print_config['player'] - len(entry["owner"]) - 7)*" "}|"
+            print(char_row)
+        print((line_length)*"-")
 
     def search_player(self,name:str):
         if name == "":
@@ -78,7 +109,7 @@ class PlayerManager():
             search_result = self.get_chars_of_player(name)
             if search_result != []:
                 print(f"found player {name} as owner of:")
-                self.print_all_chars(name)
+                self.print_chars(name)
             else:
                 print("player not found, searching for character")
                 search_result = self.get_chars_of_player(name,False)
@@ -86,3 +117,6 @@ class PlayerManager():
                     print(f"found character {name} as alt of {search_result[0]["owner"]}")
                 else:
                     print(f"Player or Character {name} does not exist")
+
+test = PlayerManager()
+test.add_player({"name":"Simmance","class":"priest","owner":"Simmance"})

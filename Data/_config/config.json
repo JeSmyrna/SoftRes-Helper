@@ -20,5 +20,16 @@
             "multichar":false,
             "sr_amount":1
         }
+    },
+    {
+        "name":"settings",
+        "sleep_timer":1
+    },
+    {
+        "name":"col_lengths",
+        "col_len":24,
+        "player":32,
+        "item":64,
+        "class":18
     }
 ]

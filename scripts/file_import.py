@@ -21,9 +21,12 @@ def load_json(filename:str) -> list:
     if not os.path.exists(filepath):
         print("File not found.")
     else:
-        with open(filepath, "r", encoding="utf-8") as data:
-            doc = json.load(data)
-        return doc
+        try:
+            with open(filepath, "r", encoding="utf-8") as data:
+                doc = json.load(data)
+            return doc
+        except:
+            return []
 
 def get_raidres_data(filename:str) -> dict:
     raidres_data = load_csv(f'./Import/{filename}')
