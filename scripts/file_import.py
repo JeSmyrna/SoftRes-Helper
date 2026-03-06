@@ -20,6 +20,7 @@ def load_json(filename:str) -> list:
     
     if not os.path.exists(filepath):
         print("File not found.")
+        return []
     else:
         try:
             with open(filepath, "r", encoding="utf-8") as data:
