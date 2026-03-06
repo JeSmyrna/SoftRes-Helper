@@ -1,10 +1,7 @@
-import scripts.read_write_csv as read_write_csv
-import scripts.manage_dict_func as manage_dict_func
-import scripts.sr_sheet_manager as sr_sheet_manager
-import scripts.general_functions as general_functions
-import time
+from scripts.player_mng import PlayerManager
 
-
+from scripts.general_functions import print_menu_title
+from time import sleep
 
 menu_options = [
     "[0] Quit program",
@@ -14,83 +11,80 @@ menu_options = [
     "[4] Manage SR+ Sheet"
                 ]
 
-player_dict = {}  
+timer = 1
 
 def main():
-
-    print("Loading players...")
-    
-    
+    player_mng = PlayerManager()
     while True:
-        player_dict = general_functions.order_dict_alphabetically(read_write_csv.read_csv_file_players())
-        general_functions.print_menu_title("Main Menu")
-        for menu_opt in menu_options:
-            print(menu_opt)
-        general_functions.print_line()
-        user_entry = input("Option: ")
+        print(chr(27) + "[2J") #clear terminal
+        print_menu_title("Main Menu")
+        for option in menu_options:
+            print(option)
 
-        try:
-            user_entry = int(user_entry)
-            general_functions.print_line()
+        print("-"*20)
+        user_input = input("Option: ")
 
-            if user_entry == 0:
-                print("Quitting program...")
-                read_write_csv.write_csv_file_players(player_dict)
-                time.sleep(2)
-                break                
+        if user_input == "0":
+            print("closing programm...")
+            sleep(timer)
+            return
+        elif user_input == "1":
+            while True:
+                print(chr(27) + "[2J") #clear terminal
+                print_menu_title("Add Character")
+                print("[0] Go back")
+                ask_name = input("name: ").capitalize()
+                if ask_name == "0":
+                    print("going back...")
+                    sleep(timer)
+                    break
 
-            elif user_entry == 1:
-                manage_dict_func.print_dictionary(player_dict)
-                general_functions.print_line()
-                print("[1] Add new player")
-                print("[2] Add new characters")
-                user_entry = input("Option: ")
-                general_functions.print_line()
-                if user_entry == "q":
-                    continue
-                elif user_entry == "1":
-                    manage_dict_func.add_new_players(player_dict)
-
-                elif user_entry == "2":
-                    manage_dict_func.add_characters_to_player(player_dict)
+                if player_mng._ask_user(f"Is {ask_name} an alt?"):
+                    player_mng.print_chars()
+                    ask_owner = input("owner: ").capitalize()
                 else:
-                    print("invalid input")
+                    ask_owner = ask_name
+                print("-"*20)
+                ask_class = player_mng.choose_class()
 
-                player_dict = general_functions.order_dict_alphabetically(player_dict)
-                read_write_csv.write_csv_file_players(player_dict)
-
-            elif user_entry == 2:
-                general_functions.print_line()
-                print("[1] Delete player")
-                print("[2] Delete character")
-                user_entry = input("Option: ")
-                general_functions.print_line()
-                if user_entry == "q":
-                    continue
-                elif user_entry == "1":
-                    manage_dict_func.delete_player(player_dict)
-                    read_write_csv.write_csv_file_players(player_dict)
-
-                elif user_entry == "2":
-                    manage_dict_func.delete_character(player_dict)
-                    read_write_csv.write_csv_file_players(player_dict)
+                if ask_class == False:
+                    print("canceling...")
+                    sleep(timer)
+                    break
+                if player_mng._ask_user(f"Want to add {ask_name} | {ask_class} | {ask_owner}"):
+                    player_mng.add_player({"name":ask_name,"class":ask_class,"owner":ask_owner})
+                    sleep(timer)
                 else:
-                    print("invalid input")
+                    break
+        elif user_input == "2":
+            while True:
+                print(chr(27) + "[2J") #clear terminal
+                print_menu_title("Delete Char or Player")
+                ask_user = input("""[0] going back
+                                 
+[1] delete Character
+[2] delete Player
+option: """)
+                if ask_user == "0":
+                    print("going back...")
+                    sleep(timer)
+                    break
+                #print(chr(27) + "[2J") #clear terminal
+                player_mng.print_chars()
+                
+                if ask_user == "1":
+                    ask_name = input("Delete character: ").capitalize()
+                    player_mng.delete_player(ask_name)
                     
-                player_dict = general_functions.order_dict_alphabetically(player_dict)
-                read_write_csv.write_csv_file_players(player_dict)
-            
-            elif user_entry == 3:
-                manage_dict_func.print_dictionary(player_dict)
+                elif ask_user == "2":
+                    ask_name = input("Delete all characters of player: ").capitalize()
+                    player_mng.delete_player(ask_name,True)
+                else:
+                    print("not an option")
+                sleep(timer)
 
-            elif user_entry == 4:
-                sr_sheet_manager.sheet_manager_start()
-
-            else:
-                pass
-
-        except:
-            print("invalid option")
-
-
+        elif user_input == "3":
+            print(" ")
+            player_mng.print_chars()
+            input("press enter to continue ...")
 main()
