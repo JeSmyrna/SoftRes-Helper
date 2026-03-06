@@ -30,6 +30,7 @@ class PlayerManager():
         """
         if self.get_chars_of_player(player["name"],False) == []:
             self.__player_dict.append(player)
+            self.sort_players()
             self.save_player_dict()
         else:
             print("Character already exists")
@@ -44,25 +45,26 @@ class PlayerManager():
                 if self.get_chars_of_player(name) == []:
                     print("Character owner not found.")
                 else:
-                    if self._ask_user(f"Are you sure you want to delete player {name} and all their characters ?"):
+                    self.print_chars(name,True)
+                    if self._ask_user(f"Are you sure you want to delete player {color_text(name,"yw")} and {color_text('all their characters ?',"rd")}"):
                         dict_changed = True
                         for entry in self.__player_dict:
                             if entry["owner"] != name:
                                 new_player_dict.append(entry)
             else:
                 if self.get_chars_of_player(name,False) == []:
-                    print("Character not found.")
+                    print(color_text("Character not found.","yw"))
                 else:
                     check_for_owner = self.get_chars_of_player(name)
-                    if len(check_for_owner) == 1:
-                        if self._ask_user(f"Are you sure you want to delete {name}"):
+                    if len(check_for_owner) <= 1:
+                        if self._ask_user(f"Are you sure you want to delete {color_text(name,"yw")}"):
                             dict_changed = True
                             for entry in self.__player_dict:
                                 if entry["name"] != name:
                                     new_player_dict.append(entry)
                     else:
-                        print(f"Character {name} is owner of another Character:")
-                        self.print_all_chars(name)
+                        print(f"Character {color_text(name,"yw")} is owner of another Character:")
+                        self.print_chars(name,True)
         
             #if there are changes to the dict, save it           
             if dict_changed:
@@ -92,15 +94,15 @@ class PlayerManager():
         main_row += f"{color_text(str(main_row_keys[2]).center(self.__print_config['player'] - len(main_row_keys[2]) - 1),"blwb")}|"
         line_length = len(main_row) -24
         print(main_row)
+        print((line_length)*"-")
 
         #print characters
         for entry in print_this:
-            print((line_length)*"-")
             char_row = f"| {str(entry["name"])}{(self.__print_config['player'] - len(entry["name"]) - 6)*" "}|"
             char_row += f" {str(entry["class"])}{(self.__print_config['class'] - len(entry["class"]) - 7)*" "}|"
             char_row += f" {str(entry["owner"])}{(self.__print_config['player'] - len(entry["owner"]) - 7)*" "}|"
             print(char_row)
-        print((line_length)*"-")
+            print((line_length)*"-")
 
     def search_player(self,name:str):
         if name == "":
@@ -111,12 +113,20 @@ class PlayerManager():
                 print(f"found player {name} as owner of:")
                 self.print_chars(name)
             else:
-                print("player not found, searching for character")
+                print(color_text("player not found, searching for character","yw"))
                 search_result = self.get_chars_of_player(name,False)
                 if search_result != []:
                     print(f"found character {name} as alt of {search_result[0]["owner"]}")
                 else:
                     print(f"Player or Character {name} does not exist")
+    
+    def sort_players(self):
+        dict_copy = self.__player_dict
+        dict_copy = sorted(dict_copy, key=lambda item: item["name"])
+        self.__player_dict = sorted(dict_copy, key=lambda item: item["owner"])
 
-test = PlayerManager()
-test.add_player({"name":"Simmance","class":"priest","owner":"Simmance"})
+#test = PlayerManager()
+#test.print_chars()
+#test.sort_players()
+#test.add_player({"name":"Bernedea","class":"Priest","owner":"Bernedea"})
+#test.delete_player("Gwynndolyn",True)
