@@ -1,11 +1,14 @@
-from file_import import load_json
-from export import save_json
-from general_functions import color_text
+from scripts.file_import import load_json
+from scripts.export import save_json
+from scripts.general_functions import color_text
+
+from time import sleep
 
 class PlayerManager():
     def __init__(self):
         self.__player_dict = []
         self.__print_config = [settings for settings in load_json("./Data/_config/config") if settings["name"] == "col_lengths"][0]
+        self.__classes = list([classes for classes in load_json("./Data/_config/config") if classes["name"] == "class_color"][0].keys())
         self.load_player_dict()
 
     def load_player_dict(self):
@@ -23,15 +26,32 @@ class PlayerManager():
                 return False
             else:
                 print("-"*10)
+    def choose_class(self) -> str:
+        while True:
+            for option in self.__classes[1:]:
+                print(f"[{self.__classes.index(option)}] {option}")
+            print("-"*20)
+            user_entry = input("option: ")
+            if user_entry == "0":
+                print("returning...")
+                sleep(1)
+                return
+            try:
+                return self.__classes[int(user_entry)]
+            except:
+                print(f"input needs to be a number from 0 - {len(self.__classes)}")
 
     def add_player(self,player:dict):
         """
         player = {'name','class','owner'}
         """
         if self.get_chars_of_player(player["name"],False) == []:
-            self.__player_dict.append(player)
-            self.sort_players()
-            self.save_player_dict()
+            if self.get_chars_of_player(player["owner"]) == []:
+                print(f"Owner {color_text(player["owner"],"yw")} does not exist")
+            else:
+                self.__player_dict.append(player)
+                self.sort_players()
+                self.save_player_dict()
         else:
             print("Character already exists")
 
