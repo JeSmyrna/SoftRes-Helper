@@ -144,9 +144,3 @@ class PlayerManager():
         dict_copy = self.__player_dict
         dict_copy = sorted(dict_copy, key=lambda item: item["name"])
         self.__player_dict = sorted(dict_copy, key=lambda item: item["owner"])
-
-#test = PlayerManager()
-#test.print_chars()
-#test.sort_players()
-#test.add_player({"name":"Bernedea","class":"Priest","owner":"Bernedea"})
-#test.delete_player("Gwynndolyn",True)
