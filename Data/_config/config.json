@@ -1,14 +1,14 @@
 [
     {
         "name":"class_color",
-        "warrior":"",
-        "priest":"",
-        "shaman":"",
-        "paladin":"",
-        "hunter":"",
-        "warlock":"",
-        "mage":"",
-        "druid":""
+        "Warrior":"",
+        "Priest":"",
+        "Shaman":"",
+        "Paladin":"",
+        "Hunter":"",
+        "Warlock":"",
+        "Mage":"",
+        "Druid":""
     },
     {
         "name":"sr_sheet",
