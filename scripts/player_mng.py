@@ -26,6 +26,7 @@ class PlayerManager():
                 return False
             else:
                 print("-"*10)
+                
     def choose_class(self) -> str:
         while True:
             for option in self.__classes[1:]:
