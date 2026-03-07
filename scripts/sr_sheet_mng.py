@@ -132,11 +132,13 @@ class SrSheetManager():
                 header_row += f"|{color_text(" " + entry + " " * (self.__col_len["item"] - len(entry)),"blwb")}"
             elif entry == "class":
                 header_row += f"|{color_text(" " + entry + " " * (self.__col_len["class"] - len(entry)),"blwb")}"
-            else:
+            elif entry == "bonus":
                 header_row += f"|{color_text(" " + entry + " " * (7 - len(entry)),"blwb")}"
+            else:
+                header_row += f"|{color_text(" " + entry + " " * (self.__col_len["col_len"] - len(entry)),"blwb")}"
         header_row += "|"
         print(header_row)
-        print("-"*(len(header_row) - 40))
+        print("-"*(len(header_row) - 48))
 
         if len(self.__sr_sheet) > 1:
             for entry in self.__sr_sheet[1:]:

@@ -38,9 +38,9 @@
     },
     {
         "name":"col_lengths",
-        "col_len":24,
-        "player":24,
+        "col_len":18,
+        "player":18,
         "item":48,
-        "class":18
+        "class":12
     }
 ]
