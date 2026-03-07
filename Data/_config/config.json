@@ -20,7 +20,17 @@
             "decay":false,
             "multichar":false,
             "sr_amount":1
-        }
+        },
+        "sr_sheet_menu": [
+            "go back",
+            "load other SR sheet\n",
+            "settings\n",
+            "print sr sheet",
+            "new entry\n",
+            "add new SR+",
+            "delete SR+\n",
+            "export to google sheet"
+        ]
     },
     {
         "name":"settings",

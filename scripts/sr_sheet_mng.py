@@ -10,17 +10,18 @@ class SrSheetManager():
     def __init__(self):
         self.__directory = load_json("./Data/_config/sr_directory")[0]["name"]
         self.__blueprint = [setting for setting in load_json("./Data/_config/config") if setting["name"] == "sr_sheet"][0]
-        self.__sr_sheet: dict
+        self.__sr_sheet: list
         self.__player_dict: PlayerManager
     
     def start_sr_mng(self,player_dict:object):
         self.__player_dict = player_dict
         while True:
             print(chr(27) + "[2J") #clear terminal
+            print_menu_title("SR Sheet Manager")
             self.get_menu(self.__directory)
             user_input = input("option: ")
             if user_input == "0":
-                print("going back...")
+                print("going back to main menu...")
                 break
             elif user_input == "1":
                 name_input = input("SR Sheet Name: ")
@@ -44,7 +45,36 @@ class SrSheetManager():
                 else:
                     print("no SR sheet detected.")
                     sleep(1)
+
+            elif user_input == "3":
+                print(f"loading {self.__directory[int(user_input)]}...")
+                sleep(1)
+                back_to = self.sr_sheet_mng(self.__directory[int(user_input)])
+                if back_to == False:
+                    print("going back to main menu...")
+                    sleep(1)
+                    return
         
+            else:
+                print("not an option...")
+                sleep(1)
+
+    def sr_sheet_mng(self,sr_sheet:str) -> bool:
+        self.__sr_sheet = load_csv(f"./Data/{sr_sheet}/{sr_sheet}")
+        print(chr(27) + "[2J") #clear terminal
+        print_loaded_file(sr_sheet)
+        self.get_menu(self.__blueprint["sr_sheet_menu"])
+        user_input = input("option: ")
+
+        if user_input == "0":
+            return False
+        elif user_input == "1":
+            return True
+        else:
+            print("not an option")
+            sleep(1)
+
+
     def get_menu(self,menu:list=[]):
         for entry in menu:
             print(f"[{menu.index(entry)}] {entry}")
