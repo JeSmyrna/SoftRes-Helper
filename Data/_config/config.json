@@ -39,8 +39,8 @@
     {
         "name":"col_lengths",
         "col_len":24,
-        "player":32,
-        "item":64,
+        "player":24,
+        "item":48,
         "class":18
     }
 ]

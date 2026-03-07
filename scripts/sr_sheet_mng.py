@@ -10,6 +10,7 @@ class SrSheetManager():
     def __init__(self):
         self.__directory = load_json("./Data/_config/sr_directory")[0]["name"]
         self.__blueprint = [setting for setting in load_json("./Data/_config/config") if setting["name"] == "sr_sheet"][0]
+        self.__col_len = [setting for setting in load_json("./Data/_config/config") if setting["name"] == "col_lengths"][0]
         self.__sr_sheet: list
         self.__player_dict: PlayerManager
     
@@ -61,18 +62,22 @@ class SrSheetManager():
 
     def sr_sheet_mng(self,sr_sheet:str) -> bool:
         self.__sr_sheet = load_csv(f"./Data/{sr_sheet}/{sr_sheet}")
-        print(chr(27) + "[2J") #clear terminal
-        print_loaded_file(sr_sheet)
-        self.get_menu(self.__blueprint["sr_sheet_menu"])
-        user_input = input("option: ")
+        while True:
+            print(chr(27) + "[2J") #clear terminal
+            print_loaded_file(sr_sheet)
+            self.get_menu(self.__blueprint["sr_sheet_menu"])
+            user_input = input("option: ")
 
-        if user_input == "0":
-            return False
-        elif user_input == "1":
-            return True
-        else:
-            print("not an option")
-            sleep(1)
+            if user_input == "0":
+                return False
+            elif user_input == "1":
+                return True
+            elif user_input == "3":
+                self.print_sr_sheet()
+                input("press enter to continue...")
+            else:
+                print("not an option")
+                sleep(1)
 
 
     def get_menu(self,menu:list=[]):
@@ -116,3 +121,36 @@ class SrSheetManager():
             save_json(f"{new_path}settings",[self.__blueprint["settings"]])
             save_csv(f"{new_path}{raidname}",[self.__blueprint["columns"]])
             save_csv(f"{new_path}sr_awarded",[self.__blueprint["awarded"]])
+
+    def print_sr_sheet(self):
+        print(chr(27) + "[2J") #clear terminal
+        header_row = ""
+        for entry in self.__sr_sheet[0]:
+            if entry == "player" or entry == "char":
+                header_row += f"|{color_text(" " + entry + " " * (self.__col_len["player"] - len(entry)),"blwb")}"
+            elif entry == "item":
+                header_row += f"|{color_text(" " + entry + " " * (self.__col_len["item"] - len(entry)),"blwb")}"
+            elif entry == "class":
+                header_row += f"|{color_text(" " + entry + " " * (self.__col_len["class"] - len(entry)),"blwb")}"
+            else:
+                header_row += f"|{color_text(" " + entry + " " * (7 - len(entry)),"blwb")}"
+        header_row += "|"
+        print(header_row)
+        print("-"*(len(header_row) - 40))
+
+        if len(self.__sr_sheet) > 1:
+            for entry in self.__sr_sheet[1:]:
+                new_row = ""
+                for value in entry:
+                    if entry.index(value) == 0 or entry.index(value) == 1:
+                        new_row += f"| {value}{' ' * (self.__col_len["player"] - len(value))}"
+                    elif entry.index(value) == 2:
+                        new_row += f"| {value}{' ' * (self.__col_len["item"] - len(value))}"
+                    elif entry.index(value) == 3:
+                        new_row += f"| {value}{' ' * (self.__col_len["class"] - len(value))}"
+                    elif entry.index(value) == 4:
+                        new_row += f"| {value}{' ' * (7 - len(value))}"
+                    else:
+                        new_row += f"| {value}{' ' * (self.__col_len["col_len"] - len(value))}"
+                new_row += "|"
+                print(new_row)
