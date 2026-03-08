@@ -13,6 +13,7 @@ class SrSheetManager():
         self.__col_len = [setting for setting in load_json("./Data/_config/config") if setting["name"] == "col_lengths"][0]
         self.__sr_sheet: list
         self.__player_dict: PlayerManager
+        self.sr_sheet_name : str
     
     def start_sr_mng(self,player_dict:object):
         self.__player_dict = player_dict
@@ -61,6 +62,7 @@ class SrSheetManager():
                 sleep(1)
 
     def sr_sheet_mng(self,sr_sheet:str) -> bool:
+        self.sr_sheet_name = sr_sheet
         self.__sr_sheet = load_csv(f"./Data/{sr_sheet}/{sr_sheet}")
         while True:
             print(chr(27) + "[2J") #clear terminal
@@ -78,7 +80,6 @@ class SrSheetManager():
             else:
                 print("not an option")
                 sleep(1)
-
 
     def get_menu(self,menu:list=[]):
         for entry in menu:
@@ -156,3 +157,18 @@ class SrSheetManager():
                         new_row += f"| {value}{' ' * (self.__col_len["col_len"] - len(value))}"
                 new_row += "|"
                 print(new_row)
+
+    def move_to_log(self,entry:dict):
+        """
+        Keys:\n
+        naem, item, bonus, comment, date_logged, data\n
+        data: dictionary 'header columns'as key and 'presence' as value from [5:]\n
+        Example: {'yyyy-mm-dd':'present', 'yyyy-mm-dd':'absent'}
+        """
+        # func to check the length of the loot log
+        index = len(load_csv(f"./Data/{self.sr_sheet_name}/sr_awarded"))
+        try:
+            entry = [index,entry["name"],entry["item"],entry["bonus"],entry["date_logged"],entry["comment"],f'"{str(entry["data"].items())}"']
+        except:
+            print("wrong format, please read the doc")
+        save_csv(f"./Data/{self.sr_sheet_name}/sr_awarded",entry,False)
