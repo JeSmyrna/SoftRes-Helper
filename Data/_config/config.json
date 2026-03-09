@@ -12,8 +12,8 @@
     },
     {
         "name":"sr_sheet",
-        "columns":["player","char","item","class","bonus"],
-        "awarded":["Entry","Player","SR Item","Bonusroll","Note","Added to log on","data"],
+        "columns":["player","char","class","item","bonus"],
+        "awarded":["Entry","Player","Class","SR Item","Bonusroll","Note","Added to log on","data"],
         "settings":{
             "bonus":10,
             "bonus_half":5,
