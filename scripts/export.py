@@ -20,19 +20,23 @@ def save_text(filename:str, text_data:list, override:bool = True):
             sr_directory.write(f'\n{sheet_name}')
 
 def save_csv(filepath:str,data:list, override:bool = True):
-    write_mode = ""
     if override:
-        write_mode = "w"
-    else:
-        write_mode = "a"
-    
-    with open(f'{filepath}.csv', write_mode, newline='') as csvfile:
-        fieldnames = data[0]
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        with open(f'{filepath}.csv', "w", newline='') as csvfile:
+            fieldnames = data[0]
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
-        writer.writeheader()
-        for entry in data[1:]:
-            new_row = {}
-            for col in fieldnames:
-                new_row.update({col:entry[fieldnames.index(col)]})
-            writer.writerow(new_row)
+            writer.writeheader()
+
+            for entry in data[1:]:
+                new_row = {}
+                for col in fieldnames:
+                    new_row.update({col:entry[fieldnames.index(col)]})
+                writer.writerow(new_row)
+    else:
+        new_log_row = ""
+        for entry in data:
+            new_log_row += f'"{str(entry)}",'
+        with open(f'{filepath}.csv', 'a') as csvfile:
+            csvfile.write(f'\n{new_log_row[:-1]}')
+    
+    
