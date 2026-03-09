@@ -161,14 +161,16 @@ class SrSheetManager():
     def move_to_log(self,entry:dict):
         """
         Keys:\n
-        naem, item, bonus, comment, date_logged, data\n
+        name, class, item, bonus, comment, date_logged, data\n
         data: dictionary 'header columns'as key and 'presence' as value from [5:]\n
         Example: {'yyyy-mm-dd':'present', 'yyyy-mm-dd':'absent'}
         """
+        self.sr_sheet_name = "test"
         # func to check the length of the loot log
         index = len(load_csv(f"./Data/{self.sr_sheet_name}/sr_awarded"))
         try:
-            entry = [index,entry["name"],entry["item"],entry["bonus"],entry["date_logged"],entry["comment"],f'"{str(entry["data"].items())}"']
+            entry = [index,entry["name"],entry["class"],entry["item"],entry["bonus"],entry["comment"],entry["date_logged"],f'{entry["data"]}']
         except:
             print("wrong format, please read the doc")
-        save_csv(f"./Data/{self.sr_sheet_name}/sr_awarded",entry,False)
+        else:
+            save_csv(f"./Data/{self.sr_sheet_name}/sr_awarded",entry,False)
