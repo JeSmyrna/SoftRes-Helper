@@ -110,18 +110,18 @@ class PlayerManager():
 
         #print main row
         main_row_keys = list(print_this[0].keys())
-        main_row = f"|{color_text(str(main_row_keys[0]).center(self.__print_config['player'] - len(main_row_keys[0]) - 1),"blwb")}|"
-        main_row += f"{color_text(str(main_row_keys[1]).center(self.__print_config['class'] - len(main_row_keys[1]) - 1),"blwb")}|"
-        main_row += f"{color_text(str(main_row_keys[2]).center(self.__print_config['player'] - len(main_row_keys[2]) - 1),"blwb")}|"
-        line_length = len(main_row) -24
+        main_row = f"|{color_text(" " + str(main_row_keys[0]) + " "*(self.__print_config['player'] - len(main_row_keys[0]) - 2),"blwb")}|"
+        main_row += f"{color_text(" " + str(main_row_keys[1]) + " "*(self.__print_config['class'] - len(main_row_keys[1]) - 1),"blwb")}|"
+        main_row += f"{color_text(" " + str(main_row_keys[2]) + " "*(self.__print_config['player'] - len(main_row_keys[2]) - 1),"blwb")}|"
+        line_length = len(main_row) - 24
         print(main_row)
         print((line_length)*"-")
 
         #print characters
         for entry in print_this:
-            char_row = f"| {str(entry["name"])}{(self.__print_config['player'] - len(entry["name"]) - 6)*" "}|"
-            char_row += f" {str(entry["class"])}{(self.__print_config['class'] - len(entry["class"]) - 7)*" "}|"
-            char_row += f" {str(entry["owner"])}{(self.__print_config['player'] - len(entry["owner"]) - 7)*" "}|"
+            char_row = f"| {str(entry["name"])}{(self.__print_config['player'] - len(entry["name"]) - 2)*" "}|"
+            char_row += f" {str(entry["class"])}{(self.__print_config['class'] - len(entry["class"]) -1)*" "}|"
+            char_row += f" {str(entry["owner"])}{(self.__print_config['player'] - len(entry["owner"]) -1)*" "}|"
             print(char_row)
             print((line_length)*"-")
 
