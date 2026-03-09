@@ -1,4 +1,5 @@
 from scripts.player_mng import PlayerManager
+from scripts.sr_sheet_mng import SrSheetManager
 
 from scripts.general_functions import print_menu_title
 from time import sleep
@@ -15,6 +16,7 @@ timer = 1
 
 def main():
     player_mng = PlayerManager()
+    sr_sheet_mng = SrSheetManager()
     while True:
         print(chr(27) + "[2J") #clear terminal
         print_menu_title("Main Menu")
@@ -87,4 +89,7 @@ option: """)
             print(" ")
             player_mng.print_chars()
             input("press enter to continue ...")
+
+        elif user_input == "4":
+            sr_sheet_mng.start_sr_mng(player_mng)
 main()
