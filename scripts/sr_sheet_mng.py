@@ -113,7 +113,11 @@ class SrSheetManager():
     def _save_sr_sheet(self):
         save_csv(f"./Data/{self.sr_sheet_name}/{self.sr_sheet_name}",self.__sr_sheet)
 
-    def _look_for_entries(self,owner_name:str):
+    def _look_for_entries(self,owner_name:str) -> list:
+        """
+        Search the SR Sheet with Owner Name\n
+        Get all entries in a list
+        """
         search_result = [entry for entry in self.__sr_sheet if entry[0] == owner_name]
         return search_result
 
