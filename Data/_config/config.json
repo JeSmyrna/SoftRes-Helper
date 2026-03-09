@@ -28,7 +28,8 @@
             "print sr sheet",
             "new entry\n",
             "add new SR+",
-            "delete SR+\n",
+            "delete SR+",
+            "reinstantiate log\n",
             "export to google sheet"
         ]
     },
