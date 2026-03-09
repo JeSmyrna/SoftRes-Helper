@@ -125,7 +125,7 @@ class PlayerManager():
             print(char_row)
             print((line_length)*"-")
 
-    def search_player(self,name:str):
+    def search_player(self,name:str) -> list:
         if name == "":
             print("nothing to search")
         else:
@@ -140,6 +140,7 @@ class PlayerManager():
                     print(f"found character {name} as alt of {search_result[0]["owner"]}")
                 else:
                     print(f"Player or Character {name} does not exist")
+            return search_result
     
     def sort_players(self):
         dict_copy = self.__player_dict

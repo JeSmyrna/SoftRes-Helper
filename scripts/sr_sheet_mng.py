@@ -86,16 +86,19 @@ class SrSheetManager():
             elif user_input == "6":
                 if len(self.__sr_sheet) > 1:
                     self.print_sr_sheet()
-                    sr_entry = input("Character to delete or (q)uit: ")
+                    sr_entry = input("\nCharacter to delete or (q)uit: ")
                     if sr_entry == "q":
                         pass
                     else:
-                        self.log_sr_entry(sr_entry,"manualy deleted")
+                        self.log_sr_entry(sr_entry,"manually deleted")
                 else:
-                    print("no entries found...")
-                    sleep(1)
+                    input("no entries found...")
+            
             elif user_input == "7":
-                self.reinstantiate_log("Gwynndolyn")
+                log_data = load_csv(f"./Data/{self.sr_sheet_name}/sr_awarded")
+                self.get_menu(log_data)
+                char_name = input("\nCharacter name: ")
+                self.reinstantiate_log(char_name)
             else:
                 print("not an option")
                 sleep(1)
@@ -110,8 +113,8 @@ class SrSheetManager():
     def _save_sr_sheet(self):
         save_csv(f"./Data/{self.sr_sheet_name}/{self.sr_sheet_name}",self.__sr_sheet)
 
-    def _look_for_double(self,char_name:str):
-        search_result = [entry for entry in self.__sr_sheet if entry[1] == char_name]
+    def _look_for_entries(self,owner_name:str):
+        search_result = [entry for entry in self.__sr_sheet if entry[0] == owner_name]
         return search_result
 
     def _delete_sr_sheet(self,sr_name:str):
@@ -202,41 +205,77 @@ class SrSheetManager():
     def log_sr_entry(self,character:str,log_msg:str):
         data = ""
         try:
-            char_entry = [entry for entry in self.__sr_sheet if entry[1] == character][0]
+            char_entry = [entry for entry in self.__sr_sheet if entry[1] == character]
         except:
             print("Error: log_sr_entry input not found")
             input("...")
         else:
             if char_entry == []:
                 print("character not found")
-            else:
-                if input(f"Are you sure you want to move {character} with the SR+ on {char_entry[3]} with a bonus of {char_entry[4]} to the Logs? (y/n): ") == "y":
-                    self.__sr_sheet.remove(char_entry)
-                    save_csv(f'./Data/{self.sr_sheet_name}/{self.sr_sheet_name}',self.__sr_sheet)
-                    for i in self.__sr_sheet[0][5:]:
-                        data += f'{i}:{char_entry[self.__sr_sheet[0].index(i)]},'
-
-                    new_log = {"name":character,
-                            "class":char_entry[2],
-                            "item":f"{char_entry[3]}",
-                            "bonus":char_entry[4],
-                            "date_logged":get_date(),
-                            "comment":log_msg,
-                            "data":f'{data[:-1]}'}
-                    self.move_to_log(new_log)
+                return
+            
+            if len(char_entry) > 1:
+                self.get_menu(char_entry)
+                entry_num = input("option or (q)uit: ")
+                if entry_num == "q":
+                    return
                 else:
-                    print("cancel logging...")
-                    sleep(1)
+                    try:
+                        char_entry = char_entry[int(entry_num)]
+                    except:
+                        input("input error...")
+                        return
+            else:
+                char_entry = char_entry[0]
+
+            if input(f"Are you sure you want to move {character} with the SR+ on {char_entry[3]} with a bonus of {char_entry[4]} to the Logs? (y/n): ") == "y" and char_entry[0] != type(list):
+                self.__sr_sheet.remove(char_entry)
+                save_csv(f'./Data/{self.sr_sheet_name}/{self.sr_sheet_name}',self.__sr_sheet)
+                for i in self.__sr_sheet[0][5:]:
+                    data += f'{i}:{char_entry[self.__sr_sheet[0].index(i)]},'
+
+                new_log = {"name":character,
+                        "class":char_entry[2],
+                        "item":f"{char_entry[3]}",
+                        "bonus":char_entry[4],
+                        "date_logged":get_date(),
+                        "comment":log_msg,
+                        "data":f'{data[:-1]}'}
+                self.move_to_log(new_log)
+                input("successfully moved to log...")
+            else:
+                print("cancel logging...")
+                sleep(1)
 
     def reinstantiate_log(self,char_name:str):
-        entry_amount = len(self._look_for_double(char_name))
+        character_list = self.__player_dict.search_player(char_name)
+        char_owner = character_list[0]["owner"]
+        entry_amount = self._look_for_entries(char_owner)
         #look for owner and alt chars in SR sheet
-
-        #can't reinstantiate if the amount of SR+ meets the max amoutn of SR+ in settings
-        if self.__settings['sr_amount'] > entry_amount: # type: ignore
+        check = []
+        #look if Sr Sheet setting allows ALT Characters AND if there is already a character of said player
+        if self.__settings['multichar'] == False and len(entry_amount) > 0: # type: ignore
+            check.append(False)
+            print(f"\n{char_owner} already has {entry_amount[0][1]} in the Sheet")
+        else:
+            check.append(True)
+         
+        #can't reinstantiate if the amount of SR+ meets the max amount of SR+ in settings
+        if self.__settings['sr_amount'] > len([entry for entry in self.__sr_sheet if entry[1] == char_name]): # type: ignore
+            check.append(True)
+        else:
+            check.append(False)
+        
+        if check == [True,True]:
             header_row = self.__sr_sheet[0]
             data = load_csv(f"./Data/{self.sr_sheet_name}/sr_awarded")
             data = [entry for entry in data if entry[1] == char_name]
+
+            if data == []:
+                print("no character in log found")
+                input("...")
+                return
+            
             if len(data) > 1:
                 print(color_text(">> character has more than 1 entry in log, please choose...","yw"))
                 self.get_menu(data)
@@ -248,15 +287,18 @@ class SrSheetManager():
                 except IndexError:
                     print("IndexError: couldn't find log")
                     input("...")
+            else:
+                data = data[0]
             
-            data_days = str(data[-1:][0]).split(",")
+            data_days = str(data[-1]).split(",")
+
             days = {}
             for entry in data_days:
                 entry = entry.split(":")
                 days.update({entry[0]:entry[1]})
             
             #search for owner of character
-            list_entry = [data[1],data[1],data[2],data[3],data[4]]
+            list_entry = [char_owner,data[1],data[2],data[3],data[4]]
             for entry in header_row[5:]:
                 if entry in days.keys():
                     list_entry.append(days[entry])
@@ -266,7 +308,6 @@ class SrSheetManager():
             self._save_sr_sheet()
             print("Succesfully instantiated the log into SR+ Sheet")
             input("...")
-            #move to log "reinstantiated log"
         else:
-            print(f"Character has already the max amount {self.__settings["sr_amount"]} of SR+ in the current sheet") # type: ignore
+            print(f"Character has already the max amount of SR+/Characters in the current sheet") # type: ignore
             input("...")
