@@ -26,7 +26,7 @@ def save_csv(filepath:str,data:list, override:bool = True):
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
             writer.writeheader()
-
+    
             for entry in data[1:]:
                 new_row = {}
                 for col in fieldnames:

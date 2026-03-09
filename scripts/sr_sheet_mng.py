@@ -72,11 +72,26 @@ class SrSheetManager():
 
             if user_input == "0":
                 return False
+            
             elif user_input == "1":
                 return True
+            
             elif user_input == "3":
                 self.print_sr_sheet()
                 input("press enter to continue...")
+
+            elif user_input == "6":
+                if len(self.__sr_sheet) > 1:
+                    self.print_sr_sheet()
+                    sr_entry = input("Character to delete or (q)uit: ")
+                    if sr_entry == "q":
+                        pass
+                    else:
+                        self.log_sr_entry(sr_entry,"manualy deleted")
+                else:
+                    print("no entries found...")
+                    sleep(1)
+                
             else:
                 print("not an option")
                 sleep(1)
@@ -139,7 +154,7 @@ class SrSheetManager():
                 header_row += f"|{color_text(" " + entry + " " * (self.__col_len["col_len"] - len(entry)),"blwb")}"
         header_row += "|"
         print(header_row)
-        print("-"*(len(header_row) - 48))
+        print("-"*((len(header_row) - (8*len(self.__sr_sheet[0])))))
 
         if len(self.__sr_sheet) > 1:
             for entry in self.__sr_sheet[1:]:
@@ -148,9 +163,9 @@ class SrSheetManager():
                     if entry.index(value) == 0 or entry.index(value) == 1:
                         new_row += f"| {value}{' ' * (self.__col_len["player"] - len(value))}"
                     elif entry.index(value) == 2:
-                        new_row += f"| {value}{' ' * (self.__col_len["item"] - len(value))}"
-                    elif entry.index(value) == 3:
                         new_row += f"| {value}{' ' * (self.__col_len["class"] - len(value))}"
+                    elif entry.index(value) == 3:
+                        new_row += f"| {value}{' ' * (self.__col_len["item"] - len(value))}"
                     elif entry.index(value) == 4:
                         new_row += f"| {value}{' ' * (7 - len(value))}"
                     else:
@@ -162,10 +177,8 @@ class SrSheetManager():
         """
         Keys:\n
         name, class, item, bonus, comment, date_logged, data\n
-        data: dictionary 'header columns'as key and 'presence' as value from [5:]\n
-        Example: {'yyyy-mm-dd':'present', 'yyyy-mm-dd':'absent'}
+        data example: 'yyyy-mm-dd:present,yyyy-mm-dd:absent'
         """
-        self.sr_sheet_name = "test"
         # func to check the length of the loot log
         index = len(load_csv(f"./Data/{self.sr_sheet_name}/sr_awarded"))
         try:
@@ -174,3 +187,32 @@ class SrSheetManager():
             print("wrong format, please read the doc")
         else:
             save_csv(f"./Data/{self.sr_sheet_name}/sr_awarded",entry,False)
+
+    def log_sr_entry(self,character:str,log_msg:str):
+        data = ""
+        try:
+            char_entry = [entry for entry in self.__sr_sheet if entry[1] == character][0]
+            self.__sr_sheet.remove(char_entry)
+            save_csv(f'./Data/{self.sr_sheet_name}/{self.sr_sheet_name}',self.__sr_sheet)
+        except:
+            print("Error: log_sr_entry input not found")
+            input("...")
+        else:
+            if char_entry == []:
+                print("character not found")
+            else:
+                if input(f"Are you sure you want to move {character} with the SR+ on {char_entry[3]} with a bonus of {char_entry[4]} to the Logs? (y/n): ") == "y":
+                    for i in self.__sr_sheet[0][5:]:
+                        data += f'{i}:{char_entry[self.__sr_sheet[0].index(i)]},'
+
+                    new_log = {"name":character,
+                            "class":char_entry[2],
+                            "item":f"{char_entry[3]}",
+                            "bonus":char_entry[4],
+                            "date_logged":get_date(),
+                            "comment":log_msg,
+                            "data":f'{data[:-1]}'}
+                    self.move_to_log(new_log)
+                else:
+                    print("cancel logging...")
+                    sleep(1)
