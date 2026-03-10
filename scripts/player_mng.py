@@ -125,21 +125,23 @@ class PlayerManager():
             print(char_row)
             print((line_length)*"-")
 
-    def search_player(self,name:str) -> list:
+    def search_player(self,name:str,show_msg:bool = True) -> list:
         if name == "":
             print("nothing to search")
         else:
             search_result = self.get_chars_of_player(name)
-            if search_result != []:
+            if search_result != [] and show_msg:
                 print(f"found player {name} as owner of:")
                 self.print_chars(name)
             else:
-                print(color_text("player not found, searching for character","yw"))
+                if show_msg:
+                    print(color_text("player not found, searching for character","yw"))
                 search_result = self.get_chars_of_player(name,False)
-                if search_result != []:
+                if search_result != [] and show_msg:
                     print(f"found character {name} as alt of {search_result[0]["owner"]}")
                 else:
-                    print(f"Player or Character {name} does not exist")
+                    if show_msg:
+                        print(f"Player or Character {name} does not exist")
             return search_result
     
     def sort_players(self):
