@@ -83,6 +83,9 @@ class SrSheetManager():
                 self.print_sr_sheet()
                 input("press enter to continue...")
 
+            elif user_input == "5":
+                self.add_to_sheet()
+
             elif user_input == "6":
                 if len(self.__sr_sheet) > 1:
                     self.print_sr_sheet()
@@ -185,11 +188,60 @@ class SrSheetManager():
                     elif entry.index(value) == 3:
                         new_row += f"| {value}{' ' * (self.__col_len["item"] - len(value))}"
                     elif entry.index(value) == 4:
-                        new_row += f"| {value}{' ' * (7 - len(value))}"
+                        new_row += f"| {value}{' ' * (7 - len(str(value)))}"
                     else:
                         new_row += f"| {value}{' ' * (self.__col_len["col_len"] - len(value))}"
                 new_row += "|"
                 print(new_row)
+
+    def _fill_days(self,present_last_day:bool = False) -> list:
+        days_filled = ["-" for entry in self.__sr_sheet[0][5:]]
+        if present_last_day:
+            days_filled.pop(-1)
+            days_filled.append("present")
+        return days_filled
+
+    def add_to_sheet(self,new_entry:list=[],auto:bool=False):
+        """
+        new_entry = [char_owner, char_name, class, item_name, bonus=0]
+        """
+        
+        #manual add
+        if auto != True:
+            char_owner = ""
+            presence_list = []
+            self.__player_dict.print_chars()
+            char_name = input("\nCharacter Name: ")
+            sr_item = input("Sr Item Name: ")
+            present = input(f"Present Last Raid day {self.__sr_sheet[0][-1]} ? (y/n): ")
+
+            search_result = self.__player_dict.search_player(char_name,False)
+            if search_result != []:
+                char_owner = search_result[0]["owner"]
+            
+            if self._check_rules(char_name) == [True,True]:
+
+                if present == "y":
+                    presence_list = self._fill_days(True)
+                else:
+                    presence_list = self._fill_days()
+
+                make_entry = [char_owner,char_name,search_result[0]["class"],sr_item,0]
+                make_entry.extend(presence_list)
+                self.__sr_sheet.append(make_entry)
+                self._save_sr_sheet()
+            else:
+                print(f"Character has already the max amount of SR+/Characters in the current sheet")
+                input("...")
+                return
+            
+        else:
+            new_entry.extend(self._fill_days())
+            self.__sr_sheet.append(new_entry)
+            self._save_sr_sheet()
+            return
+
+        input("...")
 
     def move_to_log(self,entry:dict):
         """
@@ -213,9 +265,11 @@ class SrSheetManager():
         except:
             print("Error: log_sr_entry input not found")
             input("...")
+            return
         else:
             if char_entry == []:
                 print("character not found")
+                input("...")
                 return
             
             if len(char_entry) > 1:
@@ -251,26 +305,35 @@ class SrSheetManager():
                 print("cancel logging...")
                 sleep(1)
 
-    def reinstantiate_log(self,char_name:str):
-        character_list = self.__player_dict.search_player(char_name)
+    def _check_rules(self,char_name:str) -> list[bool]:
+        check = []
+        character_list = self.__player_dict.search_player(char_name,False)
         char_owner = character_list[0]["owner"]
         entry_amount = self._look_for_entries(char_owner)
-        #look for owner and alt chars in SR sheet
-        check = []
-        #look if Sr Sheet setting allows ALT Characters AND if there is already a character of said player
+
+        #check if multiple alt are allowed and if not if they player has already a character in
         if self.__settings['multichar'] == False and len(entry_amount) > 0: # type: ignore
             check.append(False)
-            print(f"\n{char_owner} already has {entry_amount[0][1]} in the Sheet")
         else:
             check.append(True)
          
-        #can't reinstantiate if the amount of SR+ meets the max amount of SR+ in settings
+        #check if the amount of SR+ meets the max amount of SR+ in settings
         if self.__settings['sr_amount'] > len([entry for entry in self.__sr_sheet if entry[1] == char_name]): # type: ignore
             check.append(True)
         else:
             check.append(False)
+
+        return check
+
+    def reinstantiate_log(self,char_name:str):
+        character_list = self.__player_dict.search_player(char_name,False)
+        try:
+            char_owner = character_list[0]["owner"]
+        except:
+            print("reinstantiate input error")
+            input("...")
         
-        if check == [True,True]:
+        if self._check_rules(char_name) == [True,True]:
             header_row = self.__sr_sheet[0]
             data = load_csv(f"./Data/{self.sr_sheet_name}/sr_awarded")
             data = [entry for entry in data if entry[1] == char_name]
@@ -291,6 +354,7 @@ class SrSheetManager():
                 except IndexError:
                     print("IndexError: couldn't find log")
                     input("...")
+                    return
             else:
                 data = data[0]
             
@@ -301,7 +365,6 @@ class SrSheetManager():
                 entry = entry.split(":")
                 days.update({entry[0]:entry[1]})
             
-            #search for owner of character
             list_entry = [char_owner,data[1],data[2],data[3],data[4]]
             for entry in header_row[5:]:
                 if entry in days.keys():
