@@ -262,7 +262,25 @@ class SrSheetManager():
         else:
             save_csv(f"./Data/{self.sr_sheet_name}/sr_awarded",entry,False)
 
-    def log_sr_entry(self,character:str,log_msg:str):
+    def _format_log(self,entry:list,log_msg:str="") -> dict:
+        data = ""
+        for i in self.__sr_sheet[0][5:]:
+            data += f'{i}:{entry[self.__sr_sheet[0].index(i)]},'
+        new_log = {"name":entry[1],
+                "class":entry[2],
+                "item":f"{entry[3]}",
+                "bonus":entry[4],
+                "date_logged":get_date(),
+                "comment":log_msg,
+                "data":f'{data[:-1]}'}
+        return new_log
+
+    def log_sr_entry(self,character:str="",log_msg:str="",auto:bool=False,entry:list=[]):
+        if auto:
+            self._format_log(entry,log_msg)
+            self.__sr_sheet.remove(entry)
+            self._save_sr_sheet()
+
         data = ""
         try:
             char_entry = [entry for entry in self.__sr_sheet if entry[1] == character]
@@ -291,19 +309,20 @@ class SrSheetManager():
                 char_entry = char_entry[0]
 
             if input(f"Are you sure you want to move {character} with the SR+ on {char_entry[3]} with a bonus of {char_entry[4]} to the Logs? (y/n): ") == "y" and char_entry[0] != type(list):
-                self.__sr_sheet.remove(char_entry)
-                save_csv(f'./Data/{self.sr_sheet_name}/{self.sr_sheet_name}',self.__sr_sheet)
-                for i in self.__sr_sheet[0][5:]:
+                new_log = self._format_log(char_entry,log_msg)
+                """ for i in self.__sr_sheet[0][5:]:
                     data += f'{i}:{char_entry[self.__sr_sheet[0].index(i)]},'
-
                 new_log = {"name":character,
                         "class":char_entry[2],
                         "item":f"{char_entry[3]}",
                         "bonus":char_entry[4],
                         "date_logged":get_date(),
                         "comment":log_msg,
-                        "data":f'{data[:-1]}'}
+                        "data":f'{data[:-1]}'} """
+                
                 self.move_to_log(new_log)
+                self.__sr_sheet.remove(char_entry)
+                self._save_sr_sheet()
                 input("successfully moved to log...")
             else:
                 print("cancel logging...")
