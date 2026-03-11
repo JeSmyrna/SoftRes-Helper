@@ -79,6 +79,9 @@ class SrSheetManager():
             elif user_input == "1":
                 return True
             
+            elif user_input == "2":
+                self.settings_menu()
+            
             elif user_input == "3":
                 self.print_sr_sheet()
                 input("press enter to continue...")
@@ -110,6 +113,56 @@ class SrSheetManager():
         for entry in menu:
             print(f"[{menu.index(entry)}] {entry}")
     
+    def settings_menu(self):
+        options = ["go back\n"]        
+        settings = [entry for entry in self.__settings]
+        options.extend(settings)
+
+        while True:
+            print(chr(27) + "[2J") #clear terminal
+            self.show_settings()
+            self.get_menu(options)
+            user_input = input("\noption: ")
+            if user_input == "0":
+                return
+            try:
+                self.change_setting(self.__settings[options[int(user_input)]],setting_name=options[int(user_input)])
+            except IndexError:
+                print("settings_menu: INDEX error")
+            except:
+                print("settins_menu: Input error")
+            save_json(f"./Data/{self.sr_sheet_name}/settings",[self.__settings])
+
+    def show_settings(self):
+        header = [entry for entry in self.__settings]
+        values = [self.__settings[entry] for entry in self.__settings]
+        header_row = "|"
+        for entry in header:
+            header_row += color_text(f" {entry}{" " * (self.__col_len["col_len"] - len(entry) - 1)}","blwb")
+            header_row += "|"
+        print(header_row)
+        print("-" * (self.__col_len["col_len"] * len(header) + 6))
+
+        value_row = "|"
+        for entry in values:
+            value_row += f" {entry}{" " * (self.__col_len["col_len"] - len(str(entry)) - 1)}"
+            value_row += "|"
+        print(value_row)
+        print("-" * (self.__col_len["col_len"] * len(values) + 6) + "\n")
+        
+    def change_setting(self,setting,setting_name):
+        while True:
+            if type(setting) == bool:
+                self.__settings[setting_name] = not self.__settings[setting_name]
+                break
+            else:
+                user_input = input(f"New value for {setting_name}: {setting} >> ")
+                try:
+                    self.__settings[setting_name] = int(user_input)
+                    break
+                except:
+                    print("change setting: input error")
+
     def save_sr_directory(self):
         save_json("./Data/_config/sr_directory", [{"name":self.__directory}])
 
