@@ -126,7 +126,11 @@ class SrSheetManager():
             if user_input == "0":
                 return
             try:
-                self.change_setting(self.__settings[options[int(user_input)]],setting_name=options[int(user_input)])
+                if int(user_input) <= 0:
+                    print("Can't be negative or 0")
+                    input("...")
+                else:
+                    self.change_setting(self.__settings[options[int(user_input)]],setting_name=options[int(user_input)])
             except IndexError:
                 print("settings_menu: INDEX error")
             except:
