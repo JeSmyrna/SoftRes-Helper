@@ -2,11 +2,12 @@ from scripts.general_functions import get_date, color_text, print_loaded_file, o
 from scripts.file_import import load_text_file, load_json, load_csv
 from scripts.export import save_json, save_csv
 from scripts.player_mng import PlayerManager
+from scripts.import_raidlogs import RaidLogImporter
 
 import os, shutil
 from time import sleep
 
-class SrSheetManager():
+class SrSheetManager(RaidLogImporter):
     def __init__(self):
         self.__directory = load_json("./Data/_config/sr_directory")[0]["name"]
         self.__blueprint = [setting for setting in load_json("./Data/_config/config") if setting["name"] == "sr_sheet"][0]
@@ -85,6 +86,10 @@ class SrSheetManager():
             elif user_input == "3":
                 self.print_sr_sheet()
                 input("press enter to continue...")
+            
+            elif user_input == "4":
+                self.make_new_entry()
+                input("...") #delete later
 
             elif user_input == "5":
                 self.add_to_sheet()
@@ -142,17 +147,17 @@ class SrSheetManager():
         values = [self.__settings[entry] for entry in self.__settings]
         header_row = "|"
         for entry in header:
-            header_row += color_text(f" {entry}{" " * (self.__col_len["col_len"] - len(entry) - 1)}","blwb")
+            header_row += color_text(f" {entry}{" " * (self.__col_len["player"] - len(entry) - 1)}","blwb")
             header_row += "|"
         print(header_row)
-        print("-" * (self.__col_len["col_len"] * len(header) + 6))
+        print("-" * (self.__col_len["player"] * len(header) + 6))
 
         value_row = "|"
         for entry in values:
-            value_row += f" {entry}{" " * (self.__col_len["col_len"] - len(str(entry)) - 1)}"
+            value_row += f" {entry}{" " * (self.__col_len["player"] - len(str(entry)) - 1)}"
             value_row += "|"
         print(value_row)
-        print("-" * (self.__col_len["col_len"] * len(values) + 6) + "\n")
+        print("-" * (self.__col_len["player"] * len(values) + 6) + "\n")
         
     def change_setting(self,setting,setting_name):
         while True:
@@ -170,8 +175,17 @@ class SrSheetManager():
     def save_sr_directory(self):
         save_json("./Data/_config/sr_directory", [{"name":self.__directory}])
 
-    def _save_sr_sheet(self):
-        save_csv(f"./Data/{self.sr_sheet_name}/{self.sr_sheet_name}",self.__sr_sheet)
+    def _save_sr_sheet(self,copy:bool = False):
+        """
+        copy = True, copies sr_sheet into the log folder\n
+        with the last entry in the header column from sheet
+        """
+        file_path = f"./Data/{self.sr_sheet_name}/{self.sr_sheet_name}"
+        if copy:
+            target_path = f"./Data/{self.sr_sheet_name}/logs/{self.__sr_sheet[0][-1]}-{self.sr_sheet_name}.csv"
+            shutil.copy(f"{file_path}.csv",target_path)
+        else:
+            save_csv(file_path,self.__sr_sheet)
 
     def _look_for_entries(self,char_name:str,owner:bool = True) -> list:
         """
@@ -458,3 +472,26 @@ class SrSheetManager():
         else:
             print(f"Character has already the max amount of SR+/Characters in the current sheet") # type: ignore
             input("...")
+
+    def make_new_entry(self):
+        imported_data = self.import_logs()
+        if imported_data == None:
+            input("...")
+            return
+        
+        #make safety copy
+        #self._save_sr_sheet(True)
+
+        #add new column name
+        new_entry_name = input("New Date (YYYY-MM-DD): ")
+        self.__sr_sheet[0].append(new_entry_name)
+        print(imported_data[3])
+        #Check attendee if already registered
+        for attendee in imported_data[1]:
+            #Auto add players not found
+            if self.__player_dict.search_player(attendee,False) == []:
+                try:
+                    newPlayerData = imported_data[3].get(attendee)
+                    self.__player_dict.add_player({attendee,newPlayerData[2],attendee})
+                except:
+                    print(f"player {color_text(attendee,"yw")} not found in raidres, not enough information to add to player dict")
