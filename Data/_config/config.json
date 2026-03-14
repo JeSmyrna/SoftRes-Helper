@@ -18,6 +18,8 @@
             "bonus":10,
             "bonus_half":5,
             "decay":false,
+            "decay_amount":10,
+            "decay_after" : 2,
             "multichar":false,
             "sr_amount":1
         },

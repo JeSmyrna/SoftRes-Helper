@@ -22,6 +22,9 @@ def get_user_input(question:str):
     return user_input
 
 def get_date() -> str:
+    """
+    YYYY-MM-DD
+    """
     date = str(datetime.now().strftime('%Y-%m-%d'))
     return date
 
