@@ -14,6 +14,9 @@ class RaidResActor():
         self.active_entry = [] #sr sheet entries to compare to
         self.focused_char = [] #focused character entry on website
         self.profile_path = ""
+        self.item_index = 0
+        self.char_name_index = 0
+        self.bonus_index = 0
 
         self.find_firefox_profile()
 
@@ -29,11 +32,25 @@ class RaidResActor():
             return
 
     def scan_sheet_data(self):
-        self.active_entry = [entry for entry in self.sr_sheet_data if entry[0].lower() == self.focused_char[0].lower() or entry[1].lower() == self.focused_char[0].lower()]
-        self.active_entry = [entry for entry in self.active_entry if self.focused_char[1] in entry]
+        self.active_entry = [entry for entry in self.sr_sheet_data if entry[self.char_name_index].lower() == self.focused_char[0].lower()]
+        self.active_entry = [entry for entry in self.active_entry if self.focused_char[self.item_index] in entry]
 
     def set_sr_sheet(self,sr_sheet:list):
         self.sr_sheet_data = sr_sheet
+        
+        #Development might change how I format SR sheets, thats why i for charname and sr item
+        self.item_index = [col_name for col_name in sr_sheet[0] if col_name.lower() == "item"][0]
+
+        self.char_name_index = [col_name for col_name in sr_sheet[0] if col_name.lower() == "char"]
+        if self.char_name_index == []:
+            self.char_name_index = [col_name for col_name in sr_sheet[0] if col_name.lower() == "player"]
+        self.char_name_index = self.char_name_index[0]
+
+        self.bonus_index = [col_name for col_name in sr_sheet[0] if "bonus" in col_name.lower()][0]
+
+        self.char_name_index = sr_sheet[0].index(self.char_name_index)
+        self.item_index = sr_sheet[0].index(self.item_index)
+        self.bonus_index = sr_sheet[0].index(self.bonus_index)
 
     def scan_site(self, site_link:str):
         firefox_opt = ff_opt()
@@ -96,4 +113,4 @@ class RaidResActor():
         if reset:
             input_field.send_keys("0")
         else:
-            input_field.send_keys(str(self.active_entry[0][3]))
+            input_field.send_keys(str(self.active_entry[0][self.bonus_index]))
