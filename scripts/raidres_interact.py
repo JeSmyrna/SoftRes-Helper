@@ -9,7 +9,7 @@ from selenium.webdriver.common.keys import Keys
 from time import sleep
 
 
-profile_path = os.path.join(os.environ['APPDATA'], r"Mozilla/Firefox/Profiles/P6ziroSq.Profil 1")
+profile_path = os.path.join(os.environ['APPDATA'], r"Mozilla/Firefox/Profiles/ProfileName")
 ff_profile = FirefoxProfile()
 
 firefox_opt = ff_opt()
@@ -39,10 +39,11 @@ if reservation_grid.get_attribute("data-srplus") == "1":
                 input_field = e.find_element(By.CSS_SELECTOR, ".sr-plus > div > input")
                 bonus_roll = input_field.get_attribute("value")
                 
-                input_field.click()
-                input_field.send_keys(Keys.CONTROL + "a")
-                input_field.send_keys(Keys.BACKSPACE)
-                input_field.send_keys("69")
+                if char_name == "Eatmybolts" and item_name == "Eye of C'Thun":
+                    input_field.click()
+                    input_field.send_keys(Keys.CONTROL + "a")
+                    input_field.send_keys(Keys.BACKSPACE)
+                    input_field.send_keys("69")
                 #input_field.send_keys(Keys.ENTER) #i think this will reload the page
 
             except:
