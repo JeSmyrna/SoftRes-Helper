@@ -4,66 +4,96 @@ from selenium.webdriver.support.ui import WebDriverWait
 import os
 
 from selenium.webdriver.firefox.options import Options as ff_opt
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.common.keys import Keys
 from time import sleep
 
 
-profile_path = os.path.join(os.environ['APPDATA'], r"Mozilla/Firefox/Profiles/ProfileName")
-ff_profile = FirefoxProfile()
+class RaidResActor():
+    def __init__(self):
+        self.sr_sheet_data = []
+        self.active_entry = [] #sr sheet entries to compare to
+        self.focused_char = [] #focused character entry on website
+        self.profile_path = ""
 
-firefox_opt = ff_opt()
-firefox_opt.add_argument("-profile")
-firefox_opt.add_argument(profile_path)
-driver =  webdriver.Firefox(options=firefox_opt)
-driver.get("https://raidres.top/res/73c4hz")
+        self.find_firefox_profile()
 
-reservation_grid = driver.find_element(By.ID, "reservations-grid")
+    def find_firefox_profile(self) -> str:
+        if os.path.exists(os.path.join(os.environ['APPDATA'], r"Mozilla/Firefox/Profiles")):
+            folder_content = os.scandir(os.path.join(os.environ['APPDATA'], r"Mozilla/Firefox/Profiles/"))
+            profile_name = [file for file in folder_content if file.name.endswith(".Profil 1")]
+            
+            self.profile_path = os.path.join(os.environ['APPDATA'], f"Mozilla\Firefox\Profiles\{profile_name[0].name}")
+        else:
+            print("Need FireFox and create Profile 1")
+            input("...")
+            return
 
-wait = WebDriverWait(driver, 20)
-wait.until(lambda d: len(d.find_elements(By.CSS_SELECTOR, "#reservations-grid > div")) > 1)
-sleep(2) #safety wait
+    def scan_sheet_data(self):
+        self.active_entry = [entry for entry in self.sr_sheet_data if entry[0].lower() == self.focused_char[0].lower() or entry[1].lower() == self.focused_char[0].lower()]
+        self.active_entry = [entry for entry in self.active_entry if self.focused_char[1] in entry]
 
-print(reservation_grid.get_attribute("data-srplus"))
-if reservation_grid.get_attribute("data-srplus") == "1":
-    if reservation_grid.get_attribute("data-admin") == "1":
-    
-        all_entries  = reservation_grid.find_elements(By.CSS_SELECTOR, "#reservations-grid > div")
+    def set_sr_sheet(self,sr_sheet:list):
+        self.sr_sheet_data = sr_sheet
 
-        for e in all_entries[1:]:
-            char_name = e.find_element(By.CLASS_NAME, "character-name")
-            char_name = char_name.text.strip()
-            try:
-                item_name = e.find_element(By.CLASS_NAME, "raid-item")
-                item_name = item_name.text.strip()
-                input_field = e.find_element(By.CSS_SELECTOR, ".sr-plus > div > input")
-                bonus_roll = input_field.get_attribute("value")
-                
-                if char_name == "Eatmybolts" and item_name == "Eye of C'Thun":
-                    input_field.click()
-                    input_field.send_keys(Keys.CONTROL + "a")
-                    input_field.send_keys(Keys.BACKSPACE)
-                    input_field.send_keys("69")
-                #input_field.send_keys(Keys.ENTER) #i think this will reload the page
+    def scan_site(self, site_link:str):
+        firefox_opt = ff_opt()
+        firefox_opt.add_argument("-profile")
+        firefox_opt.add_argument(self.profile_path)
+        driver =  webdriver.Firefox(options=firefox_opt)
+        driver.get(site_link)
 
-            except:
-                item_name = "Nothing reserved"
-                bonus_roll = "0"
-                print(f"Char: {char_name} - SR: {item_name} - BonusRoll: {bonus_roll}")
+        reservation_grid = driver.find_element(By.ID, "reservations-grid")
+
+        wait = WebDriverWait(driver, 20)
+        wait.until(lambda d: len(d.find_elements(By.CSS_SELECTOR, "#reservations-grid > div")) > 1)
+        sleep(2) #safety wait
+
+        if reservation_grid.get_attribute("data-srplus") == "1":
+            if reservation_grid.get_attribute("data-admin") == "1":
+            
+                all_entries  = reservation_grid.find_elements(By.CSS_SELECTOR, "#reservations-grid > div")
+
+                for e in all_entries[1:]:
+                    char_name = e.find_element(By.CLASS_NAME, "character-name")
+                    char_name = char_name.text.strip()
+                    try:
+                        item_name = e.find_element(By.CLASS_NAME, "raid-item")
+                        item_name = item_name.text.strip()
+                        input_field = e.find_element(By.CSS_SELECTOR, ".sr-plus > div > input")
+                        bonus_roll = input_field.get_attribute("value")
+                    except:
+                        item_name = "Nothing reserved"
+                        bonus_roll = "0"
+                        #print(f"Char: {char_name} - SR: {item_name} - BonusRoll: {bonus_roll}")
+                    else:
+                        self.focused_char.clear()
+                        self.focused_char = [char_name,item_name,input_field]
+                        self.scan_sheet_data()
+                        if self.active_entry != []:
+                            self.change_entry()
+                        else:
+                            self.change_entry(reset=True)
+
+                #code to hit the save button
+                all_btns = driver.find_elements(By.TAG_NAME, "button")
+                for btn in all_btns:
+                    try:
+                        btn_value = btn.find_element(By.CSS_SELECTOR, "span > span")
+                        if btn_value.text.strip() == "Update SR+":
+                            btn.click()
+                    except:
+                        pass
             else:
-                print(f"Char: {char_name} - SR: {item_name} - BonusRoll: {bonus_roll}")
+                print("No Admin rights")
+        else:
+            print("SR Plus disabled")
 
-        input("...")
-        #code to hit the save button
-        all_btns = driver.find_elements(By.TAG_NAME, "button")
-        for btn in all_btns:
-            try:
-                btn_value = btn.find_element(By.CSS_SELECTOR, "span > span")
-                if btn_value.text.strip() == "Update SR+":
-                    btn.click()
-            except:
-                pass
-    else:
-        print("No Admin rights")
-else:
-    print("SR Plus disabled")
+    def change_entry(self,reset:bool=False):
+        input_field = self.focused_char[2]
+        input_field.click()
+        input_field.send_keys(Keys.CONTROL + "a")
+        input_field.send_keys(Keys.BACKSPACE)
+        if reset:
+            input_field.send_keys("0")
+        else:
+            input_field.send_keys(str(self.active_entry[0][3]))
