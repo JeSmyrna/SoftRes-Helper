@@ -5,6 +5,8 @@ import os
 
 from selenium.webdriver.firefox.options import Options as ff_opt
 from selenium.webdriver.common.keys import Keys
+from scripts.gsheets import get_gsheet_data
+from scripts.file_import import load_csv, load_json
 from time import sleep
 
 
@@ -17,8 +19,63 @@ class RaidResActor():
         self.item_index = 0
         self.char_name_index = 0
         self.bonus_index = 0
+        self.__sr_directory = load_json("./Data/_config/sr_directory")[0]["name"][3:]
+        self.__menu = ["going back\n", "import SR Sheet from Google Sheet", "import external local file", "import from saved raids\n", "export to RaidRes Site\n--------------------"]
 
         self.find_firefox_profile()
+
+    def main(self):
+        while True:
+            print("--------------------")
+            for opt in self.__menu:
+                print(f"[{self.__menu.index(opt)}] - {opt}")
+
+            user_entry = input("option: ")
+            if user_entry == "0":
+                print("closing...")
+                sleep(1)
+                return
+            
+            elif user_entry == "1":
+                gsheet_link = input("Google Sheet Link: ")
+                try:
+                    gsheet_worksheet = int(input("Worksheet 1 -> x: ")) - 1
+                except:
+                    input("Input must be a number... canceling")
+                else:
+                    gsheet_cells = input('"From":"To" (example: "A1:B4"): ')
+                    try:
+                        self.sr_sheet_data = get_gsheet_data(gsheet_link,gsheet_worksheet,gsheet_cells)
+                        self.set_sr_columns()
+                    except:
+                        print("Error: GSheet broke")
+                
+            elif user_entry == "2":
+                file_path = input("File path (csv): ")
+                if os.path.exists(file_path):
+                    self.sr_sheet_data = load_csv(file_path)
+                    self.set_sr_columns()
+                else:
+                    input("File doesn't exist. Check Path...")
+
+            elif user_entry == "3":
+                for raid in self.__sr_directory:
+                    print(f"[{self.__sr_directory.index(raid)}] - {raid}")
+                try:
+                    raid_name = self.__sr_directory[int(input("option: "))]
+                    self.sr_sheet_data = load_csv(f"./Data/{raid_name}/{raid_name}")
+                    self.set_sr_columns()
+                except:
+                    input("Error: unexpected...")
+
+            elif user_entry == "4":
+                if self.sr_sheet_data != []:
+                    hyperlink = input("Input Raidres HTML Link: ")
+                    self.scan_site(hyperlink)
+                else:
+                    input("Need to SR sheet data... ")
+            else:
+                print("not an option")
 
     def find_firefox_profile(self) -> str:
         try:
@@ -39,28 +96,35 @@ class RaidResActor():
         self.active_entry = [entry for entry in self.sr_sheet_data if entry[self.char_name_index].lower() == self.focused_char[0].lower()]
         self.active_entry = [entry for entry in self.active_entry if self.focused_char[self.item_index] in entry]
 
+    #legacy function ?
     def set_sr_sheet(self,sr_sheet:list):
         self.sr_sheet_data = sr_sheet
+        self.set_sr_columns()
         
+    def set_sr_columns(self):
         #Development might change how I format SR sheets, thats why i for charname and sr item
-        self.item_index = [col_name for col_name in sr_sheet[0] if col_name.lower() == "item"][0]
+        self.item_index = [col_name for col_name in self.sr_sheet_data[0] if col_name.lower() == "item"][0]
 
-        self.char_name_index = [col_name for col_name in sr_sheet[0] if col_name.lower() == "char"]
+        self.char_name_index = [col_name for col_name in self.sr_sheet_data[0] if col_name.lower() == "char"]
         if self.char_name_index == []:
-            self.char_name_index = [col_name for col_name in sr_sheet[0] if col_name.lower() == "player"]
+            self.char_name_index = [col_name for col_name in self.sr_sheet_data[0] if col_name.lower() == "player"]
         self.char_name_index = self.char_name_index[0]
 
-        self.bonus_index = [col_name for col_name in sr_sheet[0] if "bonus" in col_name.lower()][0]
+        self.bonus_index = [col_name for col_name in self.sr_sheet_data[0] if "bonus" in col_name.lower()][0]
 
-        self.char_name_index = sr_sheet[0].index(self.char_name_index)
-        self.item_index = sr_sheet[0].index(self.item_index)
-        self.bonus_index = sr_sheet[0].index(self.bonus_index)
+        self.char_name_index = self.sr_sheet_data[0].index(self.char_name_index)
+        self.item_index = self.sr_sheet_data[0].index(self.item_index)
+        self.bonus_index = self.sr_sheet_data[0].index(self.bonus_index)
 
     def scan_site(self, site_link:str):
         firefox_opt = ff_opt()
         firefox_opt.add_argument("-profile")
         firefox_opt.add_argument(self.profile_path)
-        driver =  webdriver.Firefox(options=firefox_opt)
+        try:
+            driver =  webdriver.Firefox(options=firefox_opt)
+        except:
+            input("Error: unexpected. Try again... ")
+            return
         driver.get(site_link)
 
         reservation_grid = driver.find_element(By.ID, "reservations-grid")
