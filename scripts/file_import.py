@@ -9,11 +9,21 @@ def load_text_file(filename,cut_text:int = 0):
 
 def load_csv(filename:str) -> list:
     csv_file = []
-    with open (f'{filename}.csv',newline='') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            csv_file.append(row)
-    return csv_file
+    try:
+        with open (f'{filename}.csv',newline='') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                csv_file.append(row)
+        return csv_file
+    except:
+        try:
+            with open (f'{filename}',newline='') as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    csv_file.append(row)
+            return csv_file
+        except:
+            print("Error loading csv")
 
 def load_json(filename:str) -> list:
     filepath = f'{filename}.json'
@@ -63,3 +73,4 @@ def save_imported_logs(filename:str,date:str,logs):
     shutil.move(f'./Import/{logs[2]}',f'{filepath}/{filename}_{date}_{logs[2][-10:]}')
     
     print(f"saved logs in: {filepath}")
+
