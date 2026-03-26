@@ -21,15 +21,19 @@ class RaidResActor():
         self.find_firefox_profile()
 
     def find_firefox_profile(self) -> str:
-        if os.path.exists(os.path.join(os.environ['APPDATA'], r"Mozilla/Firefox/Profiles")):
-            folder_content = os.scandir(os.path.join(os.environ['APPDATA'], r"Mozilla/Firefox/Profiles/"))
-            profile_name = [file for file in folder_content if file.name.endswith(".Profil 1")]
-            
-            self.profile_path = os.path.join(os.environ['APPDATA'], f"Mozilla\Firefox\Profiles\{profile_name[0].name}")
-        else:
-            print("Need FireFox and create Profile 1")
+        try:
+            if os.path.exists(os.path.join(os.environ['APPDATA'], r"Mozilla/Firefox/Profiles")):
+                folder_content = os.scandir(os.path.join(os.environ['APPDATA'], r"Mozilla/Firefox/Profiles/"))
+                profile_name = [file for file in folder_content if file.name.endswith(".Profil 1")]
+                
+                self.profile_path = os.path.join(os.environ['APPDATA'], f"Mozilla\Firefox\Profiles\{profile_name[0].name}")
+            else:
+                print("Need FireFox and create Profile 1")
+                input("...")
+                return
+        except:
+            print("Something went wrong, try again.")
             input("...")
-            return
 
     def scan_sheet_data(self):
         self.active_entry = [entry for entry in self.sr_sheet_data if entry[self.char_name_index].lower() == self.focused_char[0].lower()]
