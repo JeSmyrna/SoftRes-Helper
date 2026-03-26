@@ -3,7 +3,7 @@ from scripts.file_import import load_text_file, load_json, load_csv
 from scripts.export import save_json, save_csv
 from scripts.player_mng import PlayerManager
 from scripts.import_raidlogs import RaidLogImporter
-
+from scripts.raidres_interact import RaidResActor
 import os, shutil
 from time import sleep
 
@@ -16,6 +16,7 @@ class SrSheetManager(RaidLogImporter):
         self.__sr_sheet: list
         self.__player_dict: PlayerManager
         self.sr_sheet_name : str
+        self.raidres_actor = RaidResActor()
     
     def start_sr_mng(self,player_dict:object):
         self.__player_dict = player_dict
@@ -110,6 +111,14 @@ class SrSheetManager(RaidLogImporter):
                 self.get_menu(log_data)
                 char_name = input("\nCharacter name: ")
                 self.reinstantiate_log(char_name)
+
+            elif user_input == "9":
+                self.raidres_actor.set_sr_sheet(self.__sr_sheet)
+
+                raidres_link = input("RaidRes Link: ")
+
+                self.raidres_actor.scan_site(raidres_link)
+                input("...")
             else:
                 print("not an option")
                 sleep(1)

@@ -32,7 +32,8 @@
             "add new SR+",
             "delete SR+",
             "reinstantiate log\n",
-            "export to google sheet"
+            "export to google sheet",
+            "export data to raidres"
         ]
     },
     {
