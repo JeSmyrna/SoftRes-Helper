@@ -49,6 +49,7 @@ def gspread_overwrite(link:str,row_data:dict,start_cell:str = 'A1',worksheet_num
                     lists.append(row_data[entry])
 
                 worksheet.batch_clear([f"A{start_cell[1]}:X100"])
+                worksheet.format("A1:B1",{"backgroundColor":{"red":0.0,"green":1.0,"blue":0.5}})
                 worksheet.update(lists, f'{start_cell}:{end_col_row}')
                 return True
     return False
@@ -99,3 +100,17 @@ def export_to_gsheet(sr_plus_sheet:dict):
         print(gen_func.color_text('successfully exported','gr'))
     else:
         print(gen_func.color_text('export failed','rd'))
+
+def get_gsheet_data(link:str,worksheet:int,cells:str) -> list:
+    try:
+        #Auto check if authorized user file is to old and needs to be refreshed.
+        if check_age_of_file():
+            os.remove('./Data/_user/authorized_user.json')
+        gc = gspread.oauth(authorized_user_filename='./Data/_user/authorized_user.json')
+    except:
+        print('Google Connection Error')
+    else:
+        sh = gc.open_by_url(link)
+        worksheet = sh.get_worksheet(worksheet)
+        data = worksheet.get(cells)
+        return data
