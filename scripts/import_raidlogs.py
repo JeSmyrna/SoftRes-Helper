@@ -104,14 +104,17 @@ class RaidLogImporter():
         for key in keys:
             items = []
             comments = []
+            char_class = ""
             for item in raidres_list:
                 if key == item[1]:
                     items.append(item[0])
-                    comments.append(item[2])
+                    comments.append(item[3])
+                    char_class = item[2].capitalize()
             """ if len(items) == 1:
                 items.append(items[0])
                 comments.append('') """
             items.extend(comments)
+            items.append(char_class)
             raid_res_player_dict.update({key:items})
         return raid_res_player_dict
 

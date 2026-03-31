@@ -18,6 +18,10 @@ class PlayerManager():
         save_json("./Data/_config/player_dict",self.__player_dict)
 
     def _ask_user(self, warning_text:str="Are you sure?"):
+        """
+        Warning Message: '{warning_text} (y/n): '\n
+        returns (y) true or (n) false
+        """
         while True:
             ask_user = input(f"{warning_text} (y/n): ")
             if ask_user == "y":
@@ -47,12 +51,12 @@ class PlayerManager():
         player = {'name','class','owner'}
         """
         if self.get_chars_of_player(player["name"],False) == []:
-            if self.get_chars_of_player(player["owner"]) == []:
+            """ if self.get_chars_of_player(player["owner"]) == []:
                 print(f"Owner {color_text(player["owner"],"yw")} does not exist")
-            else:
-                self.__player_dict.append(player)
-                self.sort_players()
-                self.save_player_dict()
+            else: """
+            self.__player_dict.append(player)
+            self.sort_players()
+            self.save_player_dict()
         else:
             print("Character already exists")
 
@@ -92,13 +96,16 @@ class PlayerManager():
                 self.__player_dict = new_player_dict
                 self.save_player_dict()
 
-    def get_chars_of_player(self,name:str,owner:bool=True) -> dict:
+    def get_chars_of_player(self,name:str,owner:bool=True) -> list:
         search_key = ""
         if owner:
             search_key = "owner"
         else:
             search_key = "name"
-        search_result = [entry for entry in self.__player_dict if entry[search_key].lower() == name.lower()]
+        try:
+            search_result = [entry for entry in self.__player_dict if entry[search_key].lower() == name.lower()]
+        except:
+            pass
         return search_result
 
     def print_chars(self,name:str="",owner:bool=False):
@@ -126,6 +133,10 @@ class PlayerManager():
             print((line_length)*"-")
 
     def search_player(self,name:str,show_msg:bool = True) -> list:
+        """
+        show_msg: print searching results\n
+        returns a list of characters found, or returns an empty list
+        """
         if name == "":
             print("nothing to search")
         else:
