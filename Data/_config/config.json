@@ -27,6 +27,7 @@
             "owner":true,
             "char":true,
             "class":true,
+            "item":true,
             "prev_bonus":false,
             "bonus":true,
             "status":false,

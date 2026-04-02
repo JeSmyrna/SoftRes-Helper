@@ -267,7 +267,11 @@ class SrSheetManager(RaidLogImporter):
         header_row = ""
         columns = self.__sr_sheet[0].copy()
         #indecies to print
-        indecies_to_print = [1,2,3,5,6]
+        indecies_to_print = []
+        option_keys = list(self.__settings[1].keys())
+        for key in option_keys:
+            if self.__settings[1][key] == True:
+                indecies_to_print.append(option_keys.index(key))
         if len(columns) > 13:
             for entry in columns[-6:]:
                 indecies_to_print.append(columns.index(entry))
@@ -302,9 +306,7 @@ class SrSheetManager(RaidLogImporter):
                         new_row += f"| {value}{' ' * (self.__col_len["class"] - len(value))}"
                     elif i == 3:
                         new_row += f"| {value}{' ' * (self.__col_len["item"] - len(value))}"
-                    elif i == 4:
-                        pass
-                    elif i == 5:
+                    elif i == 5 or i == 4:
                         new_row += f"| {value}{' ' * (7 - len(str(value)))}"
                     else:
                         new_row += f"| {value}{' ' * (self.__col_len["col_len"] - len(value))}"
