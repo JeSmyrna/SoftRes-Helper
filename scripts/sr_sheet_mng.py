@@ -258,48 +258,55 @@ class SrSheetManager(RaidLogImporter):
         print(chr(27) + "[2J") #clear terminal
         header_row = ""
         columns = self.__sr_sheet[0].copy()
-        columns.pop(4)
-        for entry in columns:
-            if entry == "player" or entry == "char":
-                header_row += f"|{color_text(" " + entry + " " * (self.__col_len["player"] - len(entry)),"blwb")}"
-            elif entry == "item":
-                header_row += f"|{color_text(" " + entry + " " * (self.__col_len["item"] - len(entry)),"blwb")}"
-            elif entry == "class":
-                header_row += f"|{color_text(" " + entry + " " * (self.__col_len["class"] - len(entry)),"blwb")}"
-            elif entry == "bonus":
-                header_row += f"|{color_text(" " + entry + " " * (7 - len(entry)),"blwb")}"
+        #indecies to print
+        indecies_to_print = [1,2,3,5,6]
+        if len(columns) > 13:
+            for entry in columns[-6:]:
+                indecies_to_print.append(columns.index(entry))
+        else:
+            for entry in columns[7:]:
+                indecies_to_print.append(columns.index(entry))
+
+        for entry in indecies_to_print:
+            if columns[entry] == "player" or columns[entry] == "char":
+                header_row += f"|{color_text(" " + columns[entry] + " " * (self.__col_len["player"] - len(columns[entry])),"blwb")}"
+            elif columns[entry] == "item":
+                header_row += f"|{color_text(" " + columns[entry] + " " * (self.__col_len["item"] - len(columns[entry])),"blwb")}"
+            elif columns[entry] == "class":
+                header_row += f"|{color_text(" " + columns[entry] + " " * (self.__col_len["class"] - len(columns[entry])),"blwb")}"
+            elif columns[entry] == "bonus":
+                header_row += f"|{color_text(" " + columns[entry] + " " * (7 - len(columns[entry])),"blwb")}"
             else:
-                header_row += f"|{color_text(" " + entry + " " * (self.__col_len["col_len"] - len(entry)),"blwb")}"
+                header_row += f"|{color_text(" " + columns[entry] + " " * (self.__col_len["col_len"] - len(columns[entry])),"blwb")}"
         header_row += "|"
         print(header_row)
-        print("-"*((len(header_row) - (8*len(columns)))))
+        print("-"*((len(header_row) - (8*len(indecies_to_print)))))
 
         if len(self.__sr_sheet) > 1:
             divider_line = 0
             for entry in self.__sr_sheet[1:]:
                 new_row = ""
-                list_index = 0
-                for value in entry:
-                    if list_index == 0 or list_index == 1:
+                for i in indecies_to_print:
+                    value = entry[i]
+                    if i == 0 or i == 1:
                         new_row += f"| {value}{' ' * (self.__col_len["player"] - len(value))}"
-                    elif list_index == 2:
+                    elif i == 2:
                         new_row += f"| {value}{' ' * (self.__col_len["class"] - len(value))}"
-                    elif list_index == 3:
+                    elif i == 3:
                         new_row += f"| {value}{' ' * (self.__col_len["item"] - len(value))}"
-                    elif list_index == 4:
+                    elif i == 4:
                         pass
-                    elif list_index == 5:
+                    elif i == 5:
                         new_row += f"| {value}{' ' * (7 - len(str(value)))}"
                     else:
                         new_row += f"| {value}{' ' * (self.__col_len["col_len"] - len(value))}"
-                    list_index += 1
                 new_row += "|"
                 print(new_row)
                 divider_line += 1
                 if divider_line % 5 == 0:
-                    print("-"*((len(header_row) - (8*len(columns)))))
+                    print("-"*((len(header_row) - (8*len(indecies_to_print)))))
             if divider_line % 5 != 0:
-                print("-"*((len(header_row) - (8*len(columns)))))
+                print("-"*((len(header_row) - (8*len(indecies_to_print)))))
 
     def _fill_days(self,present_last_day:bool = False) -> list:
         days_filled = ["-" for entry in self.__sr_sheet[0][6:]]
