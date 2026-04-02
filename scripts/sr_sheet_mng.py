@@ -16,7 +16,7 @@ class SrSheetManager(RaidLogImporter):
         self.__sr_sheet: list
         self.__player_dict: PlayerManager
         self.sr_sheet_name : str
-        self.raidres_data : list
+        self.raidres_data : dict
         self.active_player : str
         self.raidres_actor = RaidResActor()
     
@@ -364,7 +364,7 @@ class SrSheetManager(RaidLogImporter):
                 return
             
         else:
-            new_entry.extend(self._fill_days(present_last_day=True))
+            new_entry.extend(self._fill_days())#delete that raider here last raid = True
             self.__sr_sheet.append(new_entry)
             self._save_sr_sheet()
             return
@@ -387,8 +387,11 @@ class SrSheetManager(RaidLogImporter):
             save_csv(f"./Data/{self.sr_sheet_name}/sr_awarded",entry,False)
 
     def _format_log(self,entry:list,log_msg:str="") -> dict:
+        """
+        formats sr entries into log entries > return dictionary for move_to_log
+        """
         data = ""
-        for i in self.__sr_sheet[0][5:]:
+        for i in self.__sr_sheet[0][7:]:
             data += f'{i}:{entry[self.__sr_sheet[0].index(i)]},'
         new_log = {"name":entry[1],
                 "class":entry[2],
@@ -434,15 +437,6 @@ class SrSheetManager(RaidLogImporter):
 
             if input(f"Are you sure you want to move {character} with the SR+ on {char_entry[3]} with a bonus of {char_entry[4]} to the Logs? (y/n): ") == "y" and char_entry[0] != type(list):
                 new_log = self._format_log(char_entry,log_msg)
-                """ for i in self.__sr_sheet[0][5:]:
-                    data += f'{i}:{char_entry[self.__sr_sheet[0].index(i)]},'
-                new_log = {"name":character,
-                        "class":char_entry[2],
-                        "item":f"{char_entry[3]}",
-                        "bonus":char_entry[4],
-                        "date_logged":get_date(),
-                        "comment":log_msg,
-                        "data":f'{data[:-1]}'} """
                 
                 self.move_to_log(new_log)
                 self.__sr_sheet.remove(char_entry)
@@ -483,6 +477,7 @@ class SrSheetManager(RaidLogImporter):
         except:
             print("reinstantiate input error")
             input("...")
+            return
         
         if self._check_rules(char_name) == [True,True]:
             header_row = self.__sr_sheet[0]
@@ -516,8 +511,8 @@ class SrSheetManager(RaidLogImporter):
                 entry = entry.split(":")
                 days.update({entry[0]:entry[1]})
             
-            list_entry = [char_owner,data[1],data[2],data[3],data[4]]
-            for entry in header_row[5:]:
+            list_entry = [char_owner,data[1],data[2],data[3],0,data[4],"active"]
+            for entry in header_row[7:]:
                 if entry in days.keys():
                     list_entry.append(days[entry])
                 else:
@@ -594,10 +589,6 @@ class SrSheetManager(RaidLogImporter):
         #make safety copy
         #self._save_sr_sheet(True)
         
-        #add new column name
-        new_entry_name = input("New Date (YYYY-MM-DD): ")
-        self.__sr_sheet[0].append(new_entry_name)
-
         #Check attendee if already registered
         for attendee in imported_data[1]:
             #Add players not found
@@ -637,15 +628,33 @@ class SrSheetManager(RaidLogImporter):
             self.active_player = attendee
             #Check if attendee is NOT in SR sheet
             if attendee not in characters_in_sheet:
-                self.choose_sr_of_player()
+                #check if alt of any owner and alts allowed
+                if self._check_rules(self.active_player)[0] == True:
+                    self.choose_sr_of_player()
             
             #attendee is in sr sheet
             else:
+                player_sr = self.raidres_data.get(self.active_player)
+                player_sr_plus = [entry for entry in self.__sr_sheet[1:] if entry[1] == self.active_player]
+                
                 #check if attendees soft reserve are the same as in the sheet
+                for entry in player_sr_plus:
+                    if entry[3] in player_sr:
+                        #found the SR+
+                        pass
+                    else:
+                        #didn't find the SR+ > Delete?
+                        print(f"{self.active_player} has not reserved the same item: {entry[3]}")
+                        if input("y/n: ") == "y":
+                            self.move_to_log(self._format_log(entry,"Player didn't reserve same item"))
+                            self.__sr_sheet.remove(entry)
+                            self._save_sr_sheet()
+
                 #check if attendee has the same amount of SR+ as sheet allows
-                #ask user which of the soft reserve needs to be added, except the on already in
-                #if there aren't any other, continue
-                pass
+                if self._check_rules(self.active_player)[1] == True:
+                    self.choose_sr_of_player()
+                    #ask user which of the soft reserve needs to be added, except the on already in
+                    #if there aren't any other, continue
 
         #check for rule decay active
         #if True then check all entries in sr sheet
@@ -654,3 +663,7 @@ class SrSheetManager(RaidLogImporter):
 
         #check for rule deleting inacitve players
         #if True move to log file
+
+        #add new column name
+        """ new_entry_name = input("New Date (YYYY-MM-DD): ")
+        self.__sr_sheet[0].append(new_entry_name) """
