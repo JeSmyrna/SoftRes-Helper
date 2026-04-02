@@ -9,21 +9,13 @@ def load_text_file(filename,cut_text:int = 0):
 
 def load_csv(filename:str) -> list:
     csv_file = []
-    try:
-        with open (f'{filename}.csv',newline='') as file:
-            reader = csv.reader(file)
-            for row in reader:
-                csv_file.append(row)
-        return csv_file
-    except:
-        try:
-            with open (f'{filename}',newline='') as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    csv_file.append(row)
-            return csv_file
-        except:
-            print("Error loading csv")
+    if filename.endswith(".csv"):
+        filename = filename[:-4]
+    with open (f'{filename}.csv',newline='') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            csv_file.append(row)
+    return csv_file
 
 def load_json(filename:str) -> list:
     filepath = f'{filename}.json'
