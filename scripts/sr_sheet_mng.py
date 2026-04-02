@@ -23,7 +23,7 @@ class SrSheetManager(RaidLogImporter):
     def start_sr_mng(self,player_dict:object):
         self.__player_dict = player_dict
         while True:
-            print(chr(27) + "[2J") #clear terminal
+            #print(chr(27) + "[2J") #clear terminal
             print_menu_title("SR Sheet Manager")
             self.get_menu(self.__directory)
             user_input = input("option: ")
@@ -72,7 +72,7 @@ class SrSheetManager(RaidLogImporter):
         self.__settings = load_json(f"./Data/{sr_sheet}/settings")
         
         while True:
-            print(chr(27) + "[2J") #clear terminal
+            #print(chr(27) + "[2J") #clear terminal
             print_loaded_file(sr_sheet)
             self.get_menu(self.__blueprint["sr_sheet_menu"])
             user_input = input("option: ")
@@ -290,6 +290,7 @@ class SrSheetManager(RaidLogImporter):
                 header_row += f"|{color_text(" " + columns[entry] + " " * (7 - len(columns[entry])),"blwb")}"
             else:
                 header_row += f"|{color_text(" " + columns[entry] + " " * (self.__col_len["col_len"] - len(columns[entry])),"blwb")}"
+            
         header_row += "|"
         print(header_row)
         print("-"*((len(header_row) - (8*len(indecies_to_print)))))
@@ -299,17 +300,21 @@ class SrSheetManager(RaidLogImporter):
             for entry in self.__sr_sheet[1:]:
                 new_row = ""
                 for i in indecies_to_print:
-                    value = entry[i]
-                    if i == 0 or i == 1:
-                        new_row += f"| {value}{' ' * (self.__col_len["player"] - len(value))}"
-                    elif i == 2:
-                        new_row += f"| {value}{' ' * (self.__col_len["class"] - len(value))}"
-                    elif i == 3:
-                        new_row += f"| {value}{' ' * (self.__col_len["item"] - len(value))}"
-                    elif i == 5 or i == 4:
-                        new_row += f"| {value}{' ' * (7 - len(str(value)))}"
-                    else:
-                        new_row += f"| {value}{' ' * (self.__col_len["col_len"] - len(value))}"
+                    try:
+                        value = entry[i]
+                        if i == 0 or i == 1:
+                            new_row += f"| {value}{' ' * (self.__col_len["player"] - len(value))}"
+                        elif i == 2:
+                            new_row += f"| {value}{' ' * (self.__col_len["class"] - len(value))}"
+                        elif i == 3:
+                            new_row += f"| {value}{' ' * (self.__col_len["item"] - len(value))}"
+                        elif i == 5 or i == 4:
+                            new_row += f"| {value}{' ' * (7 - len(str(value)))}"
+                        else:
+                            new_row += f"| {value}{' ' * (self.__col_len["col_len"] - len(value))}"
+                    except:
+                        print("Uneven length between header row and entries, reload SR Sheet")
+                        return
                 new_row += "|"
                 print(new_row)
                 divider_line += 1
@@ -319,7 +324,7 @@ class SrSheetManager(RaidLogImporter):
                 print("-"*((len(header_row) - (8*len(indecies_to_print)))))
 
     def _fill_days(self,present_last_day:bool = False) -> list:
-        days_filled = ["-" for entry in self.__sr_sheet[0][6:]]
+        days_filled = ["-" for entry in self.__sr_sheet[0][7:]]
         if present_last_day:
             days_filled.pop(-1)
             days_filled.append("present")
@@ -533,9 +538,9 @@ class SrSheetManager(RaidLogImporter):
         player_data = self.__player_dict.search_player(self.active_player,False)[0]
 
         header_line = f"|{color_text(' '*23 + 'item'+' '*24,'blwb')}|{color_text(' '*21+'comment'+' '*21,'blwb')}|"
-        try:
-            player_sr = self.raidres_data.get(self.active_player)
-        except:
+        
+        player_sr = self.raidres_data.get(self.active_player)
+        if player_sr == None:
             print(f"player {self.active_player} not found in raidres")
             return
         comment_start = len(player_sr)//2 #dynamic index
@@ -562,11 +567,12 @@ class SrSheetManager(RaidLogImporter):
                     print(f'Adding {self.active_player} with Nothing')
                     self.add_to_sheet([player_data['owner'],player_data['name'],player_data['class'],'Nothing',0,0,'active'],True)
                 else:
-                    print(color_text(f'{self.active_player}','yw')+f' new SR+: {player_sr[user_input]}')
-                    self.add_to_sheet([player_data['owner'],player_data['name'],player_data['class'],player_sr[user_input],0,0,'active'],True)
+                    print(color_text(f'{self.active_player}','yw')+f' new SR+: {player_sr[user_input-1]}')
+                    self.add_to_sheet([player_data['owner'],player_data['name'],player_data['class'],player_sr[user_input-1],0,0,'active'],True)
                 print("-"*(self.__col_len['item'] * 2 + 7)+'\n')
                 sleep(1)
                 if self._check_rules(self.active_player) == [False,True]:
+                    #delete item from list to prevent doublicates
                     if user_input != 0:
                         print(f"deleting: {res_menu[user_input]}")
                         res_menu.pop(int(user_input))
@@ -587,7 +593,7 @@ class SrSheetManager(RaidLogImporter):
         
         #make safety copy
         #self._save_sr_sheet(True)
-
+        
         #add new column name
         new_entry_name = input("New Date (YYYY-MM-DD): ")
         self.__sr_sheet[0].append(new_entry_name)
