@@ -12,7 +12,7 @@ class SrSheetManager(RaidLogImporter):
         self.__directory = load_json("./Data/_config/sr_directory")[0]["name"]
         self.__blueprint = [setting for setting in load_json("./Data/_config/config") if setting["name"] == "sr_sheet"][0]
         self.__col_len = [setting for setting in load_json("./Data/_config/config") if setting["name"] == "col_lengths"][0]
-        self.__settings = dict
+        self.__settings: dict
         self.__sr_sheet: list
         self.__player_dict: PlayerManager
         self.sr_sheet_name : str
@@ -69,7 +69,7 @@ class SrSheetManager(RaidLogImporter):
     def sr_sheet_mng(self,sr_sheet:str) -> bool:
         self.sr_sheet_name = sr_sheet
         self.__sr_sheet = load_csv(f"./Data/{sr_sheet}/{sr_sheet}")
-        self.__settings = load_json(f"./Data/{sr_sheet}/settings")[0]
+        self.__settings = load_json(f"./Data/{sr_sheet}/settings")
         
         while True:
             print(chr(27) + "[2J") #clear terminal
@@ -84,8 +84,16 @@ class SrSheetManager(RaidLogImporter):
                 return True
             
             elif user_input == "2":
-                self.settings_menu()
-            
+                self.get_menu(["go back\n","Sheet Settings","Print Settings"])
+                try:
+                    setting_option = int(input("option: "))-1
+                    if setting_option < 0 or setting_option > 2:
+                        pass
+                    else:
+                        self.settings_menu(setting_option)
+                except:
+                    pass
+
             elif user_input == "3":
                 self.print_sr_sheet()
                 input("press enter to continue...")
@@ -138,14 +146,14 @@ class SrSheetManager(RaidLogImporter):
                 print(f"[{list_index}] {entry}")
                 list_index += 1
     
-    def settings_menu(self):
-        options = ["go back\n"]        
-        settings = [entry for entry in self.__settings]
+    def settings_menu(self,setting:int):
+        options = ["go back\n"]
+        settings = [entry for entry in self.__settings[setting]]
         options.extend(settings)
 
         while True:
             print(chr(27) + "[2J") #clear terminal
-            self.show_settings()
+            self.show_settings(self.__settings[setting])
             self.get_menu(options)
             user_input = input("\noption: ")
             if user_input == "0":
@@ -155,16 +163,16 @@ class SrSheetManager(RaidLogImporter):
                     print("Can't be negative or 0")
                     input("...")
                 else:
-                    self.change_setting(self.__settings[options[int(user_input)]],setting_name=options[int(user_input)])
+                    self.change_setting(self.__settings[setting][options[int(user_input)]],setting_name=options[int(user_input)],setting_num=setting)
             except IndexError:
                 print("settings_menu: INDEX error")
             except:
                 print("settins_menu: Input error")
-            save_json(f"./Data/{self.sr_sheet_name}/settings",[self.__settings])
+            save_json(f"./Data/{self.sr_sheet_name}/settings",self.__settings)
 
-    def show_settings(self):
-        header = [entry for entry in self.__settings]
-        values = [self.__settings[entry] for entry in self.__settings]
+    def show_settings(self,settings):
+        header = [entry for entry in settings]
+        values = [settings[entry] for entry in settings]
         header_row = "|"
         for entry in header:
             header_row += color_text(f" {entry}{" " * (self.__col_len["player"] - len(entry) - 1)}","blwb")
@@ -179,15 +187,15 @@ class SrSheetManager(RaidLogImporter):
         print(value_row)
         print("-" * (self.__col_len["player"] * len(values) + 6) + "\n")
         
-    def change_setting(self,setting,setting_name):
+    def change_setting(self,setting,setting_name,setting_num:int):
         while True:
             if type(setting) == bool:
-                self.__settings[setting_name] = not self.__settings[setting_name]
+                self.__settings[setting_num][setting_name] = not self.__settings[setting_num][setting_name]
                 break
             else:
                 user_input = input(f"New value for {setting_name}: {setting} >> ")
                 try:
-                    self.__settings[setting_name] = int(user_input)
+                    self.__settings[setting_num][setting_name] = int(user_input)
                     break
                 except:
                     print("change setting: input error")
@@ -250,7 +258,7 @@ class SrSheetManager(RaidLogImporter):
             os.mkdir(f"{new_path}sr_saves/sr_sheets/")
             os.mkdir(f"{new_path}sr_saves/sr_awarded/")
 
-            save_json(f"{new_path}settings",[self.__blueprint["settings"]])
+            save_json(f"{new_path}settings",[self.__blueprint["settings"],self.__blueprint["print_settings"]])
             save_csv(f"{new_path}{raidname}",[self.__blueprint["columns"]])
             save_csv(f"{new_path}sr_awarded",[self.__blueprint["awarded"]])
 
@@ -448,13 +456,13 @@ class SrSheetManager(RaidLogImporter):
         char_owner = character_list[0]["owner"]
         entry_amount = self._look_for_entries(char_owner)
         #check if multiple alt are allowed and if not if they player has already a character in
-        if self.__settings['multichar'] == False and len(entry_amount) > 0: # type: ignore
+        if self.__settings[0]['multichar'] == False and len(entry_amount) > 0: # type: ignore
             check.append(False)
         else:
             check.append(True)
          
         #check if the amount of SR+ meets the max amount of SR+ in settings
-        if self.__settings['sr_amount'] > len([entry for entry in self.__sr_sheet if entry[1] == char_name]): # type: ignore
+        if self.__settings[0]['sr_amount'] > len([entry for entry in self.__sr_sheet if entry[1] == char_name]): # type: ignore
             check.append(True)
         else:
             check.append(False)
@@ -566,8 +574,6 @@ class SrSheetManager(RaidLogImporter):
                     return
             except:
                 input("Item not found, try again...\n")
-
-
 
     def make_new_entry(self):
         imported_data = self.import_logs()

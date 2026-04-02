@@ -23,6 +23,15 @@
             "multichar":false,
             "sr_amount":1
         },
+        "print_settings":{
+            "owner":true,
+            "char":true,
+            "class":true,
+            "prev_bonus":false,
+            "bonus":true,
+            "status":false,
+            "days":6
+        },
         "sr_sheet_menu": [
             "go back",
             "load other SR sheet\n",
