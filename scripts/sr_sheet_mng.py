@@ -173,19 +173,20 @@ class SrSheetManager(RaidLogImporter):
     def show_settings(self,settings):
         header = [entry for entry in settings]
         values = [settings[entry] for entry in settings]
+        line_len = len(header) * self.__col_len['player'] + len(header) + 1
         header_row = "|"
         for entry in header:
             header_row += color_text(f" {entry}{" " * (self.__col_len["player"] - len(entry) - 1)}","blwb")
             header_row += "|"
         print(header_row)
-        print("-" * (self.__col_len["player"] * len(header) + 6))
+        print("-" * line_len)
 
         value_row = "|"
         for entry in values:
             value_row += f" {entry}{" " * (self.__col_len["player"] - len(str(entry)) - 1)}"
             value_row += "|"
         print(value_row)
-        print("-" * (self.__col_len["player"] * len(values) + 6) + "\n")
+        print("-" * line_len + "\n")
         
     def change_setting(self,setting,setting_name,setting_num:int):
         while True:
@@ -531,7 +532,7 @@ class SrSheetManager(RaidLogImporter):
         """
         #players at this point should be in the player dicitionary
         player_data = self.__player_dict.search_player(self.active_player,False)[0]
-
+        player_sr_plus = [entry[3] for entry in self.__sr_sheet if entry[1] == self.active_player]
         header_line = f"|{color_text(' '*23 + 'item'+' '*24,'blwb')}|{color_text(' '*21+'comment'+' '*21,'blwb')}|"
         
         player_sr = self.raidres_data.get(self.active_player)
@@ -562,8 +563,12 @@ class SrSheetManager(RaidLogImporter):
                     print(f'Adding {self.active_player} with Nothing')
                     self.add_to_sheet([player_data['owner'],player_data['name'],player_data['class'],'Nothing',0,0,'active'],True)
                 else:
-                    print(color_text(f'{self.active_player}','yw')+f' new SR+: {player_sr[user_input-1]}')
-                    self.add_to_sheet([player_data['owner'],player_data['name'],player_data['class'],player_sr[user_input-1],0,0,'active'],True)
+                    #prevent double sr+
+                    if player_sr[user_input-1] not in player_sr_plus:
+                        print(color_text(f'{self.active_player}','yw')+f' new SR+: {player_sr[user_input-1]}')
+                        self.add_to_sheet([player_data['owner'],player_data['name'],player_data['class'],player_sr[user_input-1],0,0,'active'],True)
+                    else:
+                        input("Can't put in the same SR...")
                 print("-"*(self.__col_len['item'] * 2 + 7)+'\n')
                 sleep(1)
                 if self._check_rules(self.active_player) == [False,True]:
@@ -577,6 +582,54 @@ class SrSheetManager(RaidLogImporter):
                     return
             except:
                 input("Item not found, try again...\n")
+
+    def doc_attendance(self,attendance:list):
+        """
+        Documents attendance of each player in SR+ Sheet\n
+        Either present, absent or half run
+        """
+        while True:
+            clear_status = input("Full Clear ? (y/n): ")
+            if clear_status != 'y' or clear_status != 'n':
+                print('Input wrong. Try again.')
+            else:
+                break
+
+        for entry in self.__sr_sheet[1:]:
+            if entry[1] in attendance:
+                if clear_status == 'y':
+                    entry.append('present')
+                elif clear_status == 'n':
+                    entry.append('half run')
+            else:
+                entry.append('absent')
+
+    def calc_bonus_roll(self):
+        for entry in self.__sr_sheet[1:]:
+            decay_counter = 0
+            bonus_roll = 0
+            for day in entry[7:]:
+                if day == 'present':
+                    bonus_roll += self.__settings[0]['bonus']
+                elif day == 'half run':
+                    bonus_roll += self.__settings[0]['bonus_half']
+                elif day == 'absent':
+                    if self.__settings[0]['decay'] == True:
+                        decay_counter += 1
+                        if decay_counter == self.settings_menu[0]['decay_after']:
+                            bonus_roll -= self.__settings[0]['decay_amount']
+                            decay_counter = 0
+                else:
+                    pass
+
+    def check_absent_days(self):
+        """
+        Check abescence of all players in the SR Sheet.\n
+        Auto deletion of players that have an absence of self.settings[del_p_after]
+        """
+        for entry in self.__sr_sheet[1:]:
+            for day in entry[7:]:
+                pass
 
     def make_new_entry(self):
         imported_data = self.import_logs()
@@ -649,14 +702,23 @@ class SrSheetManager(RaidLogImporter):
                             self.move_to_log(self._format_log(entry,"Player didn't reserve same item"))
                             self.__sr_sheet.remove(entry)
                             self._save_sr_sheet()
+                            self.choose_sr_of_player()
 
                 #check if attendee has the same amount of SR+ as sheet allows
                 if self._check_rules(self.active_player)[1] == True:
                     self.choose_sr_of_player()
-                    #ask user which of the soft reserve needs to be added, except the on already in
-                    #if there aren't any other, continue
 
         #check for rule decay active
+        new_entry_name = input("New Date (YYYY-MM-DD): ")
+        self.__sr_sheet[0].append(new_entry_name)
+        self.doc_attendance(imported_data[1])
+        #Auto Delete players after certain days, if setting is active
+        if self.__settings[0]['del_player'] == True:
+            self.check_absent_days()
+
+        self.calc_bonus_roll()
+        self._save_sr_sheet()
+
         #if True then check all entries in sr sheet
 
         #check if entries are in attendees to set them to present or absence
@@ -665,5 +727,4 @@ class SrSheetManager(RaidLogImporter):
         #if True move to log file
 
         #add new column name
-        """ new_entry_name = input("New Date (YYYY-MM-DD): ")
-        self.__sr_sheet[0].append(new_entry_name) """
+        

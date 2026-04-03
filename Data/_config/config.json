@@ -20,6 +20,8 @@
             "decay":false,
             "decay_amount":10,
             "decay_after" : 2,
+            "del_player":false,
+            "del_p_after":6,
             "multichar":false,
             "sr_amount":1
         },
