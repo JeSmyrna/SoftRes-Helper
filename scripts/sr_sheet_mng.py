@@ -129,6 +129,8 @@ class SrSheetManager(RaidLogImporter):
 
                 self.raidres_actor.scan_site(raidres_link)
                 input("...")
+            elif user_input == "99":
+                self.show_raidres_overview(self.import_logs())
             else:
                 print("not an option")
                 sleep(1)
@@ -211,7 +213,7 @@ class SrSheetManager(RaidLogImporter):
         """
         file_path = f"./Data/{self.sr_sheet_name}/{self.sr_sheet_name}"
         if copy:
-            target_path = f"./Data/{self.sr_sheet_name}/logs/sr_sheets/{self.__sr_sheet[0][-1]}-{self.sr_sheet_name}.csv"
+            target_path = f"./Data/{self.sr_sheet_name}/sr_saves/sr_sheets/{self.__sr_sheet[0][-1]}-{self.sr_sheet_name}.csv"
             shutil.copy(f"{file_path}.csv",target_path)
         else:
             save_csv(file_path,self.__sr_sheet)
