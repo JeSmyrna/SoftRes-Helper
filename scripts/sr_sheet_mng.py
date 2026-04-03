@@ -605,6 +605,9 @@ class SrSheetManager(RaidLogImporter):
                 entry.append('absent')
 
     def calc_bonus_roll(self):
+        """
+        Only Calculates bonusroll for all entries in the SR Sheet
+        """
         for entry in self.__sr_sheet[1:]:
             decay_counter = 0
             bonus_roll = 0
@@ -621,6 +624,7 @@ class SrSheetManager(RaidLogImporter):
                             decay_counter = 0
                 else:
                     pass
+            entry[5] = bonus_roll + entry[4]
 
     def check_absent_days(self):
         """
@@ -628,8 +632,51 @@ class SrSheetManager(RaidLogImporter):
         Auto deletion of players that have an absence of self.settings[del_p_after]
         """
         for entry in self.__sr_sheet[1:]:
+            absent_days = 0
             for day in entry[7:]:
-                pass
+                if day == 'absent':
+                    absent_days += 1
+                elif day == 'present' or day == 'half run':
+                    absent_days = 0
+            #after checking should only delete player if the last played raids are higher than set
+            if absent_days >= self.__settings[0]['del_p_after']:
+                self.move_to_log(self._format_log(entry,f"Player was absent for {absent_days} raids. Auto Deleted"))
+    
+    def show_raidres_overview(self,data:list):
+        """
+        Get an Overview of all attendees soft reserves and SR pluss in sheet
+        """
+        raidres = data[3]
+        line_len = self.__col_len['player'] + self.__col_len['item'] + self.__col_len['item'] + 5
+        print('='*line_len)
+        for entry in raidres:
+            if entry in data[1]:
+                player_sr = raidres[entry]
+                comment_start = len(player_sr)//2 #dynamic index
+
+                #first print all raid res entries
+                player_name = entry
+                for sr_entry in player_sr[0:comment_start]:
+                    raidres_text = ""
+                    item_comment = player_sr[comment_start+player_sr.index(sr_entry)]
+                    raidres_text += f"{player_name}{' '*(self.__col_len['player'] - len(player_name))}|"
+                    raidres_text += f" {sr_entry}{' '*(self.__col_len['item'] - len(sr_entry))}|"
+                    raidres_text += f" {item_comment}{' '*(self.__col_len['item'] - len(item_comment))}|"
+                    print(raidres_text)
+                    player_name = ""
+
+                sr_entries = [sr_plus for sr_plus in self.__sr_sheet if sr_plus[1] == entry]
+                print('-'*line_len)
+
+                #Then print all entries in SR Sheet
+                for sr in sr_entries:
+                    row_text = ""
+                    row_text = f'{sr[1]}{' '*(self.__col_len['player'] - len(sr[1]))}|'
+                    row_text += f' {color_text(sr[3],'yw')}{" "* (self.__col_len["item"] - len(sr[3]))}|'
+                    row_text += f' Bonusroll: {sr[5]}{" "* (self.__col_len['item'] - int(sr[5]) -12)}|'
+                    print(row_text)
+
+                print('='*line_len)
 
     def make_new_entry(self):
         imported_data = self.import_logs()
@@ -708,23 +755,25 @@ class SrSheetManager(RaidLogImporter):
                 if self._check_rules(self.active_player)[1] == True:
                     self.choose_sr_of_player()
 
-        #check for rule decay active
+        #New column name for SR Sheet
         new_entry_name = input("New Date (YYYY-MM-DD): ")
         self.__sr_sheet[0].append(new_entry_name)
         self.doc_attendance(imported_data[1])
+
         #Auto Delete players after certain days, if setting is active
         if self.__settings[0]['del_player'] == True:
             self.check_absent_days()
 
         self.calc_bonus_roll()
         self._save_sr_sheet()
-
-        #if True then check all entries in sr sheet
-
-        #check if entries are in attendees to set them to present or absence
-
-        #check for rule deleting inacitve players
-        #if True move to log file
-
-        #add new column name
+        
+        self.show_raidres_overview(imported_data)
+        while True:
+            self.get_menu(['continue\n','type character name to change entry'])
+            user_input = input("option: ")
+            if user_input == '0':
+                break
+            else:
+                pass
+        
         
