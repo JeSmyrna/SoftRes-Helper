@@ -381,7 +381,14 @@ class SrSheetManager(RaidLogImporter):
         data example: 'yyyy-mm-dd:present,yyyy-mm-dd:absent'
         """
         # func to check the length of the loot log
-        index = len(load_csv(f"./Data/{self.sr_sheet_name}/sr_awarded"))
+        log_data = load_csv(f"./Data/{self.sr_sheet_name}/sr_awarded")
+        index = len(log_data)
+        if len(log_data[1:]) > 100:
+            first_entry = log_data[1][6]
+            last_entry = log_data[-1][6]
+            log_copy_path = f"./Data/{self.sr_sheet_name}/sr_saves/sr_awarded/{first_entry}-{last_entry}_SR_awarded.csv"
+            shutil.copy(f"./data/{self.sr_sheet_name}/sr_awarded.csv",log_copy_path)
+            save_csv(f"./Data/{self.sr_sheet_name}/sr_awarded",self.__blueprint["awarded"],True)
         try:
             entry = [index,entry["name"],entry["class"],entry["item"],entry["bonus"],entry["comment"],entry["date_logged"],f'{entry["data"]}']
         except:
