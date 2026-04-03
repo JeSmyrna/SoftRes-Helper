@@ -211,7 +211,7 @@ class SrSheetManager(RaidLogImporter):
         """
         file_path = f"./Data/{self.sr_sheet_name}/{self.sr_sheet_name}"
         if copy:
-            target_path = f"./Data/{self.sr_sheet_name}/logs/{self.__sr_sheet[0][-1]}-{self.sr_sheet_name}.csv"
+            target_path = f"./Data/{self.sr_sheet_name}/logs/sr_sheets/{self.__sr_sheet[0][-1]}-{self.sr_sheet_name}.csv"
             shutil.copy(f"{file_path}.csv",target_path)
         else:
             save_csv(file_path,self.__sr_sheet)
@@ -640,6 +640,7 @@ class SrSheetManager(RaidLogImporter):
                     absent_days = 0
             #after checking should only delete player if the last played raids are higher than set
             if absent_days >= self.__settings[0]['del_p_after']:
+                #self.log_sr_entry(entry[1],f"Player was absent for {absent_days} raids. Auto Deleted",True,entry)
                 self.move_to_log(self._format_log(entry,f"Player was absent for {absent_days} raids. Auto Deleted"))
     
     def show_raidres_overview(self,data:list):
@@ -764,9 +765,7 @@ class SrSheetManager(RaidLogImporter):
         if self.__settings[0]['del_player'] == True:
             self.check_absent_days()
 
-        self.calc_bonus_roll()
-        self._save_sr_sheet()
-        
+        #Check comments on players soft reserves
         self.show_raidres_overview(imported_data)
         while True:
             self.get_menu(['continue\n','type character name to change entry'])
@@ -775,5 +774,10 @@ class SrSheetManager(RaidLogImporter):
                 break
             else:
                 pass
+        
+        #Check loot log and move to log file if won
+
+        self.calc_bonus_roll()
+        self._save_sr_sheet()
         
         
