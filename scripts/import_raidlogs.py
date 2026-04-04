@@ -118,16 +118,13 @@ class RaidLogImporter():
             raid_res_player_dict.update({key:items})
         return raid_res_player_dict
 
-    def safe_imported_logs(self,filename:str,date:str,logs):
+    def safe_imported_logs(self,filename:str,date:str,logs:list):
 
-        filepath = f'./Data/Logs-{filename}/Logs'
+        filepath = f'./Data/{filename}/logs/'
 
-        if not os.path.exists(filepath):
-            os.makedirs(filepath)
-
-        shutil.move(f"./Import/{logs[0]}",f'{filepath}/{filename}_{date}.txt')
-        shutil.move(f"./Import/{logs[1]}",f'{filepath}/{filename}_{date}_Loot.txt')
-        shutil.move(f'./Import/{logs[2]}',f'{filepath}/{filename}_{date}_{logs[2][-10:]}')
+        shutil.move(f"./Import/{logs[0]}",f'{filepath}/{date}_raider.txt')
+        shutil.move(f"./Import/{logs[1]}",f'{filepath}/{date}_loot.txt')
+        shutil.move(f'./Import/{logs[2]}',f'{filepath}/{date}_{logs[2][-10:]}')
         
         print(f"saved logs in: {filepath}")
     
