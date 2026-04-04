@@ -12,7 +12,7 @@ def check_age_of_file() -> bool:
     else:
         return False
 
-def gspread_overwrite(link:str,row_data:dict,start_cell:str = 'A1',worksheet_num:int = 0) -> bool:
+def gspread_overwrite(link:str,row_data:list,start_cell:str = 'A1',worksheet_num:int = 0) -> bool:
     try:
         #Auto check if authorized user file is to old and needs to be refreshed.
         if check_age_of_file():
@@ -31,34 +31,26 @@ def gspread_overwrite(link:str,row_data:dict,start_cell:str = 'A1',worksheet_num
             except:
                 print('Google Worksheet out of range')
             else:
-                data_no_nothing = {}
+                data_no_nothing = []
                 for row in row_data:
-                    if row_data[row][1].lower() == 'nothing':
+                    if row[1].lower() == 'nothing':
                         pass
-                    elif '-' in row_data[row][1]:
-                        row_data[row][1] = str(row_data[row][1]).replace(' - ',', ')
-                        
-                        data_no_nothing.update({row:row_data[row]})
                     else:
-                        data_no_nothing.update({row:row_data[row]})
+                        data_no_nothing.append(row)
                 
                 end_col_row = calc_sheet_length(data_no_nothing,start_cell)
-                lists = []
-                for entry in data_no_nothing:
-                    #ignore player who have no SR+
-                    lists.append(row_data[entry])
 
                 worksheet.batch_clear([f"A{start_cell[1]}:X100"])
-                worksheet.format("A1:B1",{"backgroundColor":{"red":0.0,"green":1.0,"blue":0.5}})
-                worksheet.update(lists, f'{start_cell}:{end_col_row}')
+                #worksheet.format("A1:B1",{"backgroundColor":{"red":0.0,"green":1.0,"blue":0.5}})
+                worksheet.update(data_no_nothing, f'{start_cell}:{end_col_row}')
                 return True
     return False
 
-def calc_sheet_length( sr_sheet:dict, start_cell:str = 'A1'):
+def calc_sheet_length( sr_sheet:list, start_cell:str = 'A1'):
     start_cell_column = start_cell[0].lower()
     start_cell_row = int(start_cell[1])
 
-    list_length = len(sr_sheet['columns'])-1
+    list_length = 10
 
     to_column = alphabet.index(start_cell_column)+list_length
     to_row = len(sr_sheet) + start_cell_row -1
@@ -66,22 +58,26 @@ def calc_sheet_length( sr_sheet:dict, start_cell:str = 'A1'):
 
     return end_row_col
 
-def shorten_row_data(sr_sheet:dict) -> dict:
-    if len(sr_sheet['columns'] ) <= 10:
-        return sr_sheet
+def format_row_data(sr_sheet:list) -> list:
     
-    else:
-        edited_sr_sheet = {}
-        for row in sr_sheet:
-            new_row = []
-            new_row.extend(sr_sheet[row][0:4])
-            new_row.extend(sr_sheet[row][-6:])
-            edited_sr_sheet.update({row:new_row})
-        return edited_sr_sheet
+    edited_sr_sheet = []
+    days_start = 7
+    if len(sr_sheet[0]) >= 14:
+        days_start = -6
+    header_row = [sr_sheet[0][1],sr_sheet[0][3],sr_sheet[0][2],sr_sheet[0][5]]
+    header_row.extend(sr_sheet[0][days_start:])
+    
+    edited_sr_sheet.append(header_row)
+    for row in sr_sheet[1:]:
+        new_row =[]
+        new_row.extend([row[1],row[3],row[2],int(row[5])])
+        new_row.extend(row[days_start:])
+        edited_sr_sheet.append(new_row)
+    return edited_sr_sheet
         
 
-def export_to_gsheet(sr_plus_sheet:dict):
-    sr_plus_sheet = shorten_row_data(sr_plus_sheet)
+def export_to_gsheet(sr_plus_sheet:list):
+    sr_plus_sheet = format_row_data(sr_plus_sheet)
     success = False
     entered_url = input('GSheet URL: ')
     try:

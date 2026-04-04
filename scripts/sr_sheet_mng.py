@@ -4,6 +4,7 @@ from scripts.export import save_json, save_csv
 from scripts.player_mng import PlayerManager
 from scripts.import_raidlogs import RaidLogImporter
 from scripts.raidres_interact import RaidResActor
+from scripts.gsheets import export_to_gsheet
 import os, shutil
 from time import sleep
 
@@ -122,6 +123,9 @@ class SrSheetManager(RaidLogImporter):
                 char_name = input("\nCharacter name: ")
                 self.reinstantiate_log(char_name)
 
+            elif user_input == "8":
+                export_to_gsheet(self.__sr_sheet)
+
             elif user_input == "9":
                 self.raidres_actor.set_sr_sheet(self.__sr_sheet)
 
@@ -129,8 +133,6 @@ class SrSheetManager(RaidLogImporter):
 
                 self.raidres_actor.scan_site(raidres_link)
                 input("...")
-            elif user_input == "99":
-                print(self.import_logs()[0])
             else:
                 print("not an option")
                 sleep(1)
