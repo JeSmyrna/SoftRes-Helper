@@ -3,7 +3,7 @@ from time import sleep
 
 def load_text_file(filename,cut_text:int = 0):
     
-    with open(f'{filename}.txt', newline='') as text_file:
+    with open(f'{filename}.txt', newline='', encoding="utf-8") as text_file:
         text_as_list = [line[cut_text:].rstrip("\r\n") for line in text_file]
         return text_as_list
 
@@ -54,8 +54,10 @@ def get_raidres_data(filename:str) -> dict:
 
 
 def save_imported_logs(filename:str,date:str,logs):
-
-    filepath = f'./Data/{filename}/Logs'
+    """
+    logs: imported data[0] list of names in the imported folder
+    """
+    filepath = f'./Data/{filename}/logs'
 
     if not os.path.exists(filepath):
         os.makedirs(filepath)
