@@ -1,5 +1,5 @@
-from scripts.general_functions import get_date, color_text, print_loaded_file, order_dict_alphabetically, print_menu_title
-from scripts.file_import import load_text_file, load_json, load_csv
+from scripts.general_functions import get_date, color_text, print_loaded_file, print_menu_title
+from scripts.file_import import load_json, load_csv
 from scripts.export import save_json, save_csv
 from scripts.player_mng import PlayerManager
 from scripts.import_raidlogs import RaidLogImporter
@@ -130,7 +130,7 @@ class SrSheetManager(RaidLogImporter):
                 self.raidres_actor.scan_site(raidres_link)
                 input("...")
             elif user_input == "99":
-                self.show_raidres_overview(self.import_logs())
+                print(self.import_logs()[0])
             else:
                 print("not an option")
                 sleep(1)
@@ -214,7 +214,10 @@ class SrSheetManager(RaidLogImporter):
         file_path = f"./Data/{self.sr_sheet_name}/{self.sr_sheet_name}"
         if copy:
             target_path = f"./Data/{self.sr_sheet_name}/sr_saves/sr_sheets/{self.__sr_sheet[0][-1]}-{self.sr_sheet_name}.csv"
-            shutil.copy(f"{file_path}.csv",target_path)
+            if os.path.exists(target_path):
+                pass
+            else:
+                shutil.copy(f"{file_path}.csv",target_path)
         else:
             save_csv(file_path,self.__sr_sheet)
 
@@ -537,7 +540,8 @@ class SrSheetManager(RaidLogImporter):
 
     def choose_sr_of_player(self):
         """
-        adds new SR+ for player to sheet
+        adds new SR+ for player to sheet\n
+        Needs self.active_player
         """
         #players at this point should be in the player dicitionary
         player_data = self.__player_dict.search_player(self.active_player,False)[0]
@@ -633,7 +637,7 @@ class SrSheetManager(RaidLogImporter):
                             decay_counter = 0
                 else:
                     pass
-            entry[5] = bonus_roll + entry[4]
+            entry[5] = bonus_roll + int(entry[4])
 
     def check_absent_days(self):
         """
@@ -688,6 +692,40 @@ class SrSheetManager(RaidLogImporter):
 
                 print('='*line_len)
 
+    def award_through_lootlog(self,data:list):
+        loot_list = [entry.split(": ") for entry in data]
+        #format loot log to dictionary
+        loot_dict = {}
+        for entry in loot_list:
+            if entry[-1] in loot_dict.keys():
+                entry_value = loot_dict[entry[-1]]
+                if len(entry) > 2:
+                    new_entry = ": ".join(list(entry[:len(entry)-1]))
+                    entry_value.append(new_entry)
+                else:
+                    entry_value.append(entry[0])
+                loot_dict.update({entry[-1]:entry_value})
+            else:
+                loot_dict.update({entry[-1]:[entry[0]]})
+        
+        keys = list(loot_dict.keys())
+        keys.sort()
+        sr_plus_winners = []
+
+        for key in keys:
+            search_result = [entry for entry in self.__sr_sheet[1:] if entry[1] == key and entry[3] in loot_dict[key]]
+            if search_result != []:
+                for log in search_result:
+                    if input(f"{log[1]} won {log[3]} on the {self.__sr_sheet[0][-1]} with a Bonusroll of {log[5]} (y/n): ") == 'y':
+                        self.move_to_log(self._format_log(log,f"Won SR+ on {self.__sr_sheet[0][-1]}"))
+                        self.__sr_sheet.remove(log)
+                        sr_plus_winners.append(log[1])
+        print("Awarding through Loot Log done")
+        win_text = ""
+        for winner in sr_plus_winners:
+            win_text += f" {winner},"
+        print(f"Congratulations to:{win_text[0:-2]} for winning their SR Plus.\n")
+
     def make_new_entry(self):
         imported_data = self.import_logs()
         self.raidres_data = imported_data[3]
@@ -697,7 +735,7 @@ class SrSheetManager(RaidLogImporter):
             return
         
         #make safety copy
-        #self._save_sr_sheet(True)
+        self._save_sr_sheet(True)
         
         #Check attendee if already registered
         for attendee in imported_data[1]:
@@ -775,18 +813,41 @@ class SrSheetManager(RaidLogImporter):
             self.check_absent_days()
 
         #Check comments on players soft reserves
-        self.show_raidres_overview(imported_data)
         while True:
+            print(chr(27) + "[2J") #clear terminal
+            self.show_raidres_overview(imported_data)
             self.get_menu(['continue\n','type character name to change entry'])
-            user_input = input("option: ")
+            user_input = input("option or name: ")
             if user_input == '0':
                 break
             else:
-                pass
+                sr_entries = [entry for entry in self.__sr_sheet if entry[1] == user_input.capitalize()]
+                if sr_entries != []:
+                    self.active_player = user_input
+                    while True:
+                        sr_entries_menu = [item[3] for item in sr_entries].insert(0,"cancel\n")
+                        self.get_menu(sr_entries_menu)
+                        try:
+                            user_input = int(input("option: "))
+                            if user_input == 0:
+                                break
+                        except:
+                            print("input must be a number in range.\n")
+                        else:
+                            self.move_to_log(self._format_log(sr_entries[user_input],"Changed to a different SR+"))
+                            self.__sr_sheet.remove(sr_entries_menu[user_input])
+                            self.choose_sr_of_player()
+                            self._save_sr_sheet()
+                            break
+                else:
+                    input("Couldn't find character...")
         
         #Check loot log and move to log file if won
+        self.award_through_lootlog(imported_data[2])
 
         self.calc_bonus_roll()
         self._save_sr_sheet()
+        #Log the raid logs func
+        self.safe_imported_logs(self.sr_sheet_name,self.__sr_sheet[0][-1],imported_data[0])
         
         
