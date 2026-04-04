@@ -96,6 +96,8 @@ class SrSheetManager(RaidLogImporter):
                     pass
 
             elif user_input == "3":
+                self.calc_bonus_roll()
+                self._save_sr_sheet()
                 self.print_sr_sheet()
                 input("press enter to continue...")
             
@@ -605,10 +607,10 @@ class SrSheetManager(RaidLogImporter):
         """
         while True:
             clear_status = input("Full Clear ? (y/n): ")
-            if clear_status != 'y' or clear_status != 'n':
-                print('Input wrong. Try again.')
-            else:
+            if clear_status in "yn":
                 break
+            else:
+                print('Input wrong. Try again.')
 
         for entry in self.__sr_sheet[1:]:
             if entry[1] in attendance:
@@ -626,19 +628,22 @@ class SrSheetManager(RaidLogImporter):
         for entry in self.__sr_sheet[1:]:
             decay_counter = 0
             bonus_roll = 0
-            for day in entry[7:]:
-                if day == 'present':
-                    bonus_roll += self.__settings[0]['bonus']
-                elif day == 'half run':
-                    bonus_roll += self.__settings[0]['bonus_half']
-                elif day == 'absent':
-                    if self.__settings[0]['decay'] == True:
-                        decay_counter += 1
-                        if decay_counter == self.settings_menu[0]['decay_after']:
-                            bonus_roll -= self.__settings[0]['decay_amount']
-                            decay_counter = 0
-                else:
-                    pass
+            if entry[3].lower() == "nothing":
+                pass
+            else:
+                for day in entry[7:]:
+                    if day == 'present':
+                        bonus_roll += self.__settings[0]['bonus']
+                    elif day == 'half run':
+                        bonus_roll += self.__settings[0]['bonus_half']
+                    elif day == 'absent':
+                        if self.__settings[0]['decay'] == True:
+                            decay_counter += 1
+                            if decay_counter == self.settings_menu[0]['decay_after']:
+                                bonus_roll -= self.__settings[0]['decay_amount']
+                                decay_counter = 0
+                    else:
+                        pass
             entry[5] = bonus_roll + int(entry[4])
 
     def check_absent_days(self):
@@ -647,16 +652,20 @@ class SrSheetManager(RaidLogImporter):
         Auto deletion of players that have an absence of self.settings[del_p_after]
         """
         for entry in self.__sr_sheet[1:]:
-            absent_days = 0
-            for day in entry[7:]:
-                if day == 'absent':
-                    absent_days += 1
-                elif day == 'present' or day == 'half run':
-                    absent_days = 0
-            #after checking should only delete player if the last played raids are higher than set
-            if absent_days >= self.__settings[0]['del_p_after']:
-                #self.log_sr_entry(entry[1],f"Player was absent for {absent_days} raids. Auto Deleted",True,entry)
-                self.move_to_log(self._format_log(entry,f"Player was absent for {absent_days} raids. Auto Deleted"))
+            #prevent frozen players being deleted
+            if entry[6] == "active":
+                absent_days = 0
+                for day in entry[7:]:
+                    if day == 'absent':
+                        absent_days += 1
+                    elif day == 'present' or day == 'half run':
+                        absent_days = 0
+                #after checking should only delete player if the last played raids are higher than set
+                if absent_days >= self.__settings[0]['del_p_after']:
+                    #self.log_sr_entry(entry[1],f"Player was absent for {absent_days} raids. Auto Deleted",True,entry)
+                    self.move_to_log(self._format_log(entry,f"Player was absent for {absent_days} raids. Auto Deleted"))
+            else:
+                pass
     
     def show_raidres_overview(self,data:list):
         """

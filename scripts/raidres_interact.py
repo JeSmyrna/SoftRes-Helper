@@ -74,6 +74,10 @@ class RaidResActor():
                     self.scan_site(hyperlink)
                 else:
                     input("Need to SR sheet data... ")
+
+            elif user_entry == "5":
+                for entry in self.sr_sheet_data:
+                    print(entry)
             else:
                 print("not an option")
 
@@ -94,7 +98,7 @@ class RaidResActor():
 
     def scan_sheet_data(self):
         self.active_entry = [entry for entry in self.sr_sheet_data if entry[self.char_name_index].lower() == self.focused_char[0].lower()]
-        self.active_entry = [entry for entry in self.active_entry if self.focused_char[self.item_index] in entry]
+        self.active_entry = [entry for entry in self.active_entry if self.focused_char[1] in entry]
 
     #legacy function ?
     def set_sr_sheet(self,sr_sheet:list):
@@ -110,7 +114,7 @@ class RaidResActor():
             self.char_name_index = [col_name for col_name in self.sr_sheet_data[0] if col_name.lower() == "player"]
         self.char_name_index = self.char_name_index[0]
 
-        self.bonus_index = [col_name for col_name in self.sr_sheet_data[0] if "bonus" in col_name.lower()][0]
+        self.bonus_index = [col_name for col_name in self.sr_sheet_data[0] if "bonus" == col_name.lower()][0]
 
         self.char_name_index = self.sr_sheet_data[0].index(self.char_name_index)
         self.item_index = self.sr_sheet_data[0].index(self.item_index)
