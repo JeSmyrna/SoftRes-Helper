@@ -135,6 +135,8 @@ class SrSheetManager(RaidLogImporter):
 
                 self.raidres_actor.scan_site(raidres_link)
                 input("...")
+            elif user_input == "99":
+                self.change_entry()
             else:
                 print("not an option")
                 sleep(1)
@@ -146,11 +148,14 @@ class SrSheetManager(RaidLogImporter):
                 menu_copy.insert(pos,'-'*line_len)
         list_index = 0
         for entry in menu_copy:
-            if entry[0] == '-':
-                print(entry)
-            else:
-                print(f"[{list_index}] {entry}")
-                list_index += 1
+            try:
+                if entry[0] == '-':
+                    print(entry)
+                else:
+                    print(f"[{list_index}] {entry}")
+                    list_index += 1
+            except:
+                pass
     
     def settings_menu(self,setting:int):
         options = ["go back\n"]
@@ -206,6 +211,26 @@ class SrSheetManager(RaidLogImporter):
                     break
                 except:
                     print("change setting: input error")
+
+    def change_entry(self):
+        sr_entry_menu = ["go back\n"]
+        sr_entry_menu.extend([entry for entry in self.__sr_sheet[1:]])
+        while True:
+            print(chr(27) + "[2J") #clear terminal
+            self.get_menu(sr_entry_menu)
+            try:
+                entry_to_edit = int(input("Entry Num: "))
+            except:
+                pass
+            else:
+                if entry_to_edit == 0:
+                    break
+                else:
+                    while True:
+                        for value in self.__sr_sheet[entry_to_edit][6:]:
+                            print(value)
+
+                        input("...")
 
     def save_sr_directory(self):
         save_json("./Data/_config/sr_directory", [{"name":self.__directory}])
@@ -498,7 +523,8 @@ class SrSheetManager(RaidLogImporter):
         
         if self._check_rules(char_name) == [True,True]:
             header_row = self.__sr_sheet[0]
-            data = load_csv(f"./Data/{self.sr_sheet_name}/sr_awarded")
+            data_import = load_csv(f"./Data/{self.sr_sheet_name}/sr_awarded")
+            data = [entry for entry in data_import if entry != []]
             data = [entry for entry in data if entry[1] == char_name]
 
             if data == []:
@@ -756,7 +782,7 @@ class SrSheetManager(RaidLogImporter):
                 new_player_entry = {'name':attendee}
                 if self.__player_dict._ask_user(f"-----\nAdd {attendee} as alt?"):
                     while True:
-                        ask_owner_name = input("")
+                        ask_owner_name = input("owner:")
                         search_result = self.__player_dict.get_chars_of_player(ask_owner_name)
                         if search_result != []:
                             if self.__player_dict._ask_user(f"Do you want to add {ask_owner_name} as owner of {attendee}?"):
@@ -804,7 +830,7 @@ class SrSheetManager(RaidLogImporter):
                     else:
                         #didn't find the SR+ > Delete?
                         print(f"{self.active_player} has not reserved the same item: {entry[3]}")
-                        if input("y/n: ") == "y":
+                        if input("y/n: ") == "y":#add overview
                             self.move_to_log(self._format_log(entry,"Player didn't reserve same item"))
                             self.__sr_sheet.remove(entry)
                             self._save_sr_sheet()
