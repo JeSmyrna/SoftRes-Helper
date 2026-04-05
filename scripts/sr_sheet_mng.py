@@ -53,19 +53,18 @@ class SrSheetManager(RaidLogImporter):
                 else:
                     print("no SR sheet detected.")
                     sleep(1)
-
-            elif user_input == "3":
-                print(f"loading {self.__directory[int(user_input)]}...")
-                sleep(1)
-                back_to = self.sr_sheet_mng(self.__directory[int(user_input)])
-                if back_to == False:
-                    print("going back to main menu...")
-                    sleep(1)
-                    return
-        
             else:
-                print("not an option...")
-                sleep(1)
+                try:
+                    print(f"loading {self.__directory[int(user_input)]}...")
+                    sleep(1)
+                    back_to = self.sr_sheet_mng(self.__directory[int(user_input)])
+                    if back_to == False:
+                        print("going back to main menu...")
+                        sleep(1)
+                        return
+                except:
+                    print("not an option...")
+                    sleep(1)
 
     def format_num_to_int(self):
         for entry in self.__sr_sheet[1:]:
