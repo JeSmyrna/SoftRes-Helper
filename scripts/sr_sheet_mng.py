@@ -826,7 +826,6 @@ class SrSheetManager(RaidLogImporter):
         characters_in_sheet = [char[1] for char in self.__sr_sheet]
         
         for attendee in imported_data[1]:
-            
             self.active_player = attendee
             #Check if attendee is NOT in SR sheet
             if attendee not in characters_in_sheet:
@@ -837,8 +836,9 @@ class SrSheetManager(RaidLogImporter):
             #attendee is in sr sheet
             else:
                 player_sr = self.raidres_data.get(self.active_player)
+                if player_sr == None:
+                    player_sr = []
                 player_sr_plus = [entry for entry in self.__sr_sheet[1:] if entry[1] == self.active_player]
-                
                 #check if attendees soft reserve are the same as in the sheet
                 for entry in player_sr_plus:
                     if entry[3] in player_sr:
