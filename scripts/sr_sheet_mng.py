@@ -67,9 +67,15 @@ class SrSheetManager(RaidLogImporter):
                 print("not an option...")
                 sleep(1)
 
+    def format_num_to_int(self):
+        for entry in self.__sr_sheet[1:]:
+            entry[4] = int(entry[4])
+            entry[5] = int(entry[5])
+
     def sr_sheet_mng(self,sr_sheet:str) -> bool:
         self.sr_sheet_name = sr_sheet
         self.__sr_sheet = load_csv(f"./Data/{sr_sheet}/{sr_sheet}")
+        self.format_num_to_int()
         self.__settings = load_json(f"./Data/{sr_sheet}/settings")
         
         while True:
@@ -136,7 +142,7 @@ class SrSheetManager(RaidLogImporter):
                 self.raidres_actor.scan_site(raidres_link)
                 input("...")
             elif user_input == "99":
-                self.change_entry()
+                self.sort_sr_sheet()
             else:
                 print("not an option")
                 sleep(1)
@@ -321,7 +327,7 @@ class SrSheetManager(RaidLogImporter):
                 header_row += f"|{color_text(" " + columns[entry] + " " * (self.__col_len["item"] - len(columns[entry])),"blwb")}"
             elif columns[entry] == "class":
                 header_row += f"|{color_text(" " + columns[entry] + " " * (self.__col_len["class"] - len(columns[entry])),"blwb")}"
-            elif columns[entry] == "bonus":
+            elif "bonus" in columns[entry]:
                 header_row += f"|{color_text(" " + columns[entry] + " " * (7 - len(columns[entry])),"blwb")}"
             else:
                 header_row += f"|{color_text(" " + columns[entry] + " " * (self.__col_len["col_len"] - len(columns[entry])),"blwb")}"
@@ -346,7 +352,12 @@ class SrSheetManager(RaidLogImporter):
                         elif i == 5 or i == 4:
                             new_row += f"| {value}{' ' * (7 - len(str(value)))}"
                         else:
-                            new_row += f"| {value}{' ' * (self.__col_len["col_len"] - len(value))}"
+                            day = value
+                            if day == 'present':
+                                day = color_text(day,'gr')
+                            elif day == 'absent':
+                                day = color_text(day,'rd')
+                            new_row += f"| {day}{' ' * (self.__col_len["col_len"] - len(value))}"
                     except:
                         print("Uneven length between header row and entries, reload SR Sheet")
                         return
@@ -389,7 +400,7 @@ class SrSheetManager(RaidLogImporter):
                 else:
                     presence_list = self._fill_days()
 
-                make_entry = [char_owner,char_name,search_result[0]["class"],sr_item,0]
+                make_entry = [char_owner,char_name,search_result[0]["class"],sr_item,0,0,"active"]
                 make_entry.extend(presence_list)
                 self.__sr_sheet.append(make_entry)
                 self._save_sr_sheet()
@@ -567,6 +578,13 @@ class SrSheetManager(RaidLogImporter):
         else:
             print(f"Character has already the max amount of SR+/Characters in the current sheet") # type: ignore
             input("...")
+
+    def sort_sr_sheet(self):
+        sorted_list = sorted(self.__sr_sheet[1:], key=lambda x:x[1]) #by name char
+        #sorted_list = sorted(sorted_list, key=lambda x:x[3]) #by item
+        sorted_list.insert(0, self.__sr_sheet[0])
+        self.__sr_sheet = sorted_list
+        self._save_sr_sheet()
 
     def choose_sr_of_player(self):
         """
