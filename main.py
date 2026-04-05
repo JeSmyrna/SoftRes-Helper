@@ -87,6 +87,7 @@ option: """)
 
         elif user_input == "3":
             print(" ")
+            player_mng.sort_players()
             player_mng.print_chars()
             input("press enter to continue ...")
 
