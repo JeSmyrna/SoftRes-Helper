@@ -8,6 +8,8 @@ from scripts.gsheets import export_to_gsheet
 import os, shutil
 from time import sleep
 
+debug = True
+
 class SrSheetManager(RaidLogImporter):
     def __init__(self):
         self.__directory = load_json("./Data/_config/sr_directory")[0]["name"]
@@ -506,18 +508,25 @@ class SrSheetManager(RaidLogImporter):
         """
         check = []
         character_list = self.__player_dict.search_player(char_name,False)
+        print(f"Found Characters: {character_list}") if debug == True else 0
         char_owner = character_list[0]["owner"]
+        print(f"Found Character Owner: {char_owner}") if debug == True else 0
         entry_amount = self._look_for_entries(char_owner)
+        print(f"Found SR in sheet: {entry_amount}") if debug == True else 0
         #check if multiple alt are allowed and if not if they player has already a character in
         if self.__settings[0]['multichar'] == False and len(entry_amount) > 0: # type: ignore
+            print(f"No Alts allowed, at least 1 Alt has a SR: {self.__player_dict.get_chars_of_player(char_owner)}") if debug == True else 0
             check.append(False)
         else:
+            print(f"Alts are allowed or no other Alt yet in Sheet, Keep going") if debug == True else 0
             check.append(True)
          
         #check if the amount of SR+ meets the max amount of SR+ in settings
         if self.__settings[0]['sr_amount'] > len([entry for entry in self.__sr_sheet if entry[1] == char_name]): # type: ignore
+            print(f"{char_name} has room for another SR") if debug == True else 0
             check.append(True)
         else:
+            print(f"{char_name} has max SR entries") if debug == True else 0
             check.append(False)
 
         return check
@@ -823,31 +832,64 @@ class SrSheetManager(RaidLogImporter):
                     
         
         #get all char names in sr sheet
+        print(f"Getting all Characters in Sheet") if debug == True else 0
         characters_in_sheet = [char[1] for char in self.__sr_sheet]
-        
+        attendee_copy = imported_data[1].copy()
+
         for attendee in imported_data[1]:
+            print(" "* 50) if debug == True else 0
+            print(f"Check for: {color_text(attendee,'yw')}") if debug == True else 0
             self.active_player = attendee
             #Check if attendee is NOT in SR sheet
             if attendee not in characters_in_sheet:
+                print(f"Character not in sheet") if debug == True else 0
                 #check if alt of any owner and alts allowed
                 if self._check_rules(self.active_player)[0] == True:
+                    print(f"Check rules done: continue to choose SR for player {attendee}") if debug == True else 0
                     self.choose_sr_of_player()
+                #if not check present for owner
+                else:
+                    owner = self.__player_dict.get_chars_of_player(self.active_player,False)[0]['owner']
+                    print(f"Noting presence for {owner} from {attendee}") if debug == True else 0
+                    attendee_copy.pop(attendee)
+                    attendee_copy.append(owner)
             
             #attendee is in sr sheet
             else:
+                print(f"Attendee is in sr sheet, getting all raidres entries...") if debug == True else 0
                 player_sr = self.raidres_data.get(self.active_player)
+                print(f"Looking for RaidRes Entries: {player_sr}") if debug == True else 0
                 if player_sr == None:
+                    print(f"found None for {attendee}, replacing with an empty List") if debug == True else 0
                     player_sr = []
+                print(f"Looking for SR Entries in SR Sheet...") if debug == True else 0
                 player_sr_plus = [entry for entry in self.__sr_sheet[1:] if entry[1] == self.active_player]
+                print(f"Found: {player_sr_plus}") if debug == True else 0
                 #check if attendees soft reserve are the same as in the sheet
+                print(f"Checking found Entries if in Raidres...") if debug == True else 0
                 for entry in player_sr_plus:
+                    
                     if entry[3] in player_sr:
+                        print(f"{entry} found in Sheet") if debug == True else 0
                         #found the SR+
                         pass
                     else:
+                        print(f"Couldn't find {entry} in SR Sheet") if debug == True else 0
+                        #printing raidres and comment
+                        comment_start = len(player_sr)//2 #dynamic index
+                        res_menu = [f"Nothing{" "*41}| {" "*48}|"]
+                        for entry in player_sr[0:comment_start]:
+                            item_comment = player_sr[comment_start+player_sr.index(entry)]
+                            res_menu.append(f"{entry}{" "*(self.__col_len['item'] - len(entry))}| {item_comment}{" "*(self.__col_len['item'] -len(item_comment))}|")
+                        header_line = f"|{color_text(' '*23 + 'item'+' '*24,'blwb')}|{color_text(' '*21+'comment'+' '*21,'blwb')}|"
+                        print(header_line)
+                        print("-"*(self.__col_len['item'] * 2 + 7))
+                        self.get_menu(res_menu,break_line=True,line_len=103,line_pos=[1])
+                        print("-"*(self.__col_len['item'] * 2 + 7))
+
                         #didn't find the SR+ > Delete?
-                        print(f"{self.active_player} has not reserved the same item: {entry[3]}")
-                        if input("y/n: ") == "y":#add overview
+                        print(f"{self.active_player} has not reserved the same item: {entry[3]} Bonusroll: {entry[5]}")
+                        if input("y/n: ") == "y":
                             self.move_to_log(self._format_log(entry,"Player didn't reserve same item"))
                             self.__sr_sheet.remove(entry)
                             self._save_sr_sheet()
@@ -855,6 +897,7 @@ class SrSheetManager(RaidLogImporter):
 
                 #check if attendee has the same amount of SR+ as sheet allows
                 if self._check_rules(self.active_player)[1] == True:
+                    print(f"{attendee} has room for another SR Plus") if debug == True else 0
                     self.choose_sr_of_player()
 
         #New column name for SR Sheet
@@ -875,6 +918,7 @@ class SrSheetManager(RaidLogImporter):
             if user_input == '0':
                 break
             else:
+                #doesnt find alts of char yet, ADD SOON
                 sr_entries = [entry for entry in self.__sr_sheet if entry[1] == user_input.capitalize()]
                 if sr_entries != []:
                     self.active_player = user_input
