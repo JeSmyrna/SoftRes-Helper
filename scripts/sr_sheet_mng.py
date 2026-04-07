@@ -874,7 +874,8 @@ class SrSheetManager(RaidLogImporter):
                         #didn't find the SR+ > Delete?
                         print(f"{self.active_player} has not reserved the same item: {entry[3]} Bonusroll: {entry[5]}")
                         if input("y/n: ") == "y":
-                            self.move_to_log(self._format_log(entry,"Player didn't reserve same item"))
+                            if entry[3].lower() != "nothing":
+                                self.move_to_log(self._format_log(entry,"Player didn't reserve same item"))
                             self.__sr_sheet.remove(entry)
                             self._save_sr_sheet()
                             self.choose_sr_of_player()
