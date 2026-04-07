@@ -104,7 +104,7 @@ class SrSheetManager(RaidLogImporter):
 
             elif user_input == "3":
                 self.calc_bonus_roll()
-                self.sort_sr_sheet()
+                self.sort_sr_sheet([[1,False]])
                 self._save_sr_sheet()
                 self.print_sr_sheet()
                 input("press enter to continue...")
@@ -134,6 +134,8 @@ class SrSheetManager(RaidLogImporter):
                 self.reinstantiate_log(char_name)
 
             elif user_input == "8":
+                self.sort_sr_sheet([[5,True],[3,False]])
+                self.print_sr_sheet()
                 export_to_gsheet(self.__sr_sheet)
 
             elif user_input == "9":
@@ -594,12 +596,18 @@ class SrSheetManager(RaidLogImporter):
             print(f"Character has already the max amount of SR+/Characters in the current sheet") # type: ignore
             input("...")
 
-    def sort_sr_sheet(self):
-        sorted_list = sorted(self.__sr_sheet[1:], key=lambda x:x[1]) #by name char
-        #sorted_list = sorted(sorted_list, key=lambda x:x[3]) #by item
+    def sort_sr_sheet(self,sort_by:list):
+        """
+        Input: A List with Lists containing [int,bool]\n
+        Int = column names ID: 0 - owner, 1 - char, 2 - class, 3 - item , 4 - prev_bonus, 5 - bonus\n
+        Bool = sort reverse or not
+        """
+        sorted_list = self.__sr_sheet.copy()
+        for sorting in sort_by:
+            sorted_list = sorted(sorted_list[1:], key=lambda x:x[sorting[0]], reverse=sorting[1])
+
         sorted_list.insert(0, self.__sr_sheet[0])
         self.__sr_sheet = sorted_list
-        self._save_sr_sheet()
 
     def choose_sr_of_player(self):
         """
@@ -857,7 +865,7 @@ class SrSheetManager(RaidLogImporter):
                     player_sr = []
                 print(f"Looking for SR Entries in SR Sheet...") if debug == True else 0
                 player_sr_plus = [entry for entry in self.__sr_sheet[1:] if entry[1] == self.active_player]
-                print(f"Found: {player_sr_plus}") if debug == True else 0
+                print(f"Found {len(player_sr_plus)}: {player_sr_plus}") if debug == True else 0
                 #check if attendees soft reserve are the same as in the sheet
                 print(f"Checking found Entries if in Raidres...") if debug == True else 0
                 for entry in player_sr_plus:
@@ -882,7 +890,7 @@ class SrSheetManager(RaidLogImporter):
 
                 #check if attendee has the same amount of SR+ as sheet allows
                 if self._check_rules(self.active_player)[1] == True:
-                    print(f"{attendee} has room for another SR Plus") if debug == True else 0
+                    print(f"{attendee} has room for {self.__settings[0]['sr_amount'] - len(player_sr_plus)} SR Plus") if debug == True else 0
                     self.choose_sr_of_player()
 
         #Check comments on players soft reserves
