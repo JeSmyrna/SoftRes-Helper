@@ -104,6 +104,7 @@ class SrSheetManager(RaidLogImporter):
 
             elif user_input == "3":
                 self.calc_bonus_roll()
+                self.sort_sr_sheet()
                 self._save_sr_sheet()
                 self.print_sr_sheet()
                 input("press enter to continue...")
@@ -143,7 +144,7 @@ class SrSheetManager(RaidLogImporter):
                 self.raidres_actor.scan_site(raidres_link)
                 input("...")
             elif user_input == "99":
-                self.sort_sr_sheet()
+                self.import_old_data()
             else:
                 print("not an option")
                 sleep(1)
@@ -379,7 +380,7 @@ class SrSheetManager(RaidLogImporter):
 
     def add_to_sheet(self,new_entry:list=[],auto:bool=False):
         """
-        new_entry = [char_owner, char_name, class, item_name, bonus=0, status]
+        new_entry = [char_owner, char_name, class, item_name, prev_bonus=0, bonus=0, status]
         """
         #manual add
         if auto != True:
@@ -705,7 +706,7 @@ class SrSheetManager(RaidLogImporter):
         """
         for entry in self.__sr_sheet[1:]:
             #prevent frozen players being deleted
-            if entry[6] == "active":
+            if entry[6] == "active" and entry[3].lower() != "nothing":
                 absent_days = 0
                 for day in entry[7:]:
                     if day == 'absent':
@@ -805,30 +806,8 @@ class SrSheetManager(RaidLogImporter):
             #Add players not found
             #Look if player is in player dictionary
             if self.__player_dict.search_player(attendee,False) == []:
-                new_player_entry = {'name':attendee}
-                if self.__player_dict._ask_user(f"-----\nAdd {attendee} as alt?"):
-                    while True:
-                        ask_owner_name = input("owner:")
-                        search_result = self.__player_dict.get_chars_of_player(ask_owner_name)
-                        if search_result != []:
-                            if self.__player_dict._ask_user(f"Do you want to add {ask_owner_name} as owner of {attendee}?"):
-                                new_player_entry.update({'owner':ask_owner_name})
-                                break
-                        else:
-                            input(f"Couldn't find player {ask_owner_name}...")
-                            if self.__player_dict._ask_user("Rather add character also as owner?"):
-                                new_player_entry.update({'owner':attendee})
-                                break
-                else:
-                    new_player_entry.update({'owner':attendee})
-                try:
-                    newPlayerData = imported_data[3].get(attendee)
-                    new_player_entry.update({'class':newPlayerData[-1]})
-                    self.__player_dict.add_player(new_player_entry)
-                except:
-                    print(f"player {color_text(attendee,"yw")} not found in raidres, not enough information to add to player dict\n-----")
-                    new_player_entry.update({'class':self.__player_dict.choose_class()})
-                    self.__player_dict.add_player(new_player_entry)
+                #func for adding player
+                self.add_player_to_dict(attendee,imported_data[3])
                     
         
         #get all char names in sr sheet
@@ -903,7 +882,7 @@ class SrSheetManager(RaidLogImporter):
         #New column name for SR Sheet
         new_entry_name = input("New Date (YYYY-MM-DD): ")
         self.__sr_sheet[0].append(new_entry_name)
-        self.doc_attendance(imported_data[1])
+        self.doc_attendance(attendee_copy)
 
         #Auto Delete players after certain days, if setting is active
         if self.__settings[0]['del_player'] == True:
@@ -948,4 +927,49 @@ class SrSheetManager(RaidLogImporter):
         #Log the raid logs func
         self.safe_imported_logs(self.sr_sheet_name,self.__sr_sheet[0][-1],imported_data[0])
         
-        
+    def add_player_to_dict(self,attendee:str,raidres_data:dict={}):
+        new_player_entry = {'name':attendee}
+        if self.__player_dict._ask_user(f"-----\nAdd {attendee} as alt?"):
+            while True:
+                ask_owner_name = input("owner:")
+                search_result = self.__player_dict.get_chars_of_player(ask_owner_name)
+                if search_result != []:
+                    if self.__player_dict._ask_user(f"Do you want to add {ask_owner_name} as owner of {attendee}?"):
+                        new_player_entry.update({'owner':ask_owner_name})
+                        break
+                else:
+                    input(f"Couldn't find player {ask_owner_name}...")
+                    if self.__player_dict._ask_user("Rather add character also as owner?"):
+                        new_player_entry.update({'owner':attendee})
+                        break
+        else:
+            new_player_entry.update({'owner':attendee})
+
+        newPlayerData = raidres_data.get(attendee)
+        if newPlayerData != None:
+            new_player_entry.update({'class':newPlayerData[-1]})
+        else:
+            print(f"player {color_text(attendee,"yw")} not found in raidres, not enough information to add to player dict\n-----")
+            new_player_entry.update({'class':self.__player_dict.choose_class()})
+        self.__player_dict.add_player(new_player_entry)
+
+    def import_old_data(self):
+        path = input("csv filepath: ")
+        imported_data = load_csv(path.strip(".csv"))
+        self._save_sr_sheet(True)
+        #check if character are in player dictionary
+        for entry in imported_data[1:]:
+            search_result = self.__player_dict.search_player(entry[0],False)
+            #Doesn't exist yet
+            if search_result == []:
+                self.add_player_to_dict(entry[0])
+            else:
+                pass
+            #look for entries of that character
+            if self._look_for_entries(entry[0]) == []:
+                if self._check_rules(entry[0]) == [True,True]:
+                    found_char = self.__player_dict.get_chars_of_player(entry[0],False)
+                    owner_name = found_char[0]['owner']
+                    char_class = found_char[0]['class']
+                    self.add_to_sheet([owner_name,entry[0],char_class,entry[1],int(entry[2])+int(entry[3]),0,"active"],True)
+        input("Import done...")
