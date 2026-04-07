@@ -971,5 +971,5 @@ class SrSheetManager(RaidLogImporter):
                     found_char = self.__player_dict.get_chars_of_player(entry[0],False)
                     owner_name = found_char[0]['owner']
                     char_class = found_char[0]['class']
-                    self.add_to_sheet([owner_name,entry[0],char_class,entry[1],int(entry[2])+int(entry[3]),0,"active"],True)
+                    self.add_to_sheet([owner_name,entry[0],char_class,entry[1],int(entry[3]),0,"active"],True)
         input("Import done...")
