@@ -991,6 +991,8 @@ class SrSheetManager(RaidLogImporter):
         imported_data = load_csv(path.strip(".csv"))
         self._save_sr_sheet(True)
         #check if character are in player dictionary
+        column_names = [day for day in imported_data[0][4:]]
+        self.__sr_sheet[0].extend(column_names)
         for entry in imported_data[1:]:
             search_result = self.__player_dict.search_player(entry[0],False)
             #Doesn't exist yet
@@ -1004,5 +1006,8 @@ class SrSheetManager(RaidLogImporter):
                     found_char = self.__player_dict.get_chars_of_player(entry[0],False)
                     owner_name = found_char[0]['owner']
                     char_class = found_char[0]['class']
-                    self.add_to_sheet([owner_name,entry[0],char_class,entry[1],int(entry[3]),0,"active"],True)
+                    new_entry = [owner_name,entry[0],char_class,entry[1],int(entry[2]),0,"active"]
+                    new_entry_days = [day for day in entry[4:]]
+                    new_entry.extend(new_entry_days)
+                    self.__sr_sheet.append(new_entry)
         input("Import done...")
