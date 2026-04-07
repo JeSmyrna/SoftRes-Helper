@@ -172,6 +172,7 @@ class RaidResActor():
                             btn.click()
                     except:
                         pass
+                driver.close()
             else:
                 print("No Admin rights")
         else:
