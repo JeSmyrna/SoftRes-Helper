@@ -135,7 +135,6 @@ class SrSheetManager(RaidLogImporter):
 
             elif user_input == "8":
                 self.sort_sr_sheet([[5,True],[3,False]])
-                self.print_sr_sheet()
                 export_to_gsheet(self.__sr_sheet)
 
             elif user_input == "9":
