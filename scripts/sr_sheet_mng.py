@@ -703,7 +703,7 @@ class SrSheetManager(RaidLogImporter):
                     elif day == 'half run':
                         bonus_roll += self.__settings[0]['bonus_half']
                     elif day == 'absent':
-                        if self.__settings[0]['decay'] == True:
+                        if self.__settings[0]['decay'] == True and entry[5] == "active":
                             decay_counter += 1
                             if decay_counter == self.settings_menu[0]['decay_after']:
                                 bonus_roll -= self.__settings[0]['decay_amount']
