@@ -840,7 +840,8 @@ class SrSheetManager(RaidLogImporter):
                 if self._check_rules(self.active_player)[0] == True:
                     print(f"Check rules done: continue to choose SR for player {attendee}") if debug == True else 0
                     self.choose_sr_of_player()
-                #if not check present for owner
+
+                #if not, replace Entry with this char?
                 else:
                     owner = self.__player_dict.get_chars_of_player(self.active_player,False)[0]['owner']
                     raidres_of_player = imported_data[3].get(self.active_player)
@@ -853,6 +854,17 @@ class SrSheetManager(RaidLogImporter):
                         sr_in_sheet = [entry for entry in self.__sr_sheet if entry[0] == owner]
                         self.move_to_log(self._format_log(sr_in_sheet[0],f"Replacing SR with Alt {attendee}"))
                         self.choose_sr_of_player()
+                    #Take attendance for other character ?
+                    else:
+                        found_sr_entry = [entry for entry in self.__sr_sheet if entry[0] == owner]
+                        #take attendance for character from owner in Sheet
+                        if input(f"Do you want to note Players {owner} attendance with {attendee} for {found_sr_entry[0][1]} (y/n): ") == 'y':
+                            attendee_copy.pop(attendee)
+                            attendee_copy.append(found_sr_entry[1])
+                            attendee_copy.sort()
+                        else:
+                            #just throw out the character no need for attendance check
+                            attendee_copy.pop(attendee)
             
             #attendee is in sr sheet
             else:
