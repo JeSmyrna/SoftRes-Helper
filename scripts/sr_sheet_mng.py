@@ -141,8 +141,10 @@ class SrSheetManager(RaidLogImporter):
                 self.raidres_actor.set_sr_sheet(self.__sr_sheet)
 
                 raidres_link = input("RaidRes Link: ")
-
-                self.raidres_actor.scan_site(raidres_link)
+                if raidres_link == "q":
+                    pass
+                else:
+                    self.raidres_actor.scan_site(raidres_link)
                 input("...")
             elif user_input == "99":
                 self.import_old_data()
