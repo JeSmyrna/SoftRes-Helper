@@ -766,7 +766,7 @@ class SrSheetManager(RaidLogImporter):
                     row_text = ""
                     row_text = f'{sr[1]}{' '*(self.__col_len['player'] - len(sr[1]))}|'
                     row_text += f' {color_text(sr[3],'yw')}{" "* (self.__col_len["item"] - len(sr[3]))}|'
-                    row_text += f' Bonusroll: {sr[5]}{" "* (self.__col_len['item'] - int(sr[5]) -12)}|'
+                    row_text += f' Bonusroll: {sr[5]}{" "* (self.__col_len['item'] - len(str(sr[5])) -12)}|'
                     print(row_text)
 
                 print('='*line_len)
