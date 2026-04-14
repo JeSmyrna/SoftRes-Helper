@@ -603,9 +603,9 @@ class SrSheetManager(RaidLogImporter):
         Int = column names ID: 0 - owner, 1 - char, 2 - class, 3 - item , 4 - prev_bonus, 5 - bonus\n
         Bool = sort reverse or not
         """
-        sorted_list = self.__sr_sheet.copy()
+        sorted_list = self.__sr_sheet[1:].copy()
         for sorting in sort_by:
-            sorted_list = sorted(sorted_list[1:], key=lambda x:x[sorting[0]], reverse=sorting[1])
+            sorted_list = sorted(sorted_list, key=lambda x:x[sorting[0]], reverse=sorting[1])
 
         sorted_list.insert(0, self.__sr_sheet[0])
         self.__sr_sheet = sorted_list
